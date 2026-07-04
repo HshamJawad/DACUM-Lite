@@ -1,0 +1,6 @@
+Version 3.0 – 2026
+- Stable UI
+- Snapshot fixed
+- Professional toolbar system
+- Editable project rename
+- Export improvements

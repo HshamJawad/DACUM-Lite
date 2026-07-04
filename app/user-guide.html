@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DACUM Lite — Official Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Variables ─────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --indigo:    #4f46e5;
+  --indigo-d:  #3730a3;
+  --indigo-l:  #818cf8;
+  --violet:    #7c3aed;
+  --cream:     #fefce8;
+  --cream-b:   #fde68a;
+  --slate:     #1e293b;
+  --slate-m:   #475569;
+  --slate-l:   #94a3b8;
+  --bg:        #f0f2f8;
+  --white:     #ffffff;
+  --radius:    12px;
+  --shadow:    0 4px 24px rgba(79,70,229,.10);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Sora', sans-serif;
+  background: var(--bg);
+  color: var(--slate);
+  font-size: 15px;
+  line-height: 1.65;
+  min-height: 100vh;
+}
+
+/* ── Top nav ────────────────────────────────────────────────── */
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255,255,255,.88);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(79,70,229,.10);
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 40px;
+  height: 58px;
+  overflow-x: auto;
+}
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-right: 32px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.nav-brand-logo {
+  width: 30px; height: 30px;
+  background: linear-gradient(135deg, var(--indigo), var(--violet));
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+.nav-brand-name { font-size: .88em; font-weight: 700; color: var(--indigo); }
+.nav-links { display: flex; gap: 2px; }
+.nav-link {
+  padding: 6px 13px;
+  border-radius: 7px;
+  font-size: .82em;
+  font-weight: 600;
+  color: var(--slate-m);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all .14s;
+}
+.nav-link:hover { background: rgba(79,70,229,.08); color: var(--indigo); }
+.nav-link.active { background: var(--indigo); color: #fff; }
+
+/* Language switch button */
+.nav-lang-btn {
+  margin-left: auto;
+  padding: 5px 14px;
+  border-radius: 7px;
+  font-size: .82em;
+  font-weight: 700;
+  background: rgba(79,70,229,.08);
+  color: var(--indigo);
+  border: 1px solid rgba(79,70,229,.18);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all .14s;
+  text-decoration: none;
+}
+.nav-lang-btn:hover { background: var(--indigo); color: #fff; }
+
+/* ── Hero ───────────────────────────────────────────────────── */
+.hero {
+  background: linear-gradient(145deg, #3730a3 0%, #4f46e5 45%, #7c3aed 100%);
+  color: #fff;
+  padding: 70px 40px 60px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,.06) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(255,255,255,.05) 0%, transparent 40%);
+  pointer-events: none;
+}
+.hero-badge {
+  display: inline-block;
+  background: rgba(255,255,255,.14);
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 999px;
+  padding: 5px 16px;
+  font-size: .78em;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 22px;
+}
+.hero h1 {
+  font-size: clamp(2.2em, 5vw, 3.4em);
+  font-weight: 800;
+  line-height: 1.15;
+  margin-bottom: 16px;
+  letter-spacing: -.02em;
+}
+.hero h1 span { color: #fde68a; }
+.hero-sub {
+  font-size: 1.05em;
+  opacity: .82;
+  max-width: 580px;
+  margin: 0 auto 32px;
+}
+.hero-meta {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  font-size: .82em;
+  opacity: .72;
+}
+.hero-meta span { display: flex; align-items: center; gap: 6px; }
+
+/* ── Page layout ────────────────────────────────────────────── */
+.page-wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 48px 32px 80px;
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 36px;
+  align-items: start;
+}
+
+/* ── Sidebar TOC ────────────────────────────────────────────── */
+.toc {
+  position: sticky;
+  top: 74px;
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid rgba(79,70,229,.10);
+  padding: 22px;
+  box-shadow: var(--shadow);
+}
+.toc-title {
+  font-size: .72em;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--slate-l);
+  margin-bottom: 12px;
+}
+.toc-list { list-style: none; }
+.toc-list li { margin-bottom: 3px; }
+.toc-list a {
+  display: block;
+  padding: 6px 10px;
+  border-radius: 7px;
+  font-size: .85em;
+  font-weight: 500;
+  color: var(--slate-m);
+  text-decoration: none;
+  transition: all .13s;
+}
+.toc-list a:hover { background: rgba(79,70,229,.07); color: var(--indigo); }
+.toc-list a.active { background: var(--indigo); color: #fff; }
+.toc-sub a { padding-left: 22px; font-size: .82em; }
+
+/* ── Main content ───────────────────────────────────────────── */
+.doc-section {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid rgba(79,70,229,.09);
+  padding: 36px 40px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+  scroll-margin-top: 80px;
+}
+.doc-section h2 {
+  font-size: 1.4em;
+  font-weight: 700;
+  color: var(--indigo-d);
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid rgba(79,70,229,.12);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.doc-section h3 {
+  font-size: 1.04em;
+  font-weight: 700;
+  color: var(--slate);
+  margin: 26px 0 10px;
+}
+.doc-section p { margin-bottom: 14px; color: var(--slate-m); }
+.doc-section p:last-child { margin-bottom: 0; }
+
+/* Steps */
+.steps { display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }
+.step {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.step-n {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--indigo), var(--violet));
+  color: #fff; font-size: .82em; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 1px;
+}
+.step-body { flex: 1; }
+.step-body strong { display: block; font-size: .95em; color: var(--slate); margin-bottom: 3px; }
+.step-body span { font-size: .9em; color: var(--slate-m); }
+
+/* Tips / notes */
+.note {
+  display: flex;
+  gap: 12px;
+  border-radius: 9px;
+  padding: 14px 16px;
+  margin: 14px 0;
+  font-size: .9em;
+  line-height: 1.55;
+}
+.note--info   { background: #eff6ff; border-left: 3px solid #3b82f6; color: #1e40af; }
+.note--tip    { background: #f0fdf4; border-left: 3px solid #22c55e; color: #166534; }
+.note--warn   { background: #fffbeb; border-left: 3px solid #f59e0b; color: #92400e; }
+.note-icon { font-size: 1.2em; flex-shrink: 0; }
+
+/* Feature grid */
+.feat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 16px 0;
+}
+.feat-card {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px;
+}
+.feat-icon { font-size: 1.6em; margin-bottom: 8px; }
+.feat-title { font-size: .9em; font-weight: 700; color: var(--slate); margin-bottom: 5px; }
+.feat-desc  { font-size: .82em; color: var(--slate-m); line-height: 1.5; }
+
+/* Code span */
+code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .85em;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 5px;
+  padding: 2px 7px;
+  color: var(--indigo);
+}
+
+/* Keyboard keys */
+kbd {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--slate);
+  color: #fff;
+  border-radius: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .8em;
+  box-shadow: 0 2px 0 rgba(0,0,0,.3);
+}
+
+/* DACUM chart mini-preview */
+.wv-preview {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 16px;
+  background: #eef2f7;
+  border-radius: 10px;
+  margin: 16px 0;
+}
+.wv-p-duty {
+  min-width: 120px;
+  background: linear-gradient(160deg, #4338ca, #6366f1);
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px 12px;
+  flex-shrink: 0;
+}
+.wv-p-badge { font-size: .66em; font-weight: 800; letter-spacing: .1em; opacity: .7; text-transform: uppercase; margin-bottom: 4px; }
+.wv-p-title { font-size: .8em; font-weight: 700; line-height: 1.3; }
+.wv-p-tasks { display: flex; gap: 6px; flex-wrap: wrap; align-content: flex-start; }
+.wv-p-task {
+  width: 100px; min-height: 60px;
+  background: #fefce8; border: 1.5px solid #fde68a;
+  border-radius: 7px; padding: 7px 9px;
+  flex-shrink: 0;
+}
+.wv-p-task-lbl { font-size: .65em; font-weight: 800; color: #4338ca; margin-bottom: 3px; }
+.wv-p-task-txt { font-size: .72em; color: #334155; line-height: 1.35; }
+
+/* Tabs (views) explanation */
+.view-tabs-demo {
+  display: flex;
+  gap: 6px;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 9px;
+  width: fit-content;
+  margin: 12px 0;
+}
+.vtab {
+  padding: 6px 16px;
+  border-radius: 7px;
+  font-size: .82em;
+  font-weight: 600;
+  color: #64748b;
+}
+.vtab--active { background: #4f46e5; color: #fff; }
+
+/* Shortcut table */
+.shortcut-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0;
+  font-size: .9em;
+}
+.shortcut-table th {
+  background: #f1f5f9;
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 700;
+  color: var(--slate);
+  border-bottom: 2px solid #e5e7eb;
+}
+.shortcut-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  color: var(--slate-m);
+}
+.shortcut-table tr:last-child td { border-bottom: none; }
+.shortcut-table tr:hover td { background: #f8fafc; }
+
+/* About creator card */
+.creator-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  background: #f5f3ff;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 16px 0;
+}
+.creator-avatar {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--indigo), var(--violet));
+  color: #fff;
+  font-size: 1.1em; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.creator-name { font-weight: 700; font-size: 1.05em; color: var(--slate); }
+.creator-role { color: var(--indigo); font-size: .88em; font-weight: 600; margin: 2px 0 6px; }
+.creator-bio  { color: var(--slate-m); font-size: .88em; }
+.creator-links { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+.creator-link {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px;
+  background: var(--white); border: 1px solid #e5e7eb;
+  border-radius: 7px; font-size: .82em; font-weight: 600;
+  color: var(--slate-m); text-decoration: none;
+  transition: all .13s;
+}
+.creator-link:hover { border-color: var(--indigo); color: var(--indigo); }
+
+/* ── Footer ─────────────────────────────────────────────────── */
+footer {
+  text-align: center;
+  padding: 28px 20px 40px;
+  font-size: .82em;
+  color: var(--slate-l);
+  border-top: 1px solid rgba(79,70,229,.09);
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .page-wrap { grid-template-columns: 1fr; }
+  .toc { display: none; }
+  .feat-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 540px) {
+  .hero { padding: 48px 20px 40px; }
+  .doc-section { padding: 24px 20px; }
+  .feat-grid { grid-template-columns: 1fr; }
+  .top-nav { padding: 0 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Sticky Nav ──────────────────────────────────────────── -->
+<nav class="top-nav">
+  <div class="nav-brand">
+    <div class="nav-brand-logo">📊</div>
+    <span class="nav-brand-name">DACUM Lite</span>
+  </div>
+  <div class="nav-links">
+    <a class="nav-link" href="#overview">Overview</a>
+    <a class="nav-link" href="#quickstart">Quick Start</a>
+    <a class="nav-link" href="#chart-info">Chart Info</a>
+    <a class="nav-link" href="#duties-tasks">Duties & Tasks</a>
+    <a class="nav-link" href="#views">Views</a>
+    <a class="nav-link" href="#wall-view">Wall View</a>
+    <a class="nav-link" href="#export">Export</a>
+    <a class="nav-link" href="#shortcuts">Shortcuts</a>
+    <a class="nav-link" href="#about">About</a>
+  </div>
+  <a class="nav-lang-btn" href="user-guide-ar.html">🌐 العربية</a>
+</nav>
+
+<!-- ── Hero ───────────────────────────────────────────────── -->
+<header class="hero">
+  <div class="hero-badge">📘 Official Documentation</div>
+  <h1>DACUM Lite <span>v3.1</span></h1>
+  <p class="hero-sub">A comprehensive guide to occupational analysis, DACUM chart creation, and workshop facilitation — all in your browser.</p>
+  <div class="hero-meta">
+    <span>📋 Version 3.1 — 2026</span>
+    <span>🧑‍💻 by Husham Jawad Kadhim</span>
+    <span>🌐 Works in browser · No install</span>
+    <span>🧱 Wall View workshop support</span>
+  </div>
+</header>
+
+<!-- ── Page Body ───────────────────────────────────────────── -->
+<div class="page-wrap">
+
+  <!-- Sidebar TOC -->
+  <aside class="toc">
+    <div class="toc-title">On this page</div>
+    <ul class="toc-list">
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#quickstart">Quick Start</a></li>
+      <li><a href="#chart-info">Chart Info</a></li>
+      <li class="toc-sub"><a href="#scope">Scope of Work</a></li>
+      <li class="toc-sub"><a href="#panel">Workshop Panel</a></li>
+      <li><a href="#duties-tasks">Duties & Tasks</a></li>
+      <li class="toc-sub"><a href="#numbering">DACUM Numbering</a></li>
+      <li class="toc-sub"><a href="#drag-drop">Drag & Drop</a></li>
+      <li><a href="#views">View Modes</a></li>
+      <li><a href="#wall-view">Wall View</a></li>
+      <li><a href="#additional">Additional Info</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="#export">Export</a></li>
+      <li><a href="#shortcuts">Shortcuts</a></li>
+      <li><a href="#about">About</a></li>
+    </ul>
+  </aside>
+
+  <!-- Main Content -->
+  <main>
+
+    <!-- ── Overview ───────────────────────────────────────── -->
+    <section class="doc-section" id="overview">
+      <h2>🗺️ Overview</h2>
+      <p><strong>DACUM Lite</strong> is a browser-based tool for creating occupational analysis charts using the DACUM (Developing A CurriculUM) methodology. It supports the complete workflow from duty/task identification to document export — with no installation required.</p>
+
+      <div class="feat-grid">
+        <div class="feat-card">
+          <div class="feat-icon">📋</div>
+          <div class="feat-title">Table View</div>
+          <div class="feat-desc">Classic list-based editor for entering duties and tasks with full drag-and-drop reordering.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🃏</div>
+          <div class="feat-title">Card View</div>
+          <div class="feat-desc">Horizontal scrollable columns — one per duty — for a visual overview of all tasks.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🧱</div>
+          <div class="feat-title">Wall View</div>
+          <div class="feat-desc">Full-screen display mimicking the traditional DACUM workshop wall with sticky-note cards.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">↩️</div>
+          <div class="feat-title">Undo / Redo</div>
+          <div class="feat-desc">Every action is reversible. Full command history with named snapshot versioning.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">📤</div>
+          <div class="feat-title">Export</div>
+          <div class="feat-desc">Export the complete DACUM chart as a Word document (.docx) or PDF file.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">📁</div>
+          <div class="feat-title">Projects</div>
+          <div class="feat-desc">Manage multiple DACUM charts in the sidebar. Each project is saved automatically.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Quick Start ─────────────────────────────────────── -->
+    <section class="doc-section" id="quickstart">
+      <h2>🚀 Quick Start</h2>
+      <p>Get your first DACUM chart ready in under 5 minutes:</p>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-body"><strong>Open DACUM Lite</strong><span>The app loads directly in your browser. Your work is saved automatically.</span></div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-body"><strong>Create a Project</strong><span>Click <code>＋ New Project</code> in the sidebar. Give it a name — e.g. "Automotive Technician".</span></div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-body"><strong>Fill Chart Info</strong><span>Enter the Occupation Title, Job Title, and Scope of Work in the <em>Chart Info</em> tab.</span></div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-body"><strong>Add Duties & Tasks</strong><span>Go to <em>Duties & Tasks</em>. Click <code>➕ Add Duty</code> — each duty starts with one task automatically.</span></div></div>
+        <div class="step"><div class="step-n">5</div><div class="step-body"><strong>Reorder with Drag & Drop</strong><span>Grab the <code>⠿</code> handle on any duty or task to reorder. Labels update automatically.</span></div></div>
+        <div class="step"><div class="step-n">6</div><div class="step-body"><strong>Switch to Wall View</strong><span>Click <code>🧱 Wall</code> to see your chart displayed as a workshop wall. Edit directly there.</span></div></div>
+        <div class="step"><div class="step-n">7</div><div class="step-body"><strong>Export</strong><span>Use the toolbar to export as <code>PDF</code> or <code>Word</code> when ready.</span></div></div>
+      </div>
+    </section>
+
+    <!-- ── Chart Info ──────────────────────────────────────── -->
+    <section class="doc-section" id="chart-info">
+      <h2>📋 Chart Info Tab</h2>
+      <p>The Chart Info tab stores all metadata about the occupation and the workshop. This information is included in exported documents.</p>
+
+      <h3 id="scope">📌 Scope of Work / Occupational Definition</h3>
+      <p>Write a concise paragraph that describes what the occupation covers and where its boundaries lie. This is referenced to improve duty/task quality during AI-assisted generation.</p>
+      <div class="note note--tip">
+        <span class="note-icon">💡</span>
+        <span>Good scopes include: key responsibilities, typical tools used, work environments, and what is explicitly excluded (e.g. managerial functions).</span>
+      </div>
+
+      <h3 id="panel">👥 Workshop Panel</h3>
+      <p>The Workshop Panel section records the names of everyone present at the DACUM workshop:</p>
+      <ul style="margin:10px 0 14px 24px;color:var(--slate-m);line-height:2;">
+        <li><strong>Facilitators</strong> — The session leaders who guide the panel through the DACUM process</li>
+        <li><strong>Observers</strong> — Individuals attending but not actively participating</li>
+        <li><strong>Panel Members</strong> — The subject-matter experts who define duties and tasks</li>
+      </ul>
+      <div class="note note--info">
+        <span class="note-icon">ℹ️</span>
+        <span>Enter one name per line in each field. All names are included in the exported Word document and PDF cover page.</span>
+      </div>
+    </section>
+
+    <!-- ── Duties & Tasks ──────────────────────────────────── -->
+    <section class="doc-section" id="duties-tasks">
+      <h2>✅ Duties & Tasks Tab</h2>
+      <p>This is the core of DACUM Lite — where you build the occupational chart by defining duties and their associated tasks.</p>
+
+      <h3 id="numbering">🔢 DACUM Standard Numbering</h3>
+      <p>DACUM Lite automatically applies standard DACUM numbering to all duties and tasks:</p>
+      <div class="wv-preview">
+        <div><div class="wv-p-duty"><div class="wv-p-badge">Duty A</div><div class="wv-p-title">Execute Joinery Operations</div></div></div>
+        <div class="wv-p-tasks">
+          <div class="wv-p-task"><div class="wv-p-task-lbl">Task A1</div><div class="wv-p-task-txt">Cut mortise and tenon joints</div></div>
+          <div class="wv-p-task"><div class="wv-p-task-lbl">Task A2</div><div class="wv-p-task-txt">Route dadoes and grooves</div></div>
+          <div class="wv-p-task"><div class="wv-p-task-lbl">Task A3</div><div class="wv-p-task-txt">Drill holes for dowels</div></div>
+        </div>
+      </div>
+      <p>Duties are labelled <code>A, B, C … Z, AA, AB…</code> and tasks <code>A1, A2, B1, B2…</code> When you reorder anything via drag-and-drop, all labels update instantly.</p>
+
+      <h3 id="drag-drop">⠿ Drag & Drop</h3>
+      <p>Every duty and task has a <code>⠿</code> grip handle. Grab it to:</p>
+      <ul style="margin:10px 0 14px 24px;color:var(--slate-m);line-height:2.2;">
+        <li>Reorder <strong>duties</strong> up or down (table view) / left or right (card/wall view)</li>
+        <li>Reorder <strong>tasks</strong> within the same duty</li>
+        <li>Move a <strong>task</strong> from one duty to another — just drop it over the target duty</li>
+      </ul>
+      <div class="note note--warn">
+        <span class="note-icon">⚠️</span>
+        <span>Drag using the <code>⠿</code> handle only — clicking anywhere else on the card starts editing the text.</span>
+      </div>
+    </section>
+
+    <!-- ── Views ───────────────────────────────────────────── -->
+    <section class="doc-section" id="views">
+      <h2>🖥️ View Modes</h2>
+      <p>Use the three-button switcher at the top of the Duties & Tasks tab to change the display:</p>
+
+      <div class="view-tabs-demo">
+        <div class="vtab vtab--active">📋 Table</div>
+        <div class="vtab">🃏 Card</div>
+        <div class="vtab">🧱 Wall</div>
+      </div>
+
+      <h3>📋 Table View</h3>
+      <p>The default view. Duties appear as vertical rows, tasks as indented items below each duty. Best for data entry and detailed editing.</p>
+
+      <h3>🃏 Card View</h3>
+      <p>Each duty becomes a vertical column with task cards arranged horizontally. Scroll left/right to see all duties. Good for reviewing the full chart width at a glance.</p>
+
+      <h3>🧱 Wall View</h3>
+      <p>Full-screen overlay that mimics the physical DACUM workshop wall. See the next section for full details.</p>
+
+      <div class="note note--tip">
+        <span class="note-icon">💡</span>
+        <span>All edits made in any view are instantly reflected in the others. Your data is always in sync.</span>
+      </div>
+    </section>
+
+    <!-- ── Wall View ───────────────────────────────────────── -->
+    <section class="doc-section" id="wall-view">
+      <h2>🧱 Wall View</h2>
+      <p>Wall View is designed for live DACUM workshops. It displays all duties and tasks as sticky-note cards on a virtual wall — ideal for projecting in front of participants.</p>
+
+      <h3>Toolbar Controls</h3>
+      <table class="shortcut-table">
+        <tr><th>Control</th><th>Function</th></tr>
+        <tr><td><code>✕ Exit</code></td><td>Return to the previous Table or Card view</td></tr>
+        <tr><td><code>🔍− / 🔍+</code></td><td>Zoom out / in by 5% per click (range: 25%–200%)</td></tr>
+        <tr><td><code>↺ Reset</code></td><td>Reset zoom to 100%</td></tr>
+        <tr><td><code>🖨️ Print</code></td><td>Print the chart (A3 landscape, optimised at 70% scale)</td></tr>
+        <tr><td><code>⛶ Fullscreen</code></td><td>Toggle browser fullscreen mode</td></tr>
+        <tr><td><code>🃏 Card / 📋 Table</code></td><td>Switch to another view without exiting</td></tr>
+      </table>
+
+      <h3>Card Action Icons</h3>
+      <p>Each duty card (indigo) and task card (yellow) has small action icons in the top-right corner:</p>
+      <ul style="margin:10px 0 14px 24px;color:var(--slate-m);line-height:2.2;">
+        <li><strong>Duty card ＋</strong> — Adds a new duty below</li>
+        <li><strong>Duty card ✕</strong> — Deletes the duty (with confirmation)</li>
+        <li><strong>Task card ＋</strong> — Adds a new task to that duty</li>
+        <li><strong>Task card ✕</strong> — Deletes the task immediately</li>
+      </ul>
+      <div class="note note--info">
+        <span class="note-icon">ℹ️</span>
+        <span>All text in Wall View is editable — click any duty title or task text to edit it directly. Changes are saved to undo history.</span>
+      </div>
+    </section>
+
+    <!-- ── Additional Info ─────────────────────────────────── -->
+    <section class="doc-section" id="additional">
+      <h2>📚 Additional Info Tab</h2>
+      <p>Capture supplementary occupational information beyond the duty/task chart. All sections are included in exports.</p>
+      <ul style="margin:10px 0 0 24px;color:var(--slate-m);line-height:2.3;">
+        <li><strong>Knowledge Requirements</strong> — What a worker must know</li>
+        <li><strong>Skills Requirements</strong> — What a worker must be able to do</li>
+        <li><strong>Worker Behaviors/Traits</strong> — Attitudes and personal attributes</li>
+        <li><strong>Tools, Equipment, Supplies and Materials</strong></li>
+        <li><strong>Future Trends and Concerns</strong></li>
+        <li><strong>Acronyms</strong> — Terminology definitions</li>
+        <li><strong>Career Path</strong></li>
+      </ul>
+      <p style="margin-top:14px;">You can rename any section heading by clicking <code>✏️ Rename</code>, and add custom sections with <code>➕ Add Section</code>.</p>
+    </section>
+
+    <!-- ── Projects ────────────────────────────────────────── -->
+    <section class="doc-section" id="projects">
+      <h2>📁 Projects</h2>
+      <p>The sidebar on the left manages all your DACUM charts. Each project is stored independently in your browser's local storage.</p>
+      <div class="steps">
+        <div class="step"><div class="step-n">＋</div><div class="step-body"><strong>New Project</strong><span>Click <code>＋ New Project</code> to create a blank chart.</span></div></div>
+        <div class="step"><div class="step-n">✏️</div><div class="step-body"><strong>Rename</strong><span>Click the pencil icon on any project to rename it.</span></div></div>
+        <div class="step"><div class="step-n">🗑️</div><div class="step-body"><strong>Delete</strong><span>Click the bin icon to permanently remove a project.</span></div></div>
+        <div class="step"><div class="step-n">💾</div><div class="step-body"><strong>Export / Import</strong><span>Save a project as a <code>.json</code> file and reload it later using <em>Import Project</em>.</span></div></div>
+      </div>
+    </section>
+
+    <!-- ── Export ──────────────────────────────────────────── -->
+    <section class="doc-section" id="export">
+      <h2>📤 Export</h2>
+      <p>Export the full DACUM chart from the main toolbar. Both formats include: cover page, Chart Info metadata, Workshop Panel, Scope of Work, all duties and tasks, and all Additional Info sections.</p>
+
+      <h3>📄 Export as Word (.docx)</h3>
+      <p>Generates a formatted Word document with a structured table layout. Compatible with Microsoft Word and LibreOffice.</p>
+
+      <h3>🖨️ Export as PDF</h3>
+      <p>Generates a printable PDF using jsPDF. The cover page includes all metadata and the workshop panel. Each duty appears as a clearly labelled section.</p>
+
+      <div class="note note--warn">
+        <span class="note-icon">⚠️</span>
+        <span>Exports capture the current state of your chart. Make sure all duties, tasks, and metadata are complete before exporting.</span>
+      </div>
+
+      <h3>📸 Snapshots</h3>
+      <p>Before a major edit, save a named snapshot using the <code>📸</code> button in the toolbar. Snapshots let you restore any previous state of the chart with a single click.</p>
+    </section>
+
+    <!-- ── Shortcuts ───────────────────────────────────────── -->
+    <section class="doc-section" id="shortcuts">
+      <h2>⌨️ Keyboard Shortcuts</h2>
+      <table class="shortcut-table">
+        <tr><th>Shortcut</th><th>Action</th></tr>
+        <tr><td><kbd>Ctrl</kbd> + <kbd>Z</kbd></td><td>Undo last action</td></tr>
+        <tr><td><kbd>Ctrl</kbd> + <kbd>Y</kbd></td><td>Redo last undone action</td></tr>
+        <tr><td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd></td><td>Redo (alternative)</td></tr>
+        <tr><td><kbd>Tab</kbd></td><td>Move to next field (inside forms)</td></tr>
+        <tr><td><kbd>Enter</kbd></td><td>Confirm inline edit</td></tr>
+        <tr><td><kbd>Esc</kbd></td><td>Cancel / blur active field</td></tr>
+      </table>
+    </section>
+
+    <!-- ── About ───────────────────────────────────────────── -->
+    <section class="doc-section" id="about">
+      <h2>🧑‍💻 About the Creator</h2>
+      <div class="creator-card">
+        <div class="creator-avatar">HJ</div>
+        <div>
+          <div class="creator-name">Husham Jawad Kadhim</div>
+          <div class="creator-role">Creator of DACUM Lite</div>
+          <div class="creator-bio">TVET Curriculum Developer & Educational Technology Innovator with extensive experience in occupational analysis, competency-based training design, and digital learning tools.</div>
+          <div class="creator-links">
+            <a class="creator-link" href="mailto:husham.kadhim@gmail.com">📧 husham.kadhim@gmail.com</a>
+            <a class="creator-link" href="https://www.linkedin.com/in/husham-jawad-kadhim" target="_blank" rel="noopener">💼 LinkedIn</a>
+          </div>
+        </div>
+      </div>
+      <div class="note note--info">
+        <span class="note-icon">💡</span>
+        <span>For questions, bug reports, feature requests, or collaboration opportunities, please reach out via email or LinkedIn.</span>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  © 2026 DACUM Lite — by Husham Jawad Kadhim · Version 3.1.0 · All Rights Reserved
+</footer>
+
+<script>
+// Highlight active TOC link on scroll
+const sections = document.querySelectorAll('.doc-section');
+const tocLinks  = document.querySelectorAll('.toc-list a');
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.toc-list a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
+
+sections.forEach(s => observer.observe(s));
+
+// Highlight active nav link
+const navLinks = document.querySelectorAll('.nav-link');
+const obs2 = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const a = document.querySelector(`.nav-link[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => obs2.observe(s));
+</script>
+</body>
+</html>

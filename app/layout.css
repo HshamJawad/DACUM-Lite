@@ -1,0 +1,390 @@
+/* ============================================================
+   LAYOUT.CSS — Containers, Grid, Flex Layouts
+   ============================================================ */
+
+/* ── Main Container ────────────────────────────────────────── */
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  background-color: var(--surface-white);
+  padding: 40px;
+  border-radius: var(--radius-xl);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+/* ── Tabs Navigation — hidden (navigation moved to sidebar) ─── */
+.tabs {
+  display: none;
+}
+
+.tab {
+  display: none;
+}
+
+.tab.active {
+  display: none;
+}
+
+/* ── Tab Content Panels ────────────────────────────────────── */
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+  animation: fadeIn 0.3s ease-in;
+}
+
+/* ── Two Column Layout ─────────────────────────────────────── */
+.two-column {
+  display: flex;
+  gap: 25px;
+}
+
+.column {
+  flex: 1;
+}
+
+/* ── Action Button Container ───────────────────────────────── */
+.button-container {
+  display: flex;
+  justify-content: center;
+  gap: var(--gap-md);
+  margin: 30px 0;
+  flex-wrap: wrap;
+}
+
+/* ── Duties Tab Header Row ─────────────────────────────────── */
+.duties-tab-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 12px;
+}
+
+.duties-tab-header h2 {
+  margin: 0;
+}
+
+/* ── Card View Container ───────────────────────────────────── */
+#cardViewContainer {
+  display: none;
+}
+
+.card-view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+  gap: 12px;
+}
+
+.card-view-header h2 {
+  color: var(--color-primary);
+  margin: 0;
+}
+
+.card-view-footer {
+  margin-top: 16px;
+}
+
+/* ── Additional Info Section ───────────────────────────────── */
+.additional-info-intro {
+  color: #666;
+  margin-bottom: 25px;
+  font-size: 1.05em;
+}
+
+.add-section-footer {
+  margin-top: 20px;
+  text-align: center;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   MOBILE RESPONSIVE — ≤ 600px
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+
+  /* ── Duties & Tasks header: title on top, switcher below ── */
+  .duties-tab-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .duties-tab-header h2 {
+    font-size: 1.1em;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .duties-tab-header .view-switcher {
+    width: 100%;
+  }
+
+  /* ── Card View header: same — title above switcher ─────── */
+  .card-view-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .card-view-header h2 {
+    font-size: 1.1em;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .card-view-header .view-switcher {
+    width: 100%;
+  }
+
+  /* ── View switcher: stretch buttons across full width ────── */
+  .view-switcher {
+    width: 100%;
+  }
+
+  .vsw-btn {
+    flex: 1;
+    padding: 7px 8px;
+    font-size: 0.78em;
+    white-space: nowrap;
+    text-align: center;
+  }
+
+  /* ── Additional Info cards: title above buttons ─────────── */
+  .section-header-editable {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .section-header-editable h3 {
+    width: 100%;
+    font-size: 1em;
+    padding: 6px 8px;
+  }
+
+  .section-header-actions {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .section-header-actions button {
+    flex: 1;
+    min-width: 80px;
+    font-size: 0.82em;
+    padding: 7px 10px;
+    text-align: center;
+    justify-content: center;
+    white-space: nowrap;
+  }
+
+  /* ── Section container padding reduced ──────────────────── */
+  .section-container {
+    padding: 16px 14px;
+  }
+
+  /* ── Duty header: title above actions ───────────────────── */
+  .duty-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .duty-header-actions {
+    width: 100%;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .duty-header-actions button {
+    flex: 1;
+    min-width: 70px;
+    font-size: 0.82em;
+    padding: 6px 8px;
+  }
+}
+
+/* ── Top Toolbar — fixed, spans content area ───────────────── */
+.top-toolbar {
+  position: fixed;
+  top: 0;
+  left: 260px;                     /* flush with sidebar right edge    */
+  right: 0;
+  z-index: 999;                    /* below sidebar (1000), above all  */
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 56px;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  padding: 0 16px;
+  /* Matches sidebar open/close transition */
+  transition: left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Desktop mini sidebar: toolbar starts at 60px */
+body.sb-sidebar-closed .top-toolbar {
+  left: 60px;
+}
+
+/* Desktop mini sidebar: appWrapper margin matches mini width */
+body.sb-sidebar-closed #appWrapper {
+  margin-left: 60px;
+}
+
+.top-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* Pushes the Undo/Redo group to the far right */
+.top-toolbar-spacer {
+  flex: 1;
+}
+
+.top-toolbar-divider {
+  width: 1px;
+  height: 24px;
+  background: #e5e7eb;
+  margin: 0 6px;
+  flex-shrink: 0;
+}
+
+/* ── Toolbar button — shared geometry ──────────────────────── */
+.tb-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 36px;
+  padding: 0 12px;
+  font-size: 0.855em;
+  font-weight: 500;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  line-height: 1;
+  transition: background 0.2s ease, color 0.2s ease,
+              box-shadow 0.2s ease, transform 0.15s ease,
+              border-color 0.2s ease;
+  font-family: inherit;
+}
+
+.tb-btn:hover   { transform: translateY(-1px); }
+.tb-btn:active  { transform: translateY(0);    }
+
+/* disabled state applies to all variants */
+.tb-btn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+  filter: none !important;
+}
+
+/* ── Variant: primary (indigo) — Export Project ────────────── */
+.tb-btn--primary {
+  background: #4f46e5;
+  color: #ffffff;
+  border-color: #4f46e5;
+}
+.tb-btn--primary:hover:not(:disabled) {
+  background: #4338ca;
+  border-color: #4338ca;
+  box-shadow: 0 3px 10px rgba(79, 70, 229, 0.35);
+}
+.tb-btn--primary:active:not(:disabled) { background: #3730a3; }
+
+/* ── Variant: neutral (gray) — Snapshot, Import, PDF, Word ── */
+.tb-btn--neutral {
+  background: #f3f4f6;
+  color: #374151;
+  border-color: #e5e7eb;
+}
+.tb-btn--neutral:hover:not(:disabled) {
+  background: #e5e7eb;
+  border-color: #d1d5db;
+  color: #111827;
+}
+.tb-btn--neutral:active:not(:disabled) { background: #d1d5db; }
+
+/* ── Variant: danger (red) — Clear All ─────────────────────── */
+.tb-btn--danger {
+  background: #dc2626;
+  color: #ffffff;
+  border-color: #dc2626;
+}
+.tb-btn--danger:hover:not(:disabled) {
+  background: #b91c1c;
+  border-color: #b91c1c;
+  box-shadow: 0 3px 10px rgba(220, 38, 38, 0.35);
+}
+.tb-btn--danger:active:not(:disabled) { background: #991b1b; }
+
+/* ── Variant: ghost (transparent) — Undo / Redo / Debug ────── */
+.tb-btn--ghost {
+  background: transparent;
+  color: #6b7280;
+  border-color: transparent;
+}
+.tb-btn--ghost:hover:not(:disabled) {
+  background: #f3f4f6;
+  color: #374151;
+  border-color: #e5e7eb;
+}
+.tb-btn--ghost:active:not(:disabled) { background: #e5e7eb; }
+
+/* ── Remove old mobile wrap rule (replaced by icon-only in index.html) ── */
+
+/* ── Phase 3: Sidebar inline rename edit state ─────────────── */
+/* Base name element — always present */
+.sb-card-name {
+  outline: none;
+  border-radius: 4px;
+  transition: background 0.15s, box-shadow 0.15s, color 0.15s, padding 0.15s;
+}
+
+/* Editing state — high contrast: white bg, dark text, indigo ring */
+.sb-name-editing {
+  background: #ffffff !important;
+  color: #111827 !important;
+  box-shadow: 0 0 0 2px #4f46e5;
+  padding: 2px 6px;
+  border-radius: 4px;
+  cursor: text;
+  white-space: normal;          /* allow text wrapping while editing   */
+  overflow: visible;
+  text-overflow: unset;
+}
+
+.sb-name-editing:focus {
+  outline: none;
+}
+
+.copyright {
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 2px solid var(--surface-border);
+  color: #7f8c8d;
+  font-size: 1.05em;
+}
+
+.copyright-main {
+  margin-bottom: 8px;
+  font-size: 1em;
+}
+
+.copyright-disclaimer {
+  font-size: 0.85em;
+  color: var(--text-faint);
+  font-style: italic;
+}

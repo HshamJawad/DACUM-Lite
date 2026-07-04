@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DACUM Lite — الوثائق الرسمية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Variables ─────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --indigo:    #4f46e5;
+  --indigo-d:  #3730a3;
+  --indigo-l:  #818cf8;
+  --violet:    #7c3aed;
+  --cream:     #fefce8;
+  --cream-b:   #fde68a;
+  --slate:     #1e293b;
+  --slate-m:   #475569;
+  --slate-l:   #94a3b8;
+  --bg:        #f0f2f8;
+  --white:     #ffffff;
+  --radius:    12px;
+  --shadow:    0 4px 24px rgba(79,70,229,.10);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
+  background: var(--bg);
+  color: var(--slate);
+  font-size: 16px;
+  line-height: 1.75;
+  min-height: 100vh;
+}
+
+/* ── Top nav ────────────────────────────────────────────────── */
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255,255,255,.88);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(79,70,229,.10);
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 0 40px;
+  height: 58px;
+  overflow-x: auto;
+  flex-direction: row-reverse;
+}
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-left: 32px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.nav-brand-logo {
+  width: 30px; height: 30px;
+  background: linear-gradient(135deg, var(--indigo), var(--violet));
+  border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+.nav-brand-name { font-size: .9em; font-weight: 700; color: var(--indigo); }
+.nav-links { display: flex; gap: 2px; flex-direction: row-reverse; }
+.nav-link {
+  padding: 6px 13px;
+  border-radius: 7px;
+  font-size: .85em;
+  font-weight: 600;
+  color: var(--slate-m);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: all .14s;
+}
+.nav-link:hover { background: rgba(79,70,229,.08); color: var(--indigo); }
+.nav-link.active { background: var(--indigo); color: #fff; }
+
+/* Language switch button */
+.nav-lang-btn {
+  margin-right: auto;
+  padding: 5px 14px;
+  border-radius: 7px;
+  font-size: .82em;
+  font-weight: 700;
+  background: rgba(79,70,229,.08);
+  color: var(--indigo);
+  border: 1px solid rgba(79,70,229,.18);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: all .14s;
+  text-decoration: none;
+}
+.nav-lang-btn:hover { background: var(--indigo); color: #fff; }
+
+/* ── Hero ───────────────────────────────────────────────────── */
+.hero {
+  background: linear-gradient(145deg, #3730a3 0%, #4f46e5 45%, #7c3aed 100%);
+  color: #fff;
+  padding: 70px 40px 60px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,.06) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(255,255,255,.05) 0%, transparent 40%);
+  pointer-events: none;
+}
+.hero-badge {
+  display: inline-block;
+  background: rgba(255,255,255,.14);
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 999px;
+  padding: 5px 16px;
+  font-size: .82em;
+  font-weight: 600;
+  letter-spacing: .04em;
+  margin-bottom: 22px;
+}
+.hero h1 {
+  font-size: clamp(2.2em, 5vw, 3.4em);
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+.hero h1 span { color: #fde68a; }
+.hero-sub {
+  font-size: 1.05em;
+  opacity: .82;
+  max-width: 620px;
+  margin: 0 auto 32px;
+}
+.hero-meta {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  font-size: .85em;
+  opacity: .72;
+}
+.hero-meta span { display: flex; align-items: center; gap: 6px; }
+
+/* ── Page layout ────────────────────────────────────────────── */
+.page-wrap {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 48px 32px 80px;
+  display: grid;
+  grid-template-columns: 1fr 240px;
+  gap: 36px;
+  align-items: start;
+}
+
+/* ── Sidebar TOC ────────────────────────────────────────────── */
+.toc {
+  position: sticky;
+  top: 74px;
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid rgba(79,70,229,.10);
+  padding: 22px;
+  box-shadow: var(--shadow);
+}
+.toc-title {
+  font-size: .78em;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--slate-l);
+  margin-bottom: 12px;
+}
+.toc-list { list-style: none; }
+.toc-list li { margin-bottom: 3px; }
+.toc-list a {
+  display: block;
+  padding: 6px 10px;
+  border-radius: 7px;
+  font-size: .88em;
+  font-weight: 500;
+  color: var(--slate-m);
+  text-decoration: none;
+  transition: all .13s;
+}
+.toc-list a:hover { background: rgba(79,70,229,.07); color: var(--indigo); }
+.toc-list a.active { background: var(--indigo); color: #fff; }
+.toc-sub a { padding-right: 22px; padding-left: 10px; font-size: .85em; }
+
+/* ── Main content ───────────────────────────────────────────── */
+.doc-section {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid rgba(79,70,229,.09);
+  padding: 36px 40px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow);
+  scroll-margin-top: 80px;
+}
+.doc-section h2 {
+  font-size: 1.4em;
+  font-weight: 700;
+  color: var(--indigo-d);
+  margin-bottom: 18px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid rgba(79,70,229,.12);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.doc-section h3 {
+  font-size: 1.06em;
+  font-weight: 700;
+  color: var(--slate);
+  margin: 26px 0 10px;
+}
+.doc-section p { margin-bottom: 14px; color: var(--slate-m); }
+.doc-section p:last-child { margin-bottom: 0; }
+
+/* Steps */
+.steps { display: flex; flex-direction: column; gap: 12px; margin: 16px 0; }
+.step {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.step-n {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--indigo), var(--violet));
+  color: #fff; font-size: .85em; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; margin-top: 2px;
+}
+.step-body { flex: 1; }
+.step-body strong { display: block; font-size: .97em; color: var(--slate); margin-bottom: 3px; }
+.step-body span { font-size: .92em; color: var(--slate-m); }
+
+/* Notes */
+.note {
+  display: flex;
+  gap: 12px;
+  border-radius: 9px;
+  padding: 14px 16px;
+  margin: 14px 0;
+  font-size: .92em;
+  line-height: 1.6;
+}
+.note--info   { background: #eff6ff; border-right: 3px solid #3b82f6; color: #1e40af; }
+.note--tip    { background: #f0fdf4; border-right: 3px solid #22c55e; color: #166534; }
+.note--warn   { background: #fffbeb; border-right: 3px solid #f59e0b; color: #92400e; }
+.note-icon { font-size: 1.2em; flex-shrink: 0; }
+
+/* Feature grid */
+.feat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 16px 0;
+}
+.feat-card {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px;
+}
+.feat-icon { font-size: 1.6em; margin-bottom: 8px; }
+.feat-title { font-size: .92em; font-weight: 700; color: var(--slate); margin-bottom: 5px; }
+.feat-desc  { font-size: .84em; color: var(--slate-m); line-height: 1.55; }
+
+/* Code */
+code {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .85em;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 5px;
+  padding: 2px 7px;
+  color: var(--indigo);
+  direction: ltr;
+  display: inline-block;
+}
+
+/* Keyboard */
+kbd {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--slate);
+  color: #fff;
+  border-radius: 5px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: .8em;
+  box-shadow: 0 2px 0 rgba(0,0,0,.3);
+  direction: ltr;
+}
+
+/* DACUM preview */
+.wv-preview {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 16px;
+  background: #eef2f7;
+  border-radius: 10px;
+  margin: 16px 0;
+  direction: ltr;
+}
+.wv-p-duty {
+  min-width: 120px;
+  background: linear-gradient(160deg, #4338ca, #6366f1);
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px 12px;
+  flex-shrink: 0;
+}
+.wv-p-badge { font-size: .66em; font-weight: 800; letter-spacing: .1em; opacity: .7; text-transform: uppercase; margin-bottom: 4px; }
+.wv-p-title { font-size: .8em; font-weight: 700; line-height: 1.3; direction: rtl; }
+.wv-p-tasks { display: flex; gap: 6px; flex-wrap: wrap; align-content: flex-start; }
+.wv-p-task {
+  width: 100px; min-height: 60px;
+  background: #fefce8; border: 1.5px solid #fde68a;
+  border-radius: 7px; padding: 7px 9px; flex-shrink: 0;
+}
+.wv-p-task-lbl { font-size: .65em; font-weight: 800; color: #4338ca; margin-bottom: 3px; }
+.wv-p-task-txt { font-size: .72em; color: #334155; line-height: 1.35; direction: rtl; }
+
+/* View tabs demo */
+.view-tabs-demo {
+  display: flex;
+  gap: 6px;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 9px;
+  width: fit-content;
+  margin: 12px 0;
+  direction: ltr;
+}
+.vtab { padding: 6px 16px; border-radius: 7px; font-size: .82em; font-weight: 600; color: #64748b; }
+.vtab--active { background: #4f46e5; color: #fff; }
+
+/* Shortcut table */
+.shortcut-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 14px 0;
+  font-size: .92em;
+}
+.shortcut-table th {
+  background: #f1f5f9;
+  padding: 10px 14px;
+  text-align: right;
+  font-weight: 700;
+  color: var(--slate);
+  border-bottom: 2px solid #e5e7eb;
+}
+.shortcut-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid #f1f5f9;
+  color: var(--slate-m);
+  text-align: right;
+}
+.shortcut-table td:first-child { direction: ltr; text-align: left; }
+.shortcut-table tr:last-child td { border-bottom: none; }
+.shortcut-table tr:hover td { background: #f8fafc; }
+
+/* Creator card */
+.creator-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  background: #f5f3ff;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 16px 0;
+}
+.creator-avatar {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--indigo), var(--violet));
+  color: #fff; font-size: 1.1em; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.creator-name { font-weight: 700; font-size: 1.05em; color: var(--slate); }
+.creator-role { color: var(--indigo); font-size: .9em; font-weight: 600; margin: 2px 0 6px; }
+.creator-bio  { color: var(--slate-m); font-size: .9em; }
+.creator-links { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+.creator-link {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px;
+  background: var(--white); border: 1px solid #e5e7eb;
+  border-radius: 7px; font-size: .84em; font-weight: 600;
+  color: var(--slate-m); text-decoration: none;
+  transition: all .13s;
+}
+.creator-link:hover { border-color: var(--indigo); color: var(--indigo); }
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 28px 20px 40px;
+  font-size: .84em;
+  color: var(--slate-l);
+  border-top: 1px solid rgba(79,70,229,.09);
+}
+
+/* Responsive */
+@media (max-width: 860px) {
+  .page-wrap { grid-template-columns: 1fr; }
+  .toc { display: none; }
+  .feat-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 540px) {
+  .hero { padding: 48px 20px 40px; }
+  .doc-section { padding: 24px 20px; }
+  .feat-grid { grid-template-columns: 1fr; }
+  .top-nav { padding: 0 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Sticky Nav ──────────────────────────────────────────── -->
+<nav class="top-nav">
+  <div class="nav-brand">
+    <div class="nav-brand-logo">📊</div>
+    <span class="nav-brand-name">DACUM Lite</span>
+  </div>
+  <div class="nav-links">
+    <a class="nav-link" href="#overview">نظرة عامة</a>
+    <a class="nav-link" href="#quickstart">البداية السريعة</a>
+    <a class="nav-link" href="#chart-info">معلومات المخطط</a>
+    <a class="nav-link" href="#duties-tasks">الواجبات والمهام</a>
+    <a class="nav-link" href="#views">العروض</a>
+    <a class="nav-link" href="#wall-view">عرض الجدار</a>
+    <a class="nav-link" href="#export">التصدير</a>
+    <a class="nav-link" href="#shortcuts">الاختصارات</a>
+    <a class="nav-link" href="#about">عن المطوّر</a>
+  </div>
+  <a class="nav-lang-btn" href="user-guide.html">🌐 English</a>
+</nav>
+
+<!-- ── Hero ───────────────────────────────────────────────── -->
+<header class="hero">
+  <div class="hero-badge">📘 الوثائق الرسمية</div>
+  <h1>DACUM Lite <span>v3.1</span></h1>
+  <p class="hero-sub">دليل شامل لتحليل المهن، وإنشاء مخططات DACUM، وتيسير ورش العمل — كل ذلك في متصفحك مباشرة.</p>
+  <div class="hero-meta">
+    <span>📋 الإصدار 3.1 — 2026</span>
+    <span>🧑‍💻 بقلم هشام جواد كاظم</span>
+    <span>🌐 يعمل في المتصفح · لا يحتاج تثبيت</span>
+    <span>🧱 دعم عرض الجدار لورش العمل</span>
+  </div>
+</header>
+
+<!-- ── Page Body ───────────────────────────────────────────── -->
+<div class="page-wrap">
+
+  <!-- Main Content -->
+  <main>
+
+    <!-- ── Overview ───────────────────────────────────────── -->
+    <section class="doc-section" id="overview">
+      <h2>🗺️ نظرة عامة</h2>
+      <p><strong>DACUM Lite</strong> هي أداة متصفح لإنشاء مخططات التحليل المهني باستخدام منهجية DACUM (تطوير المناهج الدراسية). تدعم سير العمل الكامل من تحديد الواجبات والمهام إلى تصدير الوثائق — دون أي تثبيت.</p>
+
+      <div class="feat-grid">
+        <div class="feat-card">
+          <div class="feat-icon">📋</div>
+          <div class="feat-title">عرض الجدول</div>
+          <div class="feat-desc">محرر قائمي كلاسيكي لإدخال الواجبات والمهام مع السحب والإفلات الكامل لإعادة الترتيب.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🃏</div>
+          <div class="feat-title">عرض البطاقات</div>
+          <div class="feat-desc">أعمدة أفقية قابلة للتمرير — عمود لكل واجب — للحصول على نظرة شاملة بصرية على جميع المهام.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">🧱</div>
+          <div class="feat-title">عرض الجدار</div>
+          <div class="feat-desc">عرض ملء الشاشة يحاكي جدار ورشة DACUM التقليدية ببطاقات الملاحظات اللاصقة.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">↩️</div>
+          <div class="feat-title">تراجع / إعادة</div>
+          <div class="feat-desc">كل إجراء قابل للتراجع. سجل أوامر كامل مع إصدارات لقطات مسماة.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">📤</div>
+          <div class="feat-title">التصدير</div>
+          <div class="feat-desc">صدِّر مخطط DACUM الكامل كمستند Word ‏(.docx) أو ملف PDF.</div>
+        </div>
+        <div class="feat-card">
+          <div class="feat-icon">📁</div>
+          <div class="feat-title">المشاريع</div>
+          <div class="feat-desc">أدِر مخططات DACUM متعددة في الشريط الجانبي. يُحفظ كل مشروع تلقائياً.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Quick Start ─────────────────────────────────────── -->
+    <section class="doc-section" id="quickstart">
+      <h2>🚀 البداية السريعة</h2>
+      <p>احصل على مخطط DACUM الأول في أقل من 5 دقائق:</p>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-body"><strong>افتح DACUM Lite</strong><span>يُحمَّل التطبيق مباشرة في متصفحك. يُحفظ عملك تلقائياً.</span></div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-body"><strong>أنشئ مشروعاً</strong><span>انقر <code>＋ جديد</code> في الشريط الجانبي. أعطِه اسماً — مثلاً "فني سيارات".</span></div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-body"><strong>أكمل معلومات المخطط</strong><span>أدخل المسمى المهني والمسمى الوظيفي ونطاق العمل في تبويب <em>معلومات المخطط</em>.</span></div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-body"><strong>أضف الواجبات والمهام</strong><span>انتقل إلى <em>الواجبات والمهام</em>. انقر <code>➕ إضافة واجب</code> — يبدأ كل واجب بمهمة واحدة تلقائياً.</span></div></div>
+        <div class="step"><div class="step-n">5</div><div class="step-body"><strong>أعِد الترتيب بالسحب والإفلات</strong><span>امسك مؤشر <code>⠿</code> على أي واجب أو مهمة لإعادة الترتيب. تتحدث التسميات تلقائياً.</span></div></div>
+        <div class="step"><div class="step-n">6</div><div class="step-body"><strong>بدّل إلى عرض الجدار</strong><span>انقر <code>🧱 الجدار</code> لرؤية مخططك معروضاً كجدار ورشة. عدّل مباشرة من هناك.</span></div></div>
+        <div class="step"><div class="step-n">7</div><div class="step-body"><strong>صدِّر</strong><span>استخدم شريط الأدوات للتصدير كـ <code>PDF</code> أو <code>Word</code> عند الانتهاء.</span></div></div>
+      </div>
+    </section>
+
+    <!-- ── Chart Info ──────────────────────────────────────── -->
+    <section class="doc-section" id="chart-info">
+      <h2>📋 تبويب معلومات المخطط</h2>
+      <p>يُخزِّن تبويب معلومات المخطط جميع البيانات الوصفية للمهنة وورشة العمل. تُدرَج هذه المعلومات في الوثائق المُصدَّرة.</p>
+
+      <h3 id="scope">📌 نطاق العمل / التعريف المهني</h3>
+      <p>اكتب فقرة موجزة تصف ما يشمله المجال المهني وحدوده. يُستخدم هذا في التصدير ومرجعاً لتحسين جودة الواجبات والمهام.</p>
+      <div class="note note--tip">
+        <span class="note-icon">💡</span>
+        <span>تشمل النطاقات الجيدة: المسؤوليات الرئيسية، الأدوات النموذجية، بيئات العمل، وما هو مستثنى صراحةً (مثل الوظائف الإدارية).</span>
+      </div>
+
+      <h3 id="panel">👥 لجنة ورشة العمل</h3>
+      <p>يُسجِّل قسم لجنة ورشة العمل أسماء جميع الحاضرين في ورشة DACUM:</p>
+      <ul style="margin:10px 0 14px 0;padding-right:24px;color:var(--slate-m);line-height:2.2;">
+        <li><strong>الميسِّرون</strong> — قادة الجلسة الذين يوجّهون اللجنة خلال عملية DACUM</li>
+        <li><strong>المراقبون</strong> — الأفراد الحاضرون دون مشاركة فعّالة</li>
+        <li><strong>أعضاء اللجنة</strong> — خبراء الموضوع الذين يُحدِّدون الواجبات والمهام</li>
+      </ul>
+      <div class="note note--info">
+        <span class="note-icon">ℹ️</span>
+        <span>أدخل اسماً واحداً في كل سطر في كل حقل. تُضمَّن جميع الأسماء في مستند Word المُصدَّر وصفحة غلاف PDF.</span>
+      </div>
+    </section>
+
+    <!-- ── Duties & Tasks ──────────────────────────────────── -->
+    <section class="doc-section" id="duties-tasks">
+      <h2>✅ تبويب الواجبات والمهام</h2>
+      <p>هذا هو جوهر DACUM Lite — حيث تبني المخطط المهني بتحديد الواجبات والمهام المرتبطة بها.</p>
+
+      <h3 id="numbering">🔢 الترقيم القياسي لـ DACUM</h3>
+      <p>يُطبِّق DACUM Lite تلقائياً الترقيم القياسي لـ DACUM على جميع الواجبات والمهام:</p>
+      <div class="wv-preview">
+        <div>
+          <div class="wv-p-duty"><div class="wv-p-badge">Duty A</div><div class="wv-p-title">تنفيذ عمليات النجارة</div></div>
+        </div>
+        <div class="wv-p-tasks">
+          <div class="wv-p-task"><div class="wv-p-task-lbl">Task A1</div><div class="wv-p-task-txt">قطع مفاصل النحت والتزنير</div></div>
+          <div class="wv-p-task"><div class="wv-p-task-lbl">Task A2</div><div class="wv-p-task-txt">توجيه الأخاديد والمجاري</div></div>
+          <div class="wv-p-task"><div class="wv-p-task-lbl">Task A3</div><div class="wv-p-task-txt">حفر ثقوب المسامير</div></div>
+        </div>
+      </div>
+      <p>تُسمَّى الواجبات <code>A, B, C … Z, AA, AB…</code> والمهام <code>A1, A2, B1, B2…</code> عند إعادة الترتيب بالسحب والإفلات، تتحدث جميع التسميات فوراً.</p>
+
+      <h3 id="drag-drop">⠿ السحب والإفلات</h3>
+      <p>لكل واجب ومهمة مؤشر <code>⠿</code> للإمساك به. امسكه لـ:</p>
+      <ul style="margin:10px 0 14px 0;padding-right:24px;color:var(--slate-m);line-height:2.2;">
+        <li>إعادة ترتيب <strong>الواجبات</strong> للأعلى أو للأسفل (عرض الجدول) / للأمام أو للخلف (عرض البطاقات/الجدار)</li>
+        <li>إعادة ترتيب <strong>المهام</strong> داخل نفس الواجب</li>
+        <li>نقل <strong>مهمة</strong> من واجب إلى آخر — أفلِتها فوق الواجب المستهدف</li>
+      </ul>
+      <div class="note note--warn">
+        <span class="note-icon">⚠️</span>
+        <span>استخدم مؤشر <code>⠿</code> فقط للسحب — النقر في أي مكان آخر على البطاقة يبدأ تحرير النص.</span>
+      </div>
+    </section>
+
+    <!-- ── Views ───────────────────────────────────────────── -->
+    <section class="doc-section" id="views">
+      <h2>🖥️ أوضاع العرض</h2>
+      <p>استخدم مُبدِّل الأزرار الثلاثة في أعلى تبويب الواجبات والمهام لتغيير العرض:</p>
+
+      <div class="view-tabs-demo">
+        <div class="vtab vtab--active">📋 Table</div>
+        <div class="vtab">🃏 Card</div>
+        <div class="vtab">🧱 Wall</div>
+      </div>
+
+      <h3>📋 عرض الجدول</h3>
+      <p>العرض الافتراضي. تظهر الواجبات كصفوف رأسية، والمهام كعناصر متداخلة أسفل كل واجب. الأفضل لإدخال البيانات والتحرير التفصيلي.</p>
+
+      <h3>🃏 عرض البطاقات</h3>
+      <p>يصبح كل واجب عموداً رأسياً مع بطاقات المهام مرتبة أفقياً. مرِّر يساراً/يميناً لرؤية جميع الواجبات. جيد لمراجعة عرض المخطط الكامل دفعةً واحدة.</p>
+
+      <h3>🧱 عرض الجدار</h3>
+      <p>تراكب ملء الشاشة يحاكي جدار ورشة DACUM المادية. راجع القسم التالي للتفاصيل الكاملة.</p>
+
+      <div class="note note--tip">
+        <span class="note-icon">💡</span>
+        <span>جميع التعديلات في أي عرض تنعكس فوراً على الأعراض الأخرى. بياناتك دائماً متزامنة.</span>
+      </div>
+    </section>
+
+    <!-- ── Wall View ───────────────────────────────────────── -->
+    <section class="doc-section" id="wall-view">
+      <h2>🧱 عرض الجدار</h2>
+      <p>صُمِّم عرض الجدار لورش DACUM الحية. يعرض جميع الواجبات والمهام كبطاقات ملاحظات لاصقة على جدار افتراضي — مثالي للعرض أمام المشاركين.</p>
+
+      <h3>أدوات شريط التحكم</h3>
+      <table class="shortcut-table">
+        <tr><th>الأداة</th><th>الوظيفة</th></tr>
+        <tr><td><code>✕ خروج</code></td><td>العودة إلى عرض الجدول أو البطاقات السابق</td></tr>
+        <tr><td><code>🔍− / 🔍+</code></td><td>تصغير / تكبير بمقدار 5% لكل نقرة (النطاق: 25%–200%)</td></tr>
+        <tr><td><code>↺ إعادة ضبط</code></td><td>إعادة التكبير إلى 100%</td></tr>
+        <tr><td><code>🖨️ طباعة</code></td><td>طباعة المخطط (A3 أفقي، محسَّن بنسبة 70%)</td></tr>
+        <tr><td><code>⛶ ملء الشاشة</code></td><td>تبديل وضع ملء الشاشة</td></tr>
+        <tr><td><code>🃏 بطاقات / 📋 جدول</code></td><td>التبديل إلى عرض آخر دون الخروج</td></tr>
+      </table>
+
+      <h3>أيقونات إجراءات البطاقة</h3>
+      <p>لكل بطاقة واجب (نيلية) وبطاقة مهمة (صفراء) أيقونات إجراءات صغيرة في أعلى الزاوية:</p>
+      <ul style="margin:10px 0 14px 0;padding-right:24px;color:var(--slate-m);line-height:2.2;">
+        <li><strong>بطاقة الواجب ＋</strong> — يضيف واجباً جديداً أدناه</li>
+        <li><strong>بطاقة الواجب ✕</strong> — يحذف الواجب (مع تأكيد)</li>
+        <li><strong>بطاقة المهمة ＋</strong> — يضيف مهمة جديدة لذلك الواجب</li>
+        <li><strong>بطاقة المهمة ✕</strong> — يحذف المهمة فوراً</li>
+      </ul>
+      <div class="note note--info">
+        <span class="note-icon">ℹ️</span>
+        <span>جميع النصوص في عرض الجدار قابلة للتحرير — انقر على أي عنوان واجب أو نص مهمة لتحريره مباشرة. تُحفظ التغييرات في سجل التراجع.</span>
+      </div>
+    </section>
+
+    <!-- ── Additional Info ─────────────────────────────────── -->
+    <section class="doc-section" id="additional">
+      <h2>📚 تبويب المعلومات الإضافية</h2>
+      <p>التقط المعلومات المهنية التكميلية التي تتجاوز مخطط الواجبات/المهام. تُدرَج جميع الأقسام في الصادرات.</p>
+      <ul style="margin:10px 0 0 0;padding-right:24px;color:var(--slate-m);line-height:2.4;">
+        <li><strong>متطلبات المعرفة</strong> — ما يجب أن يعرفه العامل</li>
+        <li><strong>متطلبات المهارات</strong> — ما يجب أن يكون العامل قادراً على فعله</li>
+        <li><strong>سلوكيات وصفات العامل</strong> — المواقف والسمات الشخصية</li>
+        <li><strong>الأدوات والمعدات والمستلزمات والمواد</strong></li>
+        <li><strong>الاتجاهات والمخاوف المستقبلية</strong></li>
+        <li><strong>المختصرات</strong> — تعريفات المصطلحات</li>
+        <li><strong>المسار المهني</strong></li>
+      </ul>
+      <p style="margin-top:14px;">يمكنك إعادة تسمية أي عنوان قسم بالنقر على <code>✏️ إعادة تسمية</code>، وإضافة أقسام مخصصة بـ <code>➕ إضافة قسم</code>.</p>
+    </section>
+
+    <!-- ── Projects ────────────────────────────────────────── -->
+    <section class="doc-section" id="projects">
+      <h2>📁 المشاريع</h2>
+      <p>يُدير الشريط الجانبي على اليسار جميع مخططات DACUM الخاصة بك. يُخزَّن كل مشروع بشكل مستقل في التخزين المحلي للمتصفح.</p>
+      <div class="steps">
+        <div class="step"><div class="step-n">＋</div><div class="step-body"><strong>مشروع جديد</strong><span>انقر <code>＋ جديد</code> لإنشاء مخطط فارغ.</span></div></div>
+        <div class="step"><div class="step-n">✏️</div><div class="step-body"><strong>إعادة التسمية</strong><span>انقر أيقونة القلم على أي مشروع لإعادة تسميته.</span></div></div>
+        <div class="step"><div class="step-n">🗑️</div><div class="step-body"><strong>الحذف</strong><span>انقر أيقونة السلة لإزالة مشروع نهائياً.</span></div></div>
+        <div class="step"><div class="step-n">💾</div><div class="step-body"><strong>تصدير / استيراد</strong><span>احفظ مشروعاً كملف <code>.json</code> وأعِد تحميله لاحقاً باستخدام <em>استيراد مشروع</em>.</span></div></div>
+      </div>
+    </section>
+
+    <!-- ── Export ──────────────────────────────────────────── -->
+    <section class="doc-section" id="export">
+      <h2>📤 التصدير</h2>
+      <p>صدِّر مخطط DACUM الكامل من شريط الأدوات الرئيسي. يشمل كلا التنسيقين: صفحة الغلاف، بيانات معلومات المخطط، لجنة ورشة العمل، نطاق العمل، جميع الواجبات والمهام، وجميع أقسام المعلومات الإضافية.</p>
+
+      <h3>📄 تصدير كـ Word ‏(.docx)</h3>
+      <p>يُنشئ مستند Word منسَّقاً بتخطيط جدول منظَّم. متوافق مع Microsoft Word وLibreOffice.</p>
+
+      <h3>🖨️ تصدير كـ PDF</h3>
+      <p>يُنشئ PDF قابلاً للطباعة باستخدام jsPDF. تتضمن صفحة الغلاف جميع البيانات الوصفية ولجنة ورشة العمل. يظهر كل واجب كقسم موسوم بوضوح.</p>
+
+      <div class="note note--warn">
+        <span class="note-icon">⚠️</span>
+        <span>تلتقط الصادرات الحالة الراهنة لمخططك. تأكد من اكتمال جميع الواجبات والمهام والبيانات الوصفية قبل التصدير.</span>
+      </div>
+
+      <h3>📸 اللقطات</h3>
+      <p>قبل إجراء تعديل كبير، احفظ لقطة مُسمَّاة باستخدام زر <code>📸</code> في شريط الأدوات. تتيح لك اللقطات استعادة أي حالة سابقة للمخطط بنقرة واحدة.</p>
+    </section>
+
+    <!-- ── Shortcuts ───────────────────────────────────────── -->
+    <section class="doc-section" id="shortcuts">
+      <h2>⌨️ اختصارات لوحة المفاتيح</h2>
+      <table class="shortcut-table">
+        <tr><th>الاختصار</th><th>الإجراء</th></tr>
+        <tr><td><kbd>Ctrl</kbd> + <kbd>Z</kbd></td><td>تراجع عن آخر إجراء</td></tr>
+        <tr><td><kbd>Ctrl</kbd> + <kbd>Y</kbd></td><td>إعادة آخر إجراء تم التراجع عنه</td></tr>
+        <tr><td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd></td><td>إعادة (بديل)</td></tr>
+        <tr><td><kbd>Tab</kbd></td><td>الانتقال إلى الحقل التالي (داخل النماذج)</td></tr>
+        <tr><td><kbd>Enter</kbd></td><td>تأكيد التحرير المضمَّن</td></tr>
+        <tr><td><kbd>Esc</kbd></td><td>إلغاء / إلغاء تنشيط الحقل</td></tr>
+      </table>
+    </section>
+
+    <!-- ── About ───────────────────────────────────────────── -->
+    <section class="doc-section" id="about">
+      <h2>🧑‍💻 عن المطوّر</h2>
+      <div class="creator-card">
+        <div class="creator-avatar">HJ</div>
+        <div>
+          <div class="creator-name">Husham Jawad Kadhim</div>
+          <div class="creator-role">مبتكر DACUM Lite</div>
+          <div class="creator-bio">مطوِّر مناهج التدريب المهني والتقني ومبتكر تكنولوجيا التعليم، يمتلك خبرة واسعة في التحليل المهني، وتصميم التدريب القائم على الكفاءات، وأدوات التعلم الرقمي.</div>
+          <div class="creator-links">
+            <a class="creator-link" href="mailto:hshaam77@gmail.com">📧 hshaam77@gmail.com</a>
+            <a class="creator-link" href="https://www.linkedin.com/in/husham-jawad-kadhim-954006200/" target="_blank" rel="noopener">💼 LinkedIn</a>
+          </div>
+        </div>
+      </div>
+      <div class="note note--info">
+        <span class="note-icon">💡</span>
+        <span>للاستفسارات وتقارير الأخطاء وطلبات الميزات وفرص التعاون، يرجى التواصل عبر البريد الإلكتروني أو LinkedIn.</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Sidebar TOC -->
+  <aside class="toc">
+    <div class="toc-title">محتويات الصفحة</div>
+    <ul class="toc-list">
+      <li><a href="#overview">نظرة عامة</a></li>
+      <li><a href="#quickstart">البداية السريعة</a></li>
+      <li><a href="#chart-info">معلومات المخطط</a></li>
+      <li class="toc-sub"><a href="#scope">نطاق العمل</a></li>
+      <li class="toc-sub"><a href="#panel">لجنة ورشة العمل</a></li>
+      <li><a href="#duties-tasks">الواجبات والمهام</a></li>
+      <li class="toc-sub"><a href="#numbering">ترقيم DACUM</a></li>
+      <li class="toc-sub"><a href="#drag-drop">السحب والإفلات</a></li>
+      <li><a href="#views">أوضاع العرض</a></li>
+      <li><a href="#wall-view">عرض الجدار</a></li>
+      <li><a href="#additional">معلومات إضافية</a></li>
+      <li><a href="#projects">المشاريع</a></li>
+      <li><a href="#export">التصدير</a></li>
+      <li><a href="#shortcuts">الاختصارات</a></li>
+      <li><a href="#about">عن المطوّر</a></li>
+    </ul>
+  </aside>
+
+</div>
+
+<footer>
+  © 2026 DACUM Lite — بقلم هشام جواد كاظم · الإصدار 3.1.0 · جميع الحقوق محفوظة
+</footer>
+
+<script>
+// Highlight active TOC link on scroll
+const sections = document.querySelectorAll('.doc-section');
+const tocLinks  = document.querySelectorAll('.toc-list a');
+
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      const active = document.querySelector(`.toc-list a[href="#${e.target.id}"]`);
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-30% 0px -60% 0px', threshold: 0 });
+sections.forEach(s => observer.observe(s));
+
+// Highlight active nav link
+const navLinks = document.querySelectorAll('.nav-link');
+const obs2 = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      navLinks.forEach(l => l.classList.remove('active'));
+      const a = document.querySelector(`.nav-link[href="#${e.target.id}"]`);
+      if (a) a.classList.add('active');
+    }
+  });
+}, { rootMargin: '-20% 0px -70% 0px' });
+sections.forEach(s => obs2.observe(s));
+</script>
+</body>
+</html>

@@ -1,0 +1,1170 @@
+/* ============================================================
+   COMPONENTS.CSS — Buttons, Cards, Panels, Scroll Containers
+   ============================================================ */
+
+/* ══════════════════════════════════════════════════════════════
+   BUTTONS
+   ══════════════════════════════════════════════════════════════ */
+
+.btn-add {
+  background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success-dark) 100%);
+  color: white;
+}
+.btn-add:hover { box-shadow: 0 5px 15px rgba(16,185,129,0.4); }
+
+.btn-remove {
+  background: linear-gradient(135deg, var(--color-danger-light) 0%, var(--color-danger) 100%);
+  color: white;
+}
+.btn-remove:hover { box-shadow: 0 5px 15px rgba(239,68,68,0.4); }
+
+.btn-export {
+  background: linear-gradient(135deg, #3b82f6 0%, var(--color-primary) 100%);
+  color: white;
+  padding: 14px 28px;
+  font-size: 1.15em;
+}
+.btn-export:hover { box-shadow: 0 5px 15px rgba(59,130,246,0.4); }
+
+.btn-export-word {
+  background: linear-gradient(135deg, var(--color-purple) 0%, var(--color-purple-dark) 100%);
+  color: white;
+  padding: 14px 28px;
+  font-size: 1.15em;
+}
+.btn-export-word:hover { box-shadow: 0 5px 15px rgba(139,92,246,0.4); }
+
+.btn-save-data {
+  background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success-dark) 100%);
+  color: white;
+  padding: 14px 28px;
+  font-size: 1.15em;
+}
+.btn-save-data:hover { box-shadow: 0 5px 15px rgba(16,185,129,0.4); }
+
+.btn-load-data {
+  background: linear-gradient(135deg, var(--color-warning) 0%, var(--color-warning-dark) 100%);
+  color: white;
+  padding: 14px 28px;
+  font-size: 1.15em;
+}
+.btn-load-data:hover { box-shadow: 0 5px 15px rgba(245,158,11,0.4); }
+
+.btn-clear-all {
+  background: linear-gradient(135deg, var(--color-danger-light) 0%, var(--color-danger) 100%);
+  color: white;
+  padding: 14px 28px;
+  font-size: 1.15em;
+}
+.btn-clear-all:hover { box-shadow: 0 5px 15px rgba(239,68,68,0.4); }
+
+.btn-snapshot {
+  background: linear-gradient(135deg, var(--color-sky) 0%, var(--color-sky-dark) 100%);
+  color: white;
+  padding: 14px 22px;
+  font-size: 1.05em;
+}
+.btn-snapshot:hover { box-shadow: 0 5px 15px rgba(14,165,233,0.4); }
+
+.btn-rename {
+  background: linear-gradient(135deg, var(--color-warning) 0%, var(--color-warning-dark) 100%);
+  color: white;
+  padding: 8px 16px;
+  font-size: 0.95em;
+}
+.btn-rename:hover { box-shadow: 0 5px 15px rgba(245,158,11,0.4); }
+
+.btn-clear-section {
+  background: linear-gradient(135deg, var(--color-danger-light) 0%, var(--color-danger) 100%);
+  color: white;
+  padding: 8px 16px;
+  font-size: 0.95em;
+}
+.btn-clear-section:hover { box-shadow: 0 5px 15px rgba(239,68,68,0.4); }
+
+.btn-add-image {
+  background: linear-gradient(135deg, var(--color-purple) 0%, var(--color-purple-dark) 100%);
+  color: white;
+  padding: 8px 16px;
+  font-size: 0.95em;
+}
+.btn-add-image:hover { box-shadow: 0 5px 15px rgba(139,92,246,0.4); }
+
+.btn-remove-image {
+  background: linear-gradient(135deg, var(--color-danger-light) 0%, var(--color-danger) 100%);
+  color: white;
+  padding: 6px 12px;
+  font-size: 0.85em;
+}
+.btn-remove-image:hover { box-shadow: 0 5px 15px rgba(239,68,68,0.4); }
+
+.btn-toggle-info {
+  background: linear-gradient(135deg, var(--color-warning) 0%, var(--color-warning-dark) 100%);
+  color: white;
+  padding: 6px 14px;
+  font-size: 0.85em;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition-base);
+}
+.btn-toggle-info:hover {
+  box-shadow: 0 3px 10px rgba(245,158,11,0.4);
+  transform: translateY(-1px);
+}
+
+/* Undo / Redo */
+.btn-undo, .btn-redo {
+  background: linear-gradient(135deg, var(--color-slate-light) 0%, var(--color-slate) 100%);
+  color: white;
+  padding: 14px 22px;
+  font-size: 1.05em;
+}
+.btn-undo:hover, .btn-redo:hover { box-shadow: 0 5px 15px rgba(71,85,105,0.4); }
+.btn-undo:disabled, .btn-redo:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* View toggle — visual styles are now owned by .btn-primary / .btn-secondary.
+   This ID rule only provides a font-size override so the buttons match the
+   surrounding header scale. Removing background/color prevents the ID
+   specificity (1,0,0) from defeating the class-level (0,2,0) utility rules. */
+#toggleViewBtn, #toggleViewBtnCard {
+  font-size: 0.95em;
+}
+
+/* Remove section button (custom sections) */
+.btn-remove-section {
+  background: linear-gradient(135deg, var(--color-danger-light) 0%, var(--color-danger) 100%);
+  color: white;
+  padding: 8px 16px;
+  font-size: 0.95em;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+.btn-remove-section:hover { box-shadow: 0 5px 15px rgba(239,68,68,0.4); }
+
+/* ══════════════════════════════════════════════════════════════
+   STATUS BANNER
+   ══════════════════════════════════════════════════════════════ */
+.status {
+  padding: 15px;
+  margin: 20px 0;
+  border-radius: var(--radius-sm);
+  font-size: 1.05em;
+  font-weight: 600;
+  text-align: center;
+}
+.status.success {
+  background: #d1fae5;
+  color: #065f46;
+  border: 2px solid var(--color-success);
+}
+.status.error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 2px solid var(--color-danger-light);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   INFO BOX
+   ══════════════════════════════════════════════════════════════ */
+.info-box {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-left: 6px solid var(--color-warning);
+  padding: 20px;
+  margin-bottom: 30px;
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  position: relative;
+}
+.info-box h3 {
+  color: var(--color-warning-dark);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.info-box p {
+  font-size: 1em;
+  line-height: 1.3;
+  color: #78716c;
+  margin-bottom: 6px;
+}
+.info-box .example-section {
+  margin-top: 12px;
+  font-style: italic;
+  background: rgba(255,255,255,0.7);
+  padding: 12px;
+  border-radius: var(--radius-sm);
+}
+.info-box .example-section p { margin-bottom: 2px; }
+
+/* ══════════════════════════════════════════════════════════════
+   IMAGE UPLOAD
+   ══════════════════════════════════════════════════════════════ */
+.image-upload-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 10px;
+}
+.image-preview {
+  width: 95px;
+  height: 95px;
+  border: 2px dashed #ccc;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--surface-light);
+}
+.image-preview img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.image-preview.has-image {
+  border: 2px solid var(--color-success);
+  background: white;
+}
+.image-preview-placeholder {
+  color: var(--text-faint);
+  font-size: 0.9em;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DUTY & TASK TABLE VIEW
+   ══════════════════════════════════════════════════════════════ */
+.duty-row, .ks-row, .behavior-row {
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border: 2px solid #7dd3fc;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+}
+.duty-header, .ks-header, .behavior-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.duty-header-actions {
+  display: flex;
+  gap: 10px;
+}
+.task-list, .ks-list, .behavior-list { margin-left: 20px; }
+.task-item, .ks-item, .behavior-item {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+.task-label, .ks-label, .behavior-label {
+  width: 90px;
+  color: #666;
+  flex-shrink: 0;
+  font-weight: 600;
+  font-size: 1.05em;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SECTION CONTAINERS (Additional Info)
+   ══════════════════════════════════════════════════════════════ */
+.section-container {
+  background: linear-gradient(135deg, var(--surface-light) 0%, #f3f4f6 100%);
+  border: 2px solid #e5e7eb;
+  border-radius: var(--radius-md);
+  padding: 25px;
+  margin-bottom: 25px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.section-header-editable {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.section-header-editable h3 { margin: 0; padding: 8px 12px; border-radius: 6px; transition: background 0.3s; }
+.section-header-editable h3[contenteditable="true"] {
+  background: var(--surface-white);
+  border: 2px solid var(--color-accent);
+  outline: none;
+  cursor: text;
+}
+.section-header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* ── Floating control panel — REMOVED
+   Undo / Redo / Debug have moved into the fixed top toolbar.
+   These rules are kept as a tombstone so any cached CSS reference
+   does not throw a parse error.
+   ─────────────────────────────────────────────────────────────── */
+
+/* Legacy fp-divider — kept for snapshot panel internal use */
+.fp-divider {
+  width: 1px;
+  height: 22px;
+  background: var(--color-slate);
+  border-radius: 1px;
+  margin: 0 2px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SNAPSHOT PANEL
+   ══════════════════════════════════════════════════════════════ */
+#snapshotPanel {
+  position: fixed;
+  bottom: 80px;
+  right: 24px;
+  z-index: 9998;
+  background: var(--surface-dark);
+  border: 1px solid var(--surface-dark-mid);
+  border-radius: var(--radius-md);
+  padding: 14px;
+  min-width: 260px;
+  max-height: 320px;
+  overflow-y: auto;
+  display: none;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+#snapshotPanel h4 {
+  color: #94a3b8;
+  font-size: 0.82em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.snap-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 10px;
+  border-radius: 7px;
+  background: #0f172a;
+  margin-bottom: 6px;
+  gap: 8px;
+}
+.snap-item-label { color: #cbd5e1; font-size: 0.85em; flex: 1; }
+.snap-item-time  { color: var(--color-slate-light); font-size: 0.72em; }
+.snap-restore-btn {
+  background: var(--color-sky);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 4px 9px;
+  font-size: 0.78em;
+  cursor: pointer;
+  font-weight: 600;
+}
+.snap-restore-btn:hover { background: var(--color-sky-dark); transform: none; box-shadow: none; }
+.snap-empty {
+  color: var(--color-slate);
+  font-size: 0.85em;
+  font-style: italic;
+  text-align: center;
+  padding: 10px;
+}
+
+/* ── History bar (inline Undo/Redo row) ────────────────────── */
+.history-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 6px 12px;
+  margin-bottom: 16px;
+}
+.history-bar span {
+  font-size: 0.8em;
+  color: #94a3b8;
+  margin-left: 6px;
+}
+.hbar-btn {
+  background: #e2e8f0;
+  color: var(--color-slate);
+  border: none;
+  border-radius: 7px;
+  padding: 5px 14px;
+  font-size: 0.88em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.hbar-btn:hover:not(:disabled) { background: #cbd5e1; color: var(--surface-dark); }
+.hbar-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ══════════════════════════════════════════════════════════════
+   CARD VIEW
+   ══════════════════════════════════════════════════════════════ */
+.cv-duties-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* ── Duty row (horizontal scroll container) ─────────────────── */
+.cv-duty-row {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: 0;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-soft);
+  background: #f8fafc;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+}
+
+/* Smooth hidden scrollbar */
+.cv-duty-row::-webkit-scrollbar { height: 5px; }
+.cv-duty-row::-webkit-scrollbar-track { background: #e0e7ff; border-radius: 4px; }
+.cv-duty-row::-webkit-scrollbar-thumb { background: #93c5fd; border-radius: 4px; }
+.cv-duty-row { scrollbar-width: thin; scrollbar-color: #93c5fd #e0e7ff; }
+
+/* ── Duty card (sticky blue column) ────────────────────────── */
+.cv-duty-card {
+  background: #bfdbfe;
+  border: 2px solid #93c5fd;
+  border-radius: var(--radius-md) 0 0 var(--radius-md);
+  padding: 10px 12px 12px 12px;
+  min-width: 150px;
+  width: 150px;
+  flex-shrink: 0;
+  font-weight: 700;
+  font-size: 0.92em;
+  color: #1e3a8a;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  text-align: left;
+  box-shadow: 2px 0 8px rgba(37,99,235,0.10);
+  line-height: 1.3;
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+
+/* Top row: index label + delete */
+.cv-duty-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.cv-duty-index-label {
+  font-size: 0.7em;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--color-primary);
+  text-transform: uppercase;
+}
+
+.cv-duty-text {
+  outline: none;
+  cursor: text;
+  width: 100%;
+  min-height: 24px;
+  border-radius: 6px;
+  padding: 3px 5px;
+  transition: background 0.2s;
+  word-break: break-word;
+  font-size: 1.15em;
+  font-weight: 700;
+  color: #1e3a8a;
+}
+.cv-duty-text:focus { background: rgba(255,255,255,0.7); }
+.cv-duty-text:empty::before {
+  content: attr(data-placeholder);
+  color: #60a5fa;
+  font-style: italic;
+  font-weight: 400;
+}
+
+/* ── Circular delete buttons ────────────────────────────────── */
+.cv-delete-duty, .cv-delete-task {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border-radius: 50%;
+  background: #ef4444;
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.2s, transform 0.15s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18);
+}
+.cv-delete-duty:hover, .cv-delete-task:hover {
+  background: var(--color-danger);
+  transform: scale(1.15);
+  box-shadow: 0 2px 8px rgba(185,28,28,0.3);
+}
+
+/* ── Tasks wrapper (scrollable horizontal row) ──────────────── */
+.cv-tasks-wrapper {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;          /* Never wrap to second line */
+  align-items: stretch;
+  gap: 10px;
+  padding: 10px 12px;
+  flex: 1;
+  min-width: 0;
+  overflow-x: visible;        /* Parent cv-duty-row handles scrolling */
+}
+
+/* ── Task card ──────────────────────────────────────────────── */
+.cv-task-card {
+  background: #fef9c3;
+  border: 2px solid #fde047;
+  border-radius: var(--radius-md);
+  padding: 8px 10px;
+  min-width: 130px;
+  width: 150px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(234,179,8,0.10);
+  transition: transform 0.18s, box-shadow 0.18s;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+}
+.cv-task-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 14px rgba(234,179,8,0.22);
+}
+
+.cv-task-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cv-task-label {
+  font-size: 0.70em;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #a16207;
+}
+
+.cv-task-text {
+  font-size: 0.90em;
+  color: #422006;
+  line-height: 1.35;
+  outline: none;
+  min-height: 22px;
+  cursor: text;
+  border-radius: 4px;
+  padding: 2px 4px;
+  transition: background 0.2s;
+  word-break: break-word;
+}
+.cv-task-text:focus { background: #fef08a; }
+.cv-task-text:empty::before {
+  content: attr(data-placeholder);
+  color: #ca8a04;
+  font-style: italic;
+}
+
+/* ── Add Task inline button ─────────────────────────────────── */
+.cv-add-task {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  flex-shrink: 0;
+  background: var(--color-success);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 6px 12px;
+  font-size: 0.85em;
+  font-weight: 600;
+  cursor: pointer;
+  gap: 4px;
+  white-space: nowrap;
+  transition: background 0.2s, transform 0.15s;
+  box-shadow: 0 2px 6px rgba(16,185,129,0.2);
+}
+.cv-add-task:hover {
+  background: var(--color-success-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16,185,129,0.3);
+}
+
+/* ── Add Duty card view button ──────────────────────────────── */
+.cv-add-duty {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success-dark) 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 22px;
+  font-size: 1em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-fast);
+  box-shadow: 0 2px 8px rgba(16,185,129,0.25);
+  margin-top: 4px;
+}
+.cv-add-duty:hover {
+  background: linear-gradient(135deg, var(--color-success-dark) 0%, #047857 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(16,185,129,0.4);
+}
+
+/* ── Empty state note ───────────────────────────────────────── */
+.cv-empty-note {
+  color: #a16207;
+  font-style: italic;
+  font-size: 0.9em;
+  padding: 10px 14px;
+  background: #fef9c3;
+  border: 2px dashed #fde047;
+  border-radius: 10px;
+  align-self: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Add Section button (Additional Info tab) ───────────────── */
+.btn-add-section-main {
+  background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success-dark) 100%);
+  color: white;
+  padding: 12px 24px;
+  font-size: 1.05em;
+}
+.btn-add-section-main:hover { box-shadow: 0 5px 15px rgba(16,185,129,0.4); }
+
+/* ================================================================
+   SIDEBAR — Project Management Layer
+   ================================================================ */
+
+/* ── Layout: body override so appWrapper handles padding ────────
+   components.css loads after base.css; this rule wins by cascade. */
+body {
+  padding: 0;
+}
+
+#appWrapper {
+  margin-left: 260px;
+  min-height: 100vh;
+  padding: 20px;
+  padding-top: 72px;               /* 56px toolbar + 16px breathing room */
+  box-sizing: border-box;
+  transition: margin-left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Desktop mini sidebar: appWrapper indented by mini width (handled in layout.css) */
+body.sb-sidebar-closed #appWrapper {
+  margin-left: 60px;
+}
+
+/* ── Sidebar panel ────────────────────────────────────────────── */
+#sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 260px;
+  height: 100vh;
+  background: #13192a;
+  border-right: 1px solid #1e2a40;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  overflow: hidden;
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.45);
+  /* Width transition handles desktop mini mode */
+  transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Desktop: "collapsed" = mini (60px) — handled by body.sb-sidebar-closed
+   in the inline <style> block. No translateX on desktop. */
+#sidebar.sb-collapsed {
+  /* Legacy class — no longer used for desktop; kept for safety */
+}
+
+/* ── Section labels ────────────────────────────────────────────── */
+.sb-section-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 14px 6px;
+  font-size: 0.68em;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #3b4a6b;
+  flex-shrink: 0;
+  /* Smooth hide in mini mode */
+  transition: opacity 0.2s, height 0.2s, padding 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sb-section-label--projects {
+  border-top: 1px solid #1a2438;
+  margin-top: 4px;
+  padding-top: 12px;
+}
+
+/* ── Navigation items ──────────────────────────────────────────── */
+.sb-nav {
+  padding: 4px 8px 8px;
+  flex-shrink: 0;
+}
+
+.sb-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: 9px;
+  cursor: pointer;
+  margin-bottom: 2px;
+  border-left: 3px solid transparent;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  user-select: none;
+}
+
+.sb-nav-item:hover {
+  background: #1a2440;
+}
+
+.sb-nav-item.sb-nav-active {
+  background: rgba(99, 102, 241, 0.18);
+  border-left-color: #6366f1;
+}
+
+.sb-nav-icon {
+  font-size: 1.1em;
+  flex-shrink: 0;
+  width: 22px;
+  text-align: center;
+  line-height: 1;
+}
+
+.sb-nav-label {
+  font-size: 0.875em;
+  font-weight: 600;
+  color: #94a3b8;
+  transition: color 0.15s, opacity 0.2s, width 0.2s;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.sb-nav-item:hover .sb-nav-label {
+  color: #e2e8f0;
+}
+
+.sb-nav-item.sb-nav-active .sb-nav-label {
+  color: #a5b4fc;
+  font-weight: 700;
+}
+
+/* ── Old toggle tab — superseded by in-sidebar collapse btn ──── */
+#sidebarToggleBtn { display: none !important; }
+
+/* ── Sidebar header ──────────────────────────────────────────── */
+.sb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 12px 12px;
+  border-bottom: 1px solid #1a2438;
+  flex-shrink: 0;
+}
+
+.sb-header-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #94a3b8;
+  font-size: 0.78em;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.sb-new-btn {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  padding: 5px 10px;
+  font-size: 0.78em;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: 0.02em;
+  transition: background 0.18s, transform 0.15s, box-shadow 0.18s;
+}
+.sb-new-btn:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.35);
+}
+
+/* ── Search input ────────────────────────────────────────────── */
+.sb-search {
+  padding: 9px 10px;
+  border-bottom: 1px solid #1a2438;
+  flex-shrink: 0;
+}
+
+/* Override global input[type="text"] styles for the sidebar input.
+   #sidebar gives us extra specificity over the base rule. */
+#sidebar input[type="text"] {
+  padding: 7px 10px;
+  border: 1px solid #1e2a40;
+  border-radius: 8px;
+  background: #0d1320;
+  color: #64748b;
+  font-size: 0.80em;
+  font-weight: 400;
+  margin-bottom: 0;
+  transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
+  box-shadow: none;
+}
+
+#sidebar input[type="text"]::placeholder { color: #2d3a56; }
+
+#sidebar input[type="text"]:focus {
+  border-color: #3b82f6;
+  color: #cbd5e1;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.18);
+  outline: none;
+}
+
+/* ── Project list (scrollable) ───────────────────────────────── */
+.sb-project-list {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 7px 8px;
+  scrollbar-width: thin;
+  scrollbar-color: #1e2a40 transparent;
+}
+.sb-project-list::-webkit-scrollbar       { width: 4px; }
+.sb-project-list::-webkit-scrollbar-track { background: transparent; }
+.sb-project-list::-webkit-scrollbar-thumb { background: #1e2a40; border-radius: 4px; }
+
+/* ── Empty state ─────────────────────────────────────────────── */
+.sb-empty {
+  color: #2d3a56;
+  font-size: 0.80em;
+  text-align: center;
+  padding: 24px 10px;
+  font-style: italic;
+}
+
+/* ── Project card ────────────────────────────────────────────── */
+.sb-project-card {
+  display: flex;
+  align-items: stretch;
+  border-radius: 9px;
+  margin-bottom: 4px;
+  background: #161e30;
+  border: 1px solid #1a2438;
+  cursor: default;
+  transition: background 0.16s, border-color 0.16s;
+  overflow: hidden;
+}
+
+.sb-project-card:hover {
+  background: #1a2440;
+  border-color: #243250;
+}
+
+/* Active project — blue left border accent */
+.sb-project-card.sb-active {
+  background: #162040;
+  border-color: #2563eb;
+  border-left-width: 3px;
+}
+
+/* Card body (clickable) */
+.sb-card-body {
+  flex: 1;
+  padding: 9px 8px 9px 10px;
+  min-width: 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.sb-card-name {
+  color: #ffffff;       /* was #94a3b8 — raised to full white for contrast */
+  font-size: 0.840em;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+  line-height: 1.3;
+  transition: color 0.15s;
+}
+
+.sb-project-card:hover     .sb-card-name { color: #e2e8f0; }   /* was #b0c0d8 */
+.sb-project-card.sb-active .sb-card-name { color: #93c5fd; }   /* blue accent — unchanged */
+
+.sb-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sb-meta-item {
+  font-size: 0.70em;
+  color: #cbd5e1;       /* was #2d3a56 — nearly invisible on dark bg; raised to legible slate */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sb-project-card.sb-active .sb-meta-item { color: #94a3b8; }  /* was #374e72 — more readable on active blue border */
+
+/* ── Delete button (revealed on hover) ──────────────────────── */
+.sb-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 7px 0 3px;
+  opacity: 0;
+  transition: opacity 0.18s;
+}
+.sb-project-card:hover .sb-card-actions { opacity: 1; }
+
+/* Rename button — neutral blue-grey, matches sidebar palette */
+.sb-rename-btn {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 4px;
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.75;
+  transition: opacity 0.15s, background 0.15s, border-color 0.15s,
+              color 0.15s, transform 0.12s;
+}
+.sb-rename-btn:hover {
+  opacity: 1;
+  color: #e2e8f0;
+  background: rgba(148, 163, 184, 0.15);
+  border-color: #94a3b8;
+  transform: scale(1.1);
+  box-shadow: none;
+}
+
+.sb-delete-btn {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid rgba(248, 113, 113, 0.35);  /* soft red border at rest */
+  border-radius: 4px;
+  color: #f87171;           /* visible red — was #374e72 (near-invisible) */
+  font-size: 16px;           /* was 13px */
+  font-weight: 400;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.75;             /* slightly transparent at rest, sharpens on hover */
+  transition: opacity 0.15s, background 0.15s, border-color 0.15s,
+              color 0.15s, transform 0.12s;
+}
+.sb-delete-btn:hover {
+  opacity: 1;
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.12);   /* subtle red wash */
+  border-color: #ef4444;
+  transform: scale(1.1);
+  box-shadow: none;
+}
+
+/* ── Footer ──────────────────────────────────────────────────── */
+.sb-footer {
+  padding: 8px 12px;
+  border-top: 1px solid #1a2438;
+  flex-shrink: 0;
+}
+
+#sbProjectCount {
+  font-size: 0.68em;
+  color: #1e2a40;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+/* ── File Engine buttons ────────────────────────────────────────
+   Export Project: teal — signals "outbound project data"
+   Import Project: indigo — signals "inbound project data"
+   Both follow the exact same shape/rhythm as existing buttons. */
+
+.btn-export-project {
+  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  padding: 10px 16px;
+  font-size: 0.95em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.15s;
+  box-shadow: 0 2px 8px rgba(13,148,136,0.25);
+}
+.btn-export-project:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(13,148,136,0.4);
+}
+
+.btn-import-project {
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm, 8px);
+  padding: 10px 16px;
+  font-size: 0.95em;
+  font-weight: 600;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.15s;
+  box-shadow: 0 2px 8px rgba(99,102,241,0.25);
+}
+.btn-import-project:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(99,102,241,0.4);
+}
+
+/* ================================================================
+   DESIGN SYSTEM UTILITY BUTTONS (v2)
+   Composable classes: <button class="btn btn-primary">…</button>
+   These coexist with the existing named-button classes above.
+   Specificity: (0,2,0) = two classes, beats (0,1,0) single class.
+   ================================================================ */
+
+/* ── Base — shared geometry & behaviour ─────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  white-space: nowrap;
+  text-decoration: none;
+  outline: none;
+}
+
+.btn:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.btn:disabled {
+  opacity: 0.38;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+/* ── Primary — high-emphasis, filled blue ───────────────────── */
+.btn.btn-primary {
+  background: #2563eb;
+  color: #fff;
+  border: none;
+}
+.btn.btn-primary:hover:not(:disabled) {
+  background: #1e40af;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.45);
+}
+.btn.btn-primary:active:not(:disabled) {
+  background: #1e3a8a;
+  transform: translateY(0);
+}
+
+/* ── Secondary — medium-emphasis, outlined ──────────────────── */
+.btn.btn-secondary {
+  background: transparent;
+  border: 1px solid #334155;
+  color: #cbd5e1;
+}
+.btn.btn-secondary:hover:not(:disabled) {
+  background: #1e293b;
+  border-color: #475569;
+  transform: translateY(-1px);
+}
+.btn.btn-secondary:active:not(:disabled) {
+  background: #0f172a;
+  transform: translateY(0);
+}
+
+/* ── Danger — destructive actions, filled red ───────────────── */
+.btn.btn-danger {
+  background: #dc2626;
+  color: #fff;
+  border: none;
+}
+.btn.btn-danger:hover:not(:disabled) {
+  background: #991b1b;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.45);
+}
+.btn.btn-danger:active:not(:disabled) {
+  background: #7f1d1d;
+  transform: translateY(0);
+}
+
+/* ── Ghost — low-emphasis, no border ────────────────────────── */
+.btn.btn-ghost {
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+}
+.btn.btn-ghost:hover:not(:disabled) {
+  background: #1e293b;
+  color: #cbd5e1;
+}
+.btn.btn-ghost:active:not(:disabled) {
+  background: #0f172a;
+}
