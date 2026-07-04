@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DACUM Lite — من الورشة إلى المخطط الجاهز</title>
+<meta name="description" content="أداة مجانية ثنائية اللغة لبناء وتحرير وتصدير مخططات داكم (DACUM) مباشرة من ورشة العمل.">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+
+<style>
+:root{
+    /* ── Tokens — lifted directly from the DACUM Lite app itself ── */
+    --ink:        #1e293b;
+    --body:       #475569;
+    --muted:      #94a3b8;
+    --canvas:     #f8fafc;
+    --panel:      #ffffff;
+    --line:       #e5e7eb;
+
+    --indigo:     #6366f1;
+    --indigo-deep:#4338ca;
+    --indigo-btn: #4f46e5;
+    --violet:     #8b5cf6;
+    --amber:      #fde68a;
+    --amber-bg:   #fefce8;
+
+    --radius:     14px;
+    --radius-sm:  9px;
+    --shadow:     0 10px 34px rgba(67,56,202,.12);
+    --shadow-sm:  0 2px 10px rgba(15,23,42,.06);
+}
+
+*{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+body{
+    margin:0;
+    background:var(--canvas);
+    color:var(--ink);
+    font-family:'Manrope','Segoe UI',Tahoma,Arial,sans-serif;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+}
+html[dir="rtl"] body{ font-family:'Segoe UI',Tahoma,'Manrope',Arial,sans-serif; }
+
+h1,h2,h3{ margin:0; color:var(--ink); letter-spacing:-0.01em; }
+p{ margin:0; }
+a{ color:inherit; }
+img{ max-width:100%; display:block; }
+.container{ max-width:1120px; margin:0 auto; padding:0 24px; }
+section{ padding:88px 0; }
+@media(max-width:720px){ section{ padding:56px 0; } }
+
+/* ── Reduced motion ───────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; scroll-behavior:auto !important; }
+}
+
+/* ── Fade-in on scroll ────────────────────────────────────── */
+.reveal{ opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease; }
+.reveal.in{ opacity:1; transform:translateY(0); }
+
+/* ── Focus visibility ─────────────────────────────────────── */
+a:focus-visible, button:focus-visible{ outline:3px solid var(--indigo); outline-offset:2px; border-radius:6px; }
+
+/* ══════════════════════════════════════════════════════════
+   NAV
+   ══════════════════════════════════════════════════════════ */
+.nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(248,250,252,.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+}
+.nav-inner{ display:flex; align-items:center; justify-content:space-between; padding:14px 24px; max-width:1120px; margin:0 auto; }
+.brand{ display:flex; align-items:center; gap:10px; font-weight:800; font-size:1.05em; }
+.brand-logo{
+    width:34px; height:34px; border-radius:9px; flex-shrink:0;
+    background:linear-gradient(135deg,var(--indigo),var(--violet));
+    display:flex; align-items:center; justify-content:center; font-size:16px;
+    box-shadow:0 3px 10px rgba(99,102,241,.35);
+}
+.nav-actions{ display:flex; align-items:center; gap:10px; }
+.lang-btn{
+    background:#fff; border:1.5px solid var(--line); color:var(--body);
+    font-weight:700; font-size:.78em; letter-spacing:.04em;
+    padding:8px 13px; border-radius:8px; cursor:pointer;
+}
+.lang-btn:hover{ border-color:var(--indigo); color:var(--indigo); }
+.btn{
+    display:inline-flex; align-items:center; gap:8px;
+    font-weight:700; font-size:.92em; text-decoration:none;
+    padding:11px 20px; border-radius:10px; border:none; cursor:pointer;
+    font-family:inherit; white-space:nowrap;
+}
+.btn-primary{ background:var(--indigo-btn); color:#fff; box-shadow:0 6px 18px rgba(79,70,229,.32); }
+.btn-primary:hover{ background:#4338ca; }
+.btn-ghost{ background:#fff; color:var(--ink); border:1.5px solid var(--line); }
+.btn-ghost:hover{ border-color:var(--indigo); color:var(--indigo-btn); }
+
+/* ══════════════════════════════════════════════════════════
+   HERO  — signature element: the tilted duty/task wall,
+   built with the app's real component colors (not a stock photo)
+   ══════════════════════════════════════════════════════════ */
+.hero{ padding:72px 0 40px; overflow:hidden; }
+.hero-grid{
+    display:grid; grid-template-columns:1.05fr .95fr; gap:56px; align-items:center;
+}
+@media(max-width:900px){ .hero-grid{ grid-template-columns:1fr; gap:44px; } }
+
+.eyebrow{
+    display:inline-flex; align-items:center; gap:7px;
+    background:#eef2ff; color:var(--indigo-btn);
+    font-size:.78em; font-weight:800; letter-spacing:.04em;
+    padding:6px 12px; border-radius:99px; margin-bottom:18px;
+}
+.hero h1{
+    font-size:2.5em; font-weight:800; line-height:1.22; margin-bottom:18px;
+}
+html[dir="rtl"] .hero h1{ line-height:1.5; }
+.hero h1 .accent{
+    background:linear-gradient(120deg,var(--indigo-deep),var(--indigo));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.hero-sub{ font-size:1.12em; color:var(--body); max-width:52ch; margin-bottom:30px; }
+.hero-ctas{ display:flex; flex-wrap:wrap; gap:12px; margin-bottom:26px; }
+.hero-note{ font-size:.85em; color:var(--muted); display:flex; align-items:center; gap:8px; }
+.hero-note b{ color:var(--body); }
+
+/* ── The wall-of-cards signature visual ──────────────────── */
+.wall-wrap{ position:relative; height:400px; }
+.duty-tile{
+    position:absolute; width:230px;
+    background:linear-gradient(160deg,var(--indigo-deep),var(--indigo));
+    color:#fff; border-radius:12px; padding:16px 18px;
+    box-shadow:0 14px 30px rgba(67,56,202,.32);
+    transform:rotate(-4deg);
+    top:6px; left:6px;
+}
+html[dir="rtl"] .duty-tile{ left:auto; right:6px; }
+.duty-tile .badge{ font-size:.68em; font-weight:800; letter-spacing:.12em; text-transform:uppercase; opacity:.75; }
+.duty-tile .title{ font-size:1.05em; font-weight:700; margin-top:8px; line-height:1.4; }
+
+.task-tile{
+    position:absolute; width:158px; min-height:78px;
+    background:var(--amber-bg); border:1.5px solid var(--amber);
+    border-radius:10px; padding:11px 13px;
+    box-shadow:0 8px 18px rgba(0,0,0,.08);
+}
+.task-tile .lbl{ font-size:.72em; font-weight:800; color:var(--indigo-deep); }
+.task-tile .txt{ font-size:.82em; color:#334155; margin-top:5px; line-height:1.4; }
+
+.t1{ top:40px; right:10px; transform:rotate(3deg); }
+.t2{ top:150px; right:150px; transform:rotate(-2deg); }
+.t3{ top:190px; right:0px; transform:rotate(5deg); }
+.t4{ top:290px; right:130px; transform:rotate(-3deg); }
+html[dir="rtl"] .t1{ right:auto; left:10px; transform:rotate(-3deg); }
+html[dir="rtl"] .t2{ right:auto; left:150px; transform:rotate(2deg); }
+html[dir="rtl"] .t3{ right:auto; left:0px; transform:rotate(-5deg); }
+html[dir="rtl"] .t4{ right:auto; left:130px; transform:rotate(3deg); }
+
+.duty-tile, .task-tile{ transition:transform .35s ease; }
+.wall-wrap:hover .duty-tile{ transform:rotate(-1deg) scale(1.02); }
+.wall-wrap:hover .t1{ transform:rotate(1deg) translateY(-4px); }
+.wall-wrap:hover .t2{ transform:rotate(-1deg) translateY(-4px); }
+.wall-wrap:hover .t3{ transform:rotate(2deg) translateY(-4px); }
+.wall-wrap:hover .t4{ transform:rotate(-2deg) translateY(-4px); }
+@media(max-width:900px){ .wall-wrap{ height:320px; } .duty-tile{ width:190px; } .task-tile{ width:128px; } }
+@media(max-width:520px){ .wall-wrap{ transform:scale(.82); transform-origin:top center; } }
+
+/* ══════════════════════════════════════════════════════════
+   PROBLEM → SOLUTION STRIP
+   ══════════════════════════════════════════════════════════ */
+.strip{ background:var(--panel); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+.strip-grid{ display:grid; grid-template-columns:1fr auto 1fr; gap:28px; align-items:center; }
+@media(max-width:760px){ .strip-grid{ grid-template-columns:1fr; } .strip-arrow{ transform:rotate(90deg); } }
+.strip-col h3{ font-size:.78em; font-weight:800; letter-spacing:.08em; text-transform:uppercase; margin-bottom:10px; }
+.strip-col.before h3{ color:#b45309; }
+.strip-col.after h3{ color:var(--indigo-btn); }
+.strip-col p{ color:var(--body); font-size:1.02em; }
+.strip-arrow{ font-size:1.6em; color:var(--muted); }
+
+/* ══════════════════════════════════════════════════════════
+   FEATURES
+   ══════════════════════════════════════════════════════════ */
+.section-head{ text-align:center; max-width:640px; margin:0 auto 52px; }
+.section-head .eyebrow{ margin-bottom:14px; }
+.section-head h2{ font-size:1.9em; font-weight:800; margin-bottom:12px; }
+.section-head p{ color:var(--body); font-size:1.05em; }
+
+.feat-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:20px; }
+@media(max-width:900px){ .feat-grid{ grid-template-columns:repeat(2,1fr); } }
+@media(max-width:600px){ .feat-grid{ grid-template-columns:1fr; } }
+.feat-card{
+    background:var(--panel); border:1px solid var(--line); border-radius:var(--radius);
+    padding:26px 24px; box-shadow:var(--shadow-sm);
+}
+.feat-icon{
+    width:44px; height:44px; border-radius:11px; margin-bottom:16px;
+    display:flex; align-items:center; justify-content:center; font-size:1.3em;
+    background:#eef2ff;
+}
+.feat-card h3{ font-size:1.05em; font-weight:700; margin-bottom:8px; }
+.feat-card p{ color:var(--body); font-size:.94em; }
+
+/* ══════════════════════════════════════════════════════════
+   AUDIENCE
+   ══════════════════════════════════════════════════════════ */
+.audience{ background:var(--panel); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+.aud-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:18px; }
+@media(max-width:760px){ .aud-grid{ grid-template-columns:1fr; } }
+.aud-card{ text-align:center; padding:28px 18px; border-radius:var(--radius-sm); background:var(--canvas); border:1px solid var(--line); }
+.aud-card .em{ font-size:1.8em; margin-bottom:10px; }
+.aud-card h4{ font-size:1em; font-weight:700; margin-bottom:6px; }
+.aud-card p{ font-size:.88em; color:var(--body); }
+
+/* ══════════════════════════════════════════════════════════
+   MOCKUP — reuses real card-view visual language
+   ══════════════════════════════════════════════════════════ */
+.mock-frame{
+    background:var(--panel); border:1px solid var(--line); border-radius:18px;
+    box-shadow:var(--shadow); overflow:hidden;
+}
+.mock-topbar{ display:flex; align-items:center; gap:8px; padding:12px 16px; background:#f1f5f9; border-bottom:1px solid var(--line); }
+.mock-dot{ width:10px; height:10px; border-radius:50%; background:#cbd5e1; }
+.mock-body{ padding:28px; display:grid; grid-template-columns:repeat(3,1fr); gap:16px; background:var(--canvas); }
+@media(max-width:700px){ .mock-body{ grid-template-columns:1fr 1fr; } }
+@media(max-width:480px){ .mock-body{ grid-template-columns:1fr; } }
+.mock-duty{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:14px; box-shadow:var(--shadow-sm); }
+.mock-duty-head{ font-size:.72em; font-weight:800; letter-spacing:.08em; color:var(--indigo-deep); text-transform:uppercase; margin-bottom:6px; }
+.mock-duty-title{ font-weight:700; font-size:.95em; margin-bottom:12px; }
+.mock-task{ background:var(--amber-bg); border:1px solid var(--amber); border-radius:8px; padding:8px 10px; font-size:.8em; color:#334155; margin-bottom:8px; }
+.mock-task:last-child{ margin-bottom:0; }
+.mock-task b{ color:var(--indigo-deep); }
+
+/* ══════════════════════════════════════════════════════════
+   ABOUT CREATOR
+   ══════════════════════════════════════════════════════════ */
+.about{ background:var(--panel); border-top:1px solid var(--line); }
+.about-card{
+    display:flex; gap:22px; align-items:flex-start; max-width:760px; margin:0 auto;
+    background:var(--canvas); border:1px solid var(--line); border-radius:var(--radius); padding:28px;
+}
+@media(max-width:600px){ .about-card{ flex-direction:column; align-items:center; text-align:center; } }
+.avatar{
+    width:60px; height:60px; border-radius:50%; flex-shrink:0;
+    background:linear-gradient(135deg,var(--indigo),var(--violet)); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:1.1em;
+}
+.about-name{ font-weight:800; font-size:1.1em; }
+.about-role{ color:var(--indigo-btn); font-weight:700; font-size:.9em; margin:3px 0 8px; }
+.about-bio{ color:var(--body); font-size:.92em; margin-bottom:14px; }
+.about-links{ display:flex; gap:10px; flex-wrap:wrap; }
+@media(max-width:600px){ .about-links{ justify-content:center; } }
+.about-links a{
+    font-size:.82em; font-weight:700; color:var(--indigo-btn);
+    background:#eef2ff; padding:7px 12px; border-radius:8px; text-decoration:none;
+}
+.about-links a:hover{ background:#e0e7ff; }
+
+/* ══════════════════════════════════════════════════════════
+   FINAL CTA
+   ══════════════════════════════════════════════════════════ */
+.final-cta{
+    background:linear-gradient(135deg,var(--indigo-deep),var(--indigo) 55%,var(--violet));
+    border-radius:22px; padding:54px 40px; text-align:center; color:#fff;
+    margin:0 24px;
+}
+.final-cta h2{ color:#fff; font-size:1.75em; font-weight:800; margin-bottom:12px; }
+.final-cta p{ color:rgba(255,255,255,.85); max-width:52ch; margin:0 auto 26px; }
+.final-cta .btn-primary{ background:#fff; color:var(--indigo-deep); box-shadow:none; }
+.final-cta .btn-primary:hover{ background:#eef2ff; }
+.final-cta .btn-ghost{ background:transparent; color:#fff; border-color:rgba(255,255,255,.4); }
+.final-cta .btn-ghost:hover{ border-color:#fff; }
+.final-cta .hero-ctas{ justify-content:center; }
+
+/* ══════════════════════════════════════════════════════════
+   FOOTER
+   ══════════════════════════════════════════════════════════ */
+footer{ padding:40px 0 50px; }
+.foot-inner{
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px;
+    font-size:.85em; color:var(--muted); border-top:1px solid var(--line); padding-top:24px;
+}
+.foot-links{ display:flex; gap:16px; flex-wrap:wrap; }
+.foot-links a{ color:var(--body); text-decoration:none; }
+.foot-links a:hover{ color:var(--indigo-btn); }
+
+/* ── language visibility swap ─────────────────────────────── */
+[data-en]{ display:none; }
+html[dir="ltr"] [data-ar]{ display:none; }
+html[dir="ltr"] [data-en]{ display:inline; }
+h1[data-en], h2[data-en], p[data-en], div[data-en]{ display:none; }
+html[dir="ltr"] h1[data-en], html[dir="ltr"] h2[data-en], html[dir="ltr"] p[data-en], html[dir="ltr"] div[data-en]{ display:block; }
+html[dir="ltr"] span[data-en]{ display:inline; }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════ NAV ══════════════════════════════════ -->
+<div class="nav">
+    <div class="nav-inner">
+        <div class="brand">
+            <div class="brand-logo">📊</div>
+            <span>DACUM Lite</span>
+        </div>
+        <div class="nav-actions">
+            <button class="lang-btn" id="langBtn" onclick="toggleLang()">English</button>
+            <a class="btn btn-primary" href="./app/index.html">
+                <span data-ar>افتح الأداة</span><span data-en>Open the App</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════ HERO ══════════════════════════════════ -->
+<section class="hero">
+    <div class="container hero-grid">
+        <div class="reveal in">
+            <div class="eyebrow">
+                <span data-ar>🆓 مجاني · ثنائي اللغة · يعمل من المتصفح</span>
+                <span data-en>🆓 Free · Bilingual · Runs in your browser</span>
+            </div>
+            <h1 data-ar>
+                من ورشة عمل داكم إلى <span class="accent">مخطط جاهز للتصدير</span> — بلا تعقيد
+            </h1>
+            <h1 data-en>
+                From a DACUM workshop to a <span class="accent">finished chart</span> — with nothing lost in translation
+            </h1>
+            <p class="hero-sub" data-ar>
+                أداة DACUM Lite تساعد مطوّري المناهج وميسّري ورش العمل على بناء وتحرير وتصدير مخططات تحليل المهن (داكم) بسهولة، بدعم كامل للعربية والإنجليزية معًا.
+            </p>
+            <p class="hero-sub" data-en>
+                DACUM Lite helps curriculum developers and workshop facilitators build, edit, and export occupational analysis charts — with full Arabic and English support, right-to-left included.
+            </p>
+            <div class="hero-ctas">
+                <a class="btn btn-primary" href="./app/index.html">
+                    <span data-ar>ابدأ الآن مجانًا ←</span><span data-en>Start free ←</span>
+                </a>
+                <a class="btn btn-ghost" href="./app/user-guide.html">
+                    <span data-ar>📘 دليل الاستخدام</span><span data-en>📘 User guide</span>
+                </a>
+            </div>
+            <div class="hero-note">
+                <span data-ar>✅ لا حاجة لتسجيل أو تنزيل — يعمل مباشرة داخل المتصفح</span>
+                <span data-en>✅ No sign-up, no install — works directly in your browser</span>
+            </div>
+        </div>
+
+        <div class="wall-wrap reveal in" aria-hidden="true">
+            <div class="duty-tile">
+                <div class="badge" data-ar>الواجبة A</div>
+                <div class="badge" data-en>DUTY A</div>
+                <div class="title" data-ar>صيانة المعدات الكهربائية</div>
+                <div class="title" data-en>Maintaining Electrical Equipment</div>
+            </div>
+            <div class="task-tile t1">
+                <div class="lbl">A1</div>
+                <div class="txt" data-ar>فحص الدوائر الكهربائية</div>
+                <div class="txt" data-en>Inspect electrical circuits</div>
+            </div>
+            <div class="task-tile t2">
+                <div class="lbl">A2</div>
+                <div class="txt" data-ar>استبدال القطع التالفة</div>
+                <div class="txt" data-en>Replace faulty components</div>
+            </div>
+            <div class="task-tile t3">
+                <div class="lbl">A3</div>
+                <div class="txt" data-ar>توثيق نتائج الفحص</div>
+                <div class="txt" data-en>Document inspection results</div>
+            </div>
+            <div class="task-tile t4">
+                <div class="lbl">A4</div>
+                <div class="txt" data-ar>اختبار السلامة النهائي</div>
+                <div class="txt" data-en>Run final safety test</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════ PROBLEM → SOLUTION ══════════════════════════════════ -->
+<div class="strip">
+    <div class="container">
+        <div class="strip-grid" style="padding:44px 0;">
+            <div class="strip-col before reveal">
+                <h3><span data-ar>قبل</span><span data-en>Before</span></h3>
+                <p data-ar>بناء مخطط داكم يدويًا في Word أو Excel، ثم إعادة تنسيقه بالكامل عند أي تعديل، وترجمته يدويًا للعربية.</p>
+                <p data-en>Building a DACUM chart by hand in Word or Excel, reformatting everything after every edit, and translating it manually for Arabic audiences.</p>
+            </div>
+            <div class="strip-arrow reveal">→</div>
+            <div class="strip-col after reveal">
+                <h3><span data-ar>مع DACUM Lite</span><span data-en>With DACUM Lite</span></h3>
+                <p data-ar>تبني الواجبات والمهام بالسحب والإفلات، وتصدّر Word أو PDF جاهزين للطباعة بلغتين — خلال دقائق.</p>
+                <p data-en>Drag duties and tasks into place, then export a print-ready Word or PDF in either language — in minutes, not hours.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════ FEATURES ══════════════════════════════════ -->
+<section>
+    <div class="container">
+        <div class="section-head reveal">
+            <div class="eyebrow">
+                <span data-ar>الإمكانيات</span><span data-en>Capabilities</span>
+            </div>
+            <h2 data-ar>كل ما تحتاجه لإدارة ورشة داكم</h2>
+            <h2 data-en>Everything a DACUM workshop needs</h2>
+            <p data-ar>من أول جلسة عصف ذهني إلى آخر مستند مُصدّر.</p>
+            <p data-en>From the first brainstorm to the final exported document.</p>
+        </div>
+
+        <div class="feat-grid">
+            <div class="feat-card reveal">
+                <div class="feat-icon">📁</div>
+                <h3><span data-ar>مشاريع متعددة</span><span data-en>Multiple projects</span></h3>
+                <p data-ar>أنشئ وأدر عدة مخططات داكم منفصلة، وانتقل بينها بنقرة واحدة.</p>
+                <p data-en>Create and switch between separate DACUM charts with a single click.</p>
+            </div>
+            <div class="feat-card reveal">
+                <div class="feat-icon">🌐</div>
+                <h3><span data-ar>عربي وإنجليزي بالكامل</span><span data-en>Fully bilingual</span></h3>
+                <p data-ar>واجهة تدعم الاتجاه من اليمين لليسار بشكل أصلي، وليس كإضافة لاحقة.</p>
+                <p data-en>Native right-to-left support — not bolted on as an afterthought.</p>
+            </div>
+            <div class="feat-card reveal">
+                <div class="feat-icon">📤</div>
+                <h3><span data-ar>تصدير Word و PDF</span><span data-en>Word &amp; PDF export</span></h3>
+                <p data-ar>مستندات جاهزة للطباعة والمشاركة مع الجهة المستفيدة مباشرة.</p>
+                <p data-en>Print-ready documents you can hand straight to the client or panel.</p>
+            </div>
+            <div class="feat-card reveal">
+                <div class="feat-icon">🧱</div>
+                <h3><span data-ar>عرض الجدار للورش الحية</span><span data-en>Live Wall View</span></h3>
+                <p data-ar>اعرض الواجبات والمهام على الشاشة وحرّرها مباشرة أثناء الورشة.</p>
+                <p data-en>Project duties and tasks on screen and edit them live during the session.</p>
+            </div>
+            <div class="feat-card reveal">
+                <div class="feat-icon">↩️</div>
+                <h3><span data-ar>تراجع ولقطات محفوظة</span><span data-en>Undo &amp; snapshots</span></h3>
+                <p data-ar>كل إجراء قابل للتراجع، وبإمكانك حفظ نسخة مسمّاة قبل أي تعديل كبير.</p>
+                <p data-en>Every action is reversible, and you can save a named snapshot before big changes.</p>
+            </div>
+            <div class="feat-card reveal">
+                <div class="feat-icon">📶</div>
+                <h3><span data-ar>يعمل بدون إنترنت</span><span data-en>Works offline</span></h3>
+                <p data-ar>ثبّت الأداة كتطبيق على جهازك واستخدمها حتى بدون اتصال.</p>
+                <p data-en>Install it as an app on your device and keep working without a connection.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════ AUDIENCE ══════════════════════════════════ -->
+<div class="audience">
+    <div class="container" style="padding:70px 24px;">
+        <div class="section-head reveal">
+            <h2 data-ar>لمن صُممت هذه الأداة؟</h2>
+            <h2 data-en>Who is it for?</h2>
+        </div>
+        <div class="aud-grid">
+            <div class="aud-card reveal">
+                <div class="em">🧑‍🏫</div>
+                <h4 data-ar>ميسّرو ورش داكم</h4>
+                <h4 data-en>DACUM facilitators</h4>
+                <p data-ar>لإدارة الجلسة وتوثيق مخرجاتها لحظيًا</p>
+                <p data-en>Run the session and capture its output live</p>
+            </div>
+            <div class="aud-card reveal">
+                <div class="em">📚</div>
+                <h4 data-ar>مطوّرو المناهج المهنية</h4>
+                <h4 data-en>TVET curriculum developers</h4>
+                <p data-ar>لتحويل تحليل المهنة إلى مخطط منهجي منظم</p>
+                <p data-en>Turn occupational analysis into a structured chart</p>
+            </div>
+            <div class="aud-card reveal">
+                <div class="em">🏢</div>
+                <h4 data-ar>جهات ومعاهد التدريب</h4>
+                <h4 data-en>Training institutions</h4>
+                <p data-ar>لإنتاج مستندات رسمية جاهزة للجهات المستفيدة</p>
+                <p data-en>Produce official documents ready for stakeholders</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════ MOCKUP ══════════════════════════════════ -->
+<section>
+    <div class="container">
+        <div class="section-head reveal">
+            <h2 data-ar>هكذا تبدو مخططاتك</h2>
+            <h2 data-en>This is what your chart looks like</h2>
+            <p data-ar>عرض البطاقات — سحب وإفلات، تحرير مباشر، وترقيم تلقائي (A1، A2…)</p>
+            <p data-en>Card view — drag and drop, inline editing, automatic numbering (A1, A2…)</p>
+        </div>
+        <div class="mock-frame reveal">
+            <div class="mock-topbar"><span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span></div>
+            <div class="mock-body">
+                <div class="mock-duty">
+                    <div class="mock-duty-head">DUTY A</div>
+                    <div class="mock-duty-title" data-ar>خدمة العملاء</div>
+                    <div class="mock-duty-title" data-en>Customer Service</div>
+                    <div class="mock-task"><b>A1</b> · <span data-ar>استقبال الطلبات</span><span data-en>Receive requests</span></div>
+                    <div class="mock-task"><b>A2</b> · <span data-ar>معالجة الشكاوى</span><span data-en>Handle complaints</span></div>
+                </div>
+                <div class="mock-duty">
+                    <div class="mock-duty-head">DUTY B</div>
+                    <div class="mock-duty-title" data-ar>إدارة المخزون</div>
+                    <div class="mock-duty-title" data-en>Inventory Management</div>
+                    <div class="mock-task"><b>B1</b> · <span data-ar>جرد المواد</span><span data-en>Count stock</span></div>
+                    <div class="mock-task"><b>B2</b> · <span data-ar>إعداد التقارير</span><span data-en>Prepare reports</span></div>
+                </div>
+                <div class="mock-duty">
+                    <div class="mock-duty-head">DUTY C</div>
+                    <div class="mock-duty-title" data-ar>ضبط الجودة</div>
+                    <div class="mock-duty-title" data-en>Quality Control</div>
+                    <div class="mock-task"><b>C1</b> · <span data-ar>فحص العينات</span><span data-en>Inspect samples</span></div>
+                    <div class="mock-task"><b>C2</b> · <span data-ar>توثيق النتائج</span><span data-en>Log results</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════ ABOUT CREATOR ══════════════════════════════════ -->
+<div class="about">
+    <div class="container" style="padding:64px 24px;">
+        <div class="about-card reveal">
+            <div class="avatar">HJ</div>
+            <div>
+                <div class="about-name">Husham Jawad Kadhim</div>
+                <div class="about-role"><span data-ar>مطوّر مناهج مهنية ومبتكر تقني تعليمي</span><span data-en>TVET Curriculum Developer &amp; Ed-Tech Innovator</span></div>
+                <p class="about-bio" data-ar>صمّم DACUM Lite لتسهيل عمل الميسّرين والمختصين في التدريب المهني والتقني.</p>
+                <p class="about-bio" data-en>Built DACUM Lite to make life easier for TVET facilitators and specialists.</p>
+                <div class="about-links">
+                    <a href="mailto:hshaam77@gmail.com">📧 hshaam77@gmail.com</a>
+                    <a href="https://www.linkedin.com/in/husham-jawad-kadhim-954006200/" target="_blank" rel="noopener">💼 LinkedIn</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════ FINAL CTA ══════════════════════════════════ -->
+<section>
+    <div class="final-cta reveal">
+        <h2 data-ar>جاهز تبني أول مخطط داكم؟</h2>
+        <h2 data-en>Ready to build your first DACUM chart?</h2>
+        <p data-ar>مجاني بالكامل، لا يتطلب تسجيلًا، ويعمل من أي متصفح حديث.</p>
+        <p data-en>Completely free, no account needed, works in any modern browser.</p>
+        <div class="hero-ctas">
+            <a class="btn btn-primary" href="./app/index.html">
+                <span data-ar>افتح DACUM Lite ←</span><span data-en>Open DACUM Lite ←</span>
+            </a>
+            <a class="btn btn-ghost" href="./app/user-guide.html">
+                <span data-ar>📘 اقرأ الدليل</span><span data-en>📘 Read the guide</span>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════ FOOTER ══════════════════════════════════ -->
+<footer>
+    <div class="container foot-inner">
+        <span data-ar>© 2026 DACUM Lite — كل الحقوق محفوظة</span>
+        <span data-en>© 2026 DACUM Lite — All rights reserved</span>
+        <div class="foot-links">
+            <a href="mailto:hshaam77@gmail.com" data-ar>راسلنا</a>
+            <a href="mailto:hshaam77@gmail.com" data-en>Contact</a>
+            <a href="./app/user-guide.html" data-ar>الدليل</a>
+            <a href="./app/user-guide.html" data-en>Guide</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+// ── Language toggle — mirrors the same EN/AR pattern used in the app ──
+function toggleLang(){
+    const html = document.documentElement;
+    const goingLtr = html.dir === 'rtl';
+    html.dir  = goingLtr ? 'ltr' : 'rtl';
+    html.lang = goingLtr ? 'en' : 'ar';
+    document.getElementById('langBtn').textContent = goingLtr ? 'العربية' : 'English';
+}
+
+// ── Scroll reveal ──
+const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
