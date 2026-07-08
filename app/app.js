@@ -31,10 +31,9 @@ import {
     showWallView, exitWallView, wallViewZoom, resetWallZoom,
     printWallView, toggleWallFullscreen,
     showTableView, showCardView,
-    // Project serialisation helpers (chart info + additional info + images)
+    // Project serialisation helpers (chart info + additional info)
     getChartInfoData, applyChartInfoData,
     getAdditionalInfoData, applyAdditionalInfoData,
-    applyChartImages,
 } from './events.js';
 import {
     createProject, deleteProject, renameProject,
@@ -42,6 +41,48 @@ import {
     persistProjects, loadProjects,
     updateActiveProjectData, injectProject
 } from './project-manager.js';
+
+// ══════════════════════════════════════════════════════════════
+//  COLOR THEME TOGGLE (Default → Palette 1 → Palette 2 → …)
+//  Self-contained: no imports needed. The bootstrap <script> in
+//  index.html already applies the stored theme to <html> before
+//  first paint (to avoid a flash) — this section just wires the
+//  toolbar button, keeps its label in sync, and updates the PWA
+//  theme-color meta tag. Shares the same localStorage key used
+//  by the landing page so the preference carries over between
+//  the two pages.
+// ══════════════════════════════════════════════════════════════
+const THEME_KEY    = 'dacum_theme_palette';
+const THEME_ORDER  = ['default', 'palette1', 'palette2'];
+const THEME_SWATCH = { default: '#6366f1', palette1: '#6595BF', palette2: '#639A87' };
+const THEME_LABEL  = {
+    default:  'Colors: Default',
+    palette1: 'Colors: Palette 1',
+    palette2: 'Colors: Palette 2',
+};
+
+function _applyThemeUI(theme) {
+    const fullLabel = document.getElementById('themeLabelFull');
+    const mobileLabel = document.getElementById('themeLabelMobile');
+    const label = THEME_LABEL[theme] || THEME_LABEL.default;
+    if (fullLabel)   fullLabel.textContent = ' ' + label;
+    if (mobileLabel) mobileLabel.textContent = label.replace('Colors: ', '');
+
+    const meta = document.getElementById('metaThemeColor');
+    if (meta) meta.setAttribute('content', THEME_SWATCH[theme] || THEME_SWATCH.default);
+}
+
+function cycleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') || 'default';
+    const idx     = THEME_ORDER.indexOf(current);
+    const next    = THEME_ORDER[(idx + 1) % THEME_ORDER.length];
+
+    if (next === 'default') document.documentElement.removeAttribute('data-theme');
+    else document.documentElement.setAttribute('data-theme', next);
+
+    try { localStorage.setItem(THEME_KEY, next); } catch (e) { /* storage unavailable */ }
+    _applyThemeUI(next);
+}
 
 // ── Wire cross-module render reference ────────────────────────
 // Extended to sync card/table DOM visibility so that undo, redo,
@@ -181,15 +222,11 @@ function _loadProjectIntoUI(proj) {
         AppState.snapshots = JSON.parse(JSON.stringify(proj.snapshots));
     }
 
-    // 4a. Restore Chart Info text fields + Additional Info sections
-    //     Backward-compatible: old records without these keys → DOM stays blank
+    // 4. Restore Chart Info + Additional Info DOM fields
+    //    (stored at proj.chartInfo / proj.additionalInfo since this fix)
+    //    Backward-compatible: old records without these keys → DOM stays blank
     applyChartInfoData(proj.chartInfo || null);
     applyAdditionalInfoData(proj.additionalInfo || null);
-
-    // 4b. Restore logo images from AppState.chartImages
-    //     applyProjectState() already loaded them into AppState.chartImages above.
-    //     Now sync the module-level variables and DOM previews in events.js.
-    applyChartImages(AppState.chartImages);
 
     // 5. Clear undo/redo — command closures cannot be serialised
     StateManager.undoStack = [];
@@ -415,6 +452,10 @@ export function renderSidebar(filterText) {
 // ══════════════════════════════════════════════════════════════
 window.addEventListener('DOMContentLoaded', () => {
 
+    // ── 0. Sync theme toggle label with whatever the bootstrap
+    //       script already applied to <html> before first paint ──
+    _applyThemeUI(document.documentElement.getAttribute('data-theme') || 'default');
+
     // ── 1. Load project store ──────────────────────────────────
     loadProjects();
 
@@ -610,5 +651,8 @@ window.addEventListener('DOMContentLoaded', () => {
             }
         },
         pmFilterProjects: (text) => renderSidebar(text),
+
+        // ── Color Theme Toggle ────────────────────────────────────
+        cycleTheme,
     });
 });

@@ -292,16 +292,16 @@ body.sb-sidebar-closed #appWrapper {
 
 /* ── Variant: primary (indigo) — Export Project ────────────── */
 .tb-btn--primary {
-  background: #4f46e5;
+  background: var(--brand-primary-btn);
   color: #ffffff;
-  border-color: #4f46e5;
+  border-color: var(--brand-primary-btn);
 }
 .tb-btn--primary:hover:not(:disabled) {
-  background: #4338ca;
-  border-color: #4338ca;
-  box-shadow: 0 3px 10px rgba(79, 70, 229, 0.35);
+  background: var(--brand-primary-deep);
+  border-color: var(--brand-primary-deep);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--brand-primary-btn) 35%, transparent);
 }
-.tb-btn--primary:active:not(:disabled) { background: #3730a3; }
+.tb-btn--primary:active:not(:disabled) { background: color-mix(in srgb, var(--brand-primary-deep) 85%, black); }
 
 /* ── Variant: neutral (gray) — Snapshot, Import, PDF, Word ── */
 .tb-btn--neutral {
@@ -356,7 +356,7 @@ body.sb-sidebar-closed #appWrapper {
 .sb-name-editing {
   background: #ffffff !important;
   color: #111827 !important;
-  box-shadow: 0 0 0 2px #4f46e5;
+  box-shadow: 0 0 0 2px var(--brand-primary-btn);
   padding: 2px 6px;
   border-radius: 4px;
   cursor: text;
