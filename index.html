@@ -33,6 +33,83 @@
     --shadow-sm:  0 2px 10px rgba(15,23,42,.06);
 }
 
+/* ══════════════════════════════════════════════════════════
+   THEME — Palette 1 (sage / lavender-gray / terracotta / blue)
+   Toggled via [data-theme="palette1"] on <html>. Every color
+   below is one of the 6 supplied hex values or a shade/tint of
+   one of them — no outside hues introduced.
+   ══════════════════════════════════════════════════════════ */
+html[data-theme="palette1"]{
+    --ink:        #1F1B20;   /* headings / high-contrast text */
+    --body:       #4B4750;   /* tint of ink — paragraph text   */
+    --muted:      #8886A0;   /* shade of lavender-gray — hints */
+    --canvas:     #F5F4F8;   /* tint of lavender-gray — page bg*/
+    --panel:      #FEFEFE;   /* card / surface background      */
+    --line:       #CCCADB;   /* borders, dividers              */
+
+    --indigo:     #6595BF;   /* primary accent (blue)          */
+    --indigo-deep:#3F6488;   /* shade of blue — gradients/hover*/
+    --indigo-btn: #4C7AA3;   /* shade of blue — button fill    */
+    --violet:     #7A8C5F;   /* secondary accent (sage green)  */
+    --amber:      #D87757;   /* tertiary accent (terracotta)   */
+    --amber-bg:   #FBEAE3;   /* tint of terracotta — task bg   */
+
+    --shadow:     0 10px 34px rgba(63,100,136,.16);
+    --shadow-sm:  0 2px 10px rgba(31,27,32,.08);
+}
+/* Rules below reference hardcoded hex (not custom properties) in the
+   base stylesheet, so they need explicit palette1 counterparts. */
+html[data-theme="palette1"] .btn-primary{ box-shadow:0 6px 18px rgba(76,122,163,.32); }
+html[data-theme="palette1"] .btn-primary:hover{ background:#3F6488; }
+html[data-theme="palette1"] .brand-logo{ box-shadow:0 3px 10px rgba(101,149,191,.35); }
+html[data-theme="palette1"] .eyebrow{ background:#E8F0F7; }
+html[data-theme="palette1"] .feat-icon{ background:#E8F0F7; }
+html[data-theme="palette1"] .about-links a{ background:#E8F0F7; }
+html[data-theme="palette1"] .about-links a:hover{ background:#D7E6F0; }
+html[data-theme="palette1"] .strip-col.before h3{ color:#A8482D; }
+html[data-theme="palette1"] .mock-topbar{ background:#F5F4F8; }
+html[data-theme="palette1"] .mock-dot{ background:#CCCADB; }
+html[data-theme="palette1"] .final-cta .btn-primary:hover{ background:#EAF1F7; }
+html[data-theme="palette1"] .nav{ background:rgba(245,244,248,.85); }
+
+/* ══════════════════════════════════════════════════════════
+   THEME — Palette 2 (mint / periwinkle / terracotta / peach)
+   Toggled via [data-theme="palette2"] on <html>. The supplied
+   set has no near-black/near-white, so --ink/--body/--panel are
+   shades or tints mixed from the given hues; every other token
+   is one of the 6 supplied hex values used as-is.
+   ══════════════════════════════════════════════════════════ */
+html[data-theme="palette2"]{
+    --ink:        #211F2E;   /* shade of periwinkle — headings */
+    --body:       #4A4658;   /* tint of ink — paragraph text   */
+    --muted:      #8886A0;   /* shade of lavender-gray — hints */
+    --canvas:     #F3F8F6;   /* tint of mint — page bg         */
+    --panel:      #FEFEFE;   /* card / surface background      */
+    --line:       #CCCADB;   /* borders, dividers              */
+
+    --indigo:     #639A87;   /* primary accent (teal/mint)     */
+    --indigo-deep:#4A7465;   /* shade of teal — gradients/hover*/
+    --indigo-btn: #578A79;   /* shade of teal — button fill    */
+    --violet:     #827DBD;   /* secondary accent (periwinkle)  */
+    --amber:      #D87757;   /* tertiary accent (terracotta)   */
+    --amber-bg:   #EAC9B6;   /* tint (peach) — task bg         */
+
+    --shadow:     0 10px 34px rgba(74,116,101,.16);
+    --shadow-sm:  0 2px 10px rgba(33,31,46,.08);
+}
+html[data-theme="palette2"] .btn-primary{ box-shadow:0 6px 18px rgba(87,138,121,.32); }
+html[data-theme="palette2"] .btn-primary:hover{ background:#4A7465; }
+html[data-theme="palette2"] .brand-logo{ box-shadow:0 3px 10px rgba(99,154,135,.35); }
+html[data-theme="palette2"] .eyebrow{ background:#DEE8E5; }
+html[data-theme="palette2"] .feat-icon{ background:#DEE8E5; }
+html[data-theme="palette2"] .about-links a{ background:#DEE8E5; }
+html[data-theme="palette2"] .about-links a:hover{ background:#BCD1CA; }
+html[data-theme="palette2"] .strip-col.before h3{ color:#A8482D; }
+html[data-theme="palette2"] .mock-topbar{ background:#F3F8F6; }
+html[data-theme="palette2"] .mock-dot{ background:#CCCADB; }
+html[data-theme="palette2"] .final-cta .btn-primary:hover{ background:#DEE8E5; }
+html[data-theme="palette2"] .nav{ background:rgba(243,248,246,.85); }
+
 *{ box-sizing:border-box; }
 html{ scroll-behavior:smooth; }
 body{
@@ -323,6 +400,9 @@ html[dir="ltr"] span[data-en]{ display:inline; }
         </div>
         <div class="nav-actions">
             <button class="lang-btn" id="langBtn" onclick="toggleLang()">English</button>
+            <button class="lang-btn theme-btn" id="themeBtn" onclick="toggleTheme()" title="Cycle color theme">
+                <span data-ar>الألوان: الحالي</span><span data-en>Colors: Default</span>
+            </button>
             <a class="btn btn-primary" href="./app/index.html">
                 <span data-ar>افتح الأداة</span><span data-en>Open the App</span>
             </a>
@@ -613,6 +693,44 @@ function toggleLang(){
     html.dir  = goingLtr ? 'ltr' : 'rtl';
     html.lang = goingLtr ? 'en' : 'ar';
     document.getElementById('langBtn').textContent = goingLtr ? 'العربية' : 'English';
+}
+
+// ── Theme toggle — cycles Default → Palette 1 → Palette 2 → Default ──
+const THEME_KEY   = 'dacum_landing_theme';
+const THEME_ORDER = ['default', 'palette1', 'palette2'];
+const THEME_LABELS = {
+    default:  { ar: 'الألوان: الحالي',      en: 'Colors: Default'   },
+    palette1: { ar: 'الألوان: Palette 1',   en: 'Colors: Palette 1' },
+    palette2: { ar: 'الألوان: Palette 2',   en: 'Colors: Palette 2' },
+};
+
+function _applyTheme(theme){
+    const html = document.documentElement;
+    if (theme === 'palette1' || theme === 'palette2') html.setAttribute('data-theme', theme);
+    else html.removeAttribute('data-theme');
+
+    const btn = document.getElementById('themeBtn');
+    if (btn){
+        const arLabel = btn.querySelector('[data-ar]');
+        const enLabel = btn.querySelector('[data-en]');
+        const labels  = THEME_LABELS[theme] || THEME_LABELS.default;
+        if (arLabel) arLabel.textContent = labels.ar;
+        if (enLabel) enLabel.textContent = labels.en;
+    }
+}
+
+function toggleTheme(){
+    const current  = document.documentElement.getAttribute('data-theme') || 'default';
+    const idx      = THEME_ORDER.indexOf(current);
+    const next     = THEME_ORDER[(idx + 1) % THEME_ORDER.length];
+    localStorage.setItem(THEME_KEY, next);
+    _applyTheme(next);
+}
+
+// Restore stored theme preference before the user interacts
+{
+    const stored = localStorage.getItem(THEME_KEY);
+    _applyTheme(THEME_ORDER.includes(stored) ? stored : 'default');
 }
 
 // ── Scroll reveal ──
