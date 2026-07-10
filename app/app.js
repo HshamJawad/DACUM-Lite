@@ -56,9 +56,9 @@ const THEME_KEY    = 'dacum_theme_palette';
 const THEME_ORDER  = ['default', 'palette1', 'palette2'];
 const THEME_SWATCH = { default: '#6366f1', palette1: '#6595BF', palette2: '#639A87' };
 const THEME_LABEL  = {
-    default:  'Colors: Default',
-    palette1: 'Colors: Palette 1',
-    palette2: 'Colors: Palette 2',
+    default:  'Theme 1',
+    palette1: 'Theme 2',
+    palette2: 'Theme 3',
 };
 
 function _applyThemeUI(theme) {
@@ -66,7 +66,7 @@ function _applyThemeUI(theme) {
     const mobileLabel = document.getElementById('themeLabelMobile');
     const label = THEME_LABEL[theme] || THEME_LABEL.default;
     if (fullLabel)   fullLabel.textContent = ' ' + label;
-    if (mobileLabel) mobileLabel.textContent = label.replace('Colors: ', '');
+    if (mobileLabel) mobileLabel.textContent = label;
 
     const meta = document.getElementById('metaThemeColor');
     if (meta) meta.setAttribute('content', THEME_SWATCH[theme] || THEME_SWATCH.default);

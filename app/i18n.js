@@ -112,21 +112,14 @@ export function applyTranslations() {
 }
 
 // ══════════════════════════════════════════════════════════════
-//  Toggle-button label helper
-//  The sidebar button shows the code of the NEXT language in the
-//  cycle (e.g. while in English it shows "FR" — "press to switch
-//  to French"), matching the previous EN⇄AR behaviour, now
-//  extended to three languages.
+//  Language dropdown helper
+//  The toolbar now uses a plain <select id="langSelect"> instead
+//  of a cycling button — this just keeps its displayed value in
+//  sync with the active language.
 // ══════════════════════════════════════════════════════════════
-function _nextLangCode() {
-    const idx  = LANG_ORDER.indexOf(_lang);
-    const next = LANG_ORDER[(idx + 1) % LANG_ORDER.length];
-    return next.toUpperCase();
-}
-
-function _updateToggleBtnLabel() {
-    const btn = document.getElementById('langToggleBtn');
-    if (btn) btn.textContent = _nextLangCode();
+function _syncLangSelect() {
+    const sel = document.getElementById('langSelect');
+    if (sel && sel.value !== _lang) sel.value = _lang;
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -145,8 +138,8 @@ export function setLang(lang) {
     // Translate every data-i18n* element in the DOM
     applyTranslations();
 
-    // Update the toggle button label
-    _updateToggleBtnLabel();
+    // Keep the toolbar language dropdown showing the active language
+    _syncLangSelect();
 
     // Notify dynamic renderers (e.g. renderSidebar in app.js) to re-render
     document.dispatchEvent(new CustomEvent('dacum:langchange'));
@@ -178,10 +171,10 @@ export function initI18n() {
     // Translate static DOM
     applyTranslations();
 
-    // Wire toggle button
-    const btn = document.getElementById('langToggleBtn');
-    if (btn) {
-        _updateToggleBtnLabel();
-        btn.addEventListener('click', toggleLang);
+    // Wire the language dropdown
+    const sel = document.getElementById('langSelect');
+    if (sel) {
+        sel.value = _lang;
+        sel.addEventListener('change', () => setLang(sel.value));
     }
 }

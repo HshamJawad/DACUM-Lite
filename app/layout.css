@@ -316,6 +316,19 @@ body.sb-sidebar-closed #appWrapper {
 }
 .tb-btn--neutral:active:not(:disabled) { background: #d1d5db; }
 
+/* Toolbar language dropdown (<select id="langSelect">) — sizing/arrow
+   styles live inline in index.html's <style> block, colocated with the
+   rest of the v3.1+ toolbar additions. This just keeps it aligned with
+   the other tb-btn controls at the base geometry level. */
+.tb-lang-select {
+  height: 36px;
+  font-size: 0.855em;
+  font-weight: 500;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
 /* ── Variant: danger (red) — Clear All ─────────────────────── */
 .tb-btn--danger {
   background: #dc2626;

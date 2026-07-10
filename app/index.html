@@ -397,19 +397,22 @@
         .hc-disclaimer strong { color:#475569;display:block;margin-bottom:4px;font-size:.95em; }
         .hc-disclaimer p { margin:0; }
 
-        /* ══ LANGUAGE TOGGLE BUTTON ═══════════════════════════ */
-        .sb-lang-btn {
-            display:flex;align-items:center;justify-content:center;
-            background:rgba(255,255,255,.07);
-            color:#94a3b8;
-            border:1px solid rgba(255,255,255,.11);
-            border-radius:7px;padding:5px 0;
-            font-size:0.72em;font-weight:700;letter-spacing:.07em;
-            cursor:pointer;width:100%;margin-top:6px;
-            transition:background .15s,color .15s;
+        /* ══ LANGUAGE DROPDOWN (toolbar) ══════════════════════ */
+        .tb-lang-select {
+            appearance:none;-webkit-appearance:none;-moz-appearance:none;
+            padding-right:26px;
+            background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236b7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat:no-repeat;
+            background-position:right 10px center;
         }
-        .sb-lang-btn:hover { background:rgba(255,255,255,.13);color:#e2e8f0; }
-        body.sb-sidebar-closed .sb-lang-btn { display:none; }
+        html[dir="rtl"] .tb-lang-select {
+            padding-right:12px;padding-left:26px;
+            background-position:left 10px center;
+        }
+        @media (max-width:768px) {
+            .tb-lang-select { width:66px;min-width:66px;padding:4px 22px 5px 6px; }
+            html[dir="rtl"] .tb-lang-select { padding:4px 6px 5px 22px; }
+        }
 
         /* ══ RTL SUPPORT ══════════════════════════════════════ */
         /* Flip sidebar from left → right */
@@ -594,7 +597,6 @@
     <!-- Footer -->
     <div class="sb-footer">
         <span id="sbProjectCount">0 projects</span>
-        <button id="langToggleBtn" class="sb-lang-btn" type="button">AR</button>
         <button id="pwaInstallBtn" class="sb-install-btn" onclick="pwaInstall()" title="Install DACUM Lite as an app" style="display:none;">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             <span data-i18n="sidebar.installApp">Install App</span>
@@ -702,8 +704,13 @@
                     type="button"
                     onclick="cycleTheme()"
                     title="Cycle interface color theme">
-                <span class="tb-icon">🎨</span><span class="tb-label" id="themeLabelFull"> Colors: Default</span><span class="tb-mlabel" id="themeLabelMobile">Colors</span>
+                <span class="tb-icon">🎨</span><span class="tb-label" id="themeLabelFull"> Theme 1</span><span class="tb-mlabel" id="themeLabelMobile">Theme 1</span>
             </button>
+            <select id="langSelect" class="tb-btn tb-btn--neutral tb-lang-select" title="Interface language">
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+                <option value="ar">العربية</option>
+            </select>
         </div>
 
         <!-- Spacer pushes Undo/Redo to the far right ────────── -->
