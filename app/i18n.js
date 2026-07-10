@@ -1,12 +1,12 @@
 // ============================================================
 // i18n.js — Internationalisation Engine
-// DACUM Lite v3.1
+// DACUM Lite v3.2  (adds French — EN / FR / AR)
 //
 // Public API:
-//   getLang()           → 'en' | 'ar'
+//   getLang()           → 'en' | 'fr' | 'ar'
 //   t(key, vars?)       → translated string with {{token}} replaced
 //   setLang(lang)       → switch language, persist, update DOM
-//   toggleLang()        → flip between 'en' and 'ar'
+//   toggleLang()        → cycle EN → FR → AR → EN
 //   initI18n()          → call once in DOMContentLoaded
 //   applyTranslations() → re-apply all data-i18n* attributes
 //
@@ -24,10 +24,21 @@ import { translations } from './translations.js';
 // ── Persistence key ───────────────────────────────────────────
 const LANG_KEY = 'dacum_lang';
 
+// ── Supported languages & cycle order ──────────────────────────
+// toggleLang()/the sidebar button step through this list in order.
+// Only languages listed here are considered valid — an unrecognised
+// or stale localStorage value silently falls back to 'en'.
+const LANG_ORDER = ['en', 'fr', 'ar'];
+
+// Languages that should render right-to-left. French, like English,
+// is left-to-right, so only Arabic needs the 'rtl' treatment.
+const RTL_LANGS = ['ar'];
+
 // ── Active language (module-level) ────────────────────────────
 // Initialised from localStorage so the stored preference
 // is applied before the first applyTranslations() call.
 let _lang = localStorage.getItem(LANG_KEY) || 'en';
+if (!LANG_ORDER.includes(_lang)) _lang = 'en';   // guard against stale/unknown values
 
 // ── Public: read current language ────────────────────────────
 export function getLang() { return _lang; }
@@ -86,48 +97,68 @@ export function applyTranslations() {
     // 5. Smart section headings  (data-i18n-section)
     // These are contenteditable h3 elements — only translate if the user
     // has NOT renamed them (i.e. the current text still matches a known
-    // default in either EN or AR).  If the user renamed the heading, we
-    // leave it untouched.
+    // default in ANY of the supported languages). If the user renamed
+    // the heading, we leave it untouched.
     document.querySelectorAll('[data-i18n-section]').forEach(el => {
-        const key   = el.getAttribute('data-i18n-section');
-        const enVal = translations['en']?.[key] ?? '';
-        const arVal = translations['ar']?.[key] ?? '';
-        const cur   = el.textContent.trim();
-        if (cur === enVal || cur === arVal) {
+        const key = el.getAttribute('data-i18n-section');
+        const cur = el.textContent.trim();
+        const isStillDefault = LANG_ORDER.some(
+            lang => (translations[lang]?.[key] ?? '') === cur
+        );
+        if (isStillDefault) {
             el.textContent = t(key);
         }
     });
 }
 
 // ══════════════════════════════════════════════════════════════
+//  Toggle-button label helper
+//  The sidebar button shows the code of the NEXT language in the
+//  cycle (e.g. while in English it shows "FR" — "press to switch
+//  to French"), matching the previous EN⇄AR behaviour, now
+//  extended to three languages.
+// ══════════════════════════════════════════════════════════════
+function _nextLangCode() {
+    const idx  = LANG_ORDER.indexOf(_lang);
+    const next = LANG_ORDER[(idx + 1) % LANG_ORDER.length];
+    return next.toUpperCase();
+}
+
+function _updateToggleBtnLabel() {
+    const btn = document.getElementById('langToggleBtn');
+    if (btn) btn.textContent = _nextLangCode();
+}
+
+// ══════════════════════════════════════════════════════════════
 //  setLang() — switch language, persist, update DOM
 // ══════════════════════════════════════════════════════════════
 export function setLang(lang) {
-    if (lang !== 'en' && lang !== 'ar') return;   // guard
+    if (!LANG_ORDER.includes(lang)) return;   // guard
     _lang = lang;
     localStorage.setItem(LANG_KEY, lang);
 
     // Update <html> attributes for RTL support and browser accessibility
     const html = document.documentElement;
     html.lang = lang;
-    html.dir  = lang === 'ar' ? 'rtl' : 'ltr';
+    html.dir  = RTL_LANGS.includes(lang) ? 'rtl' : 'ltr';
 
     // Translate every data-i18n* element in the DOM
     applyTranslations();
 
     // Update the toggle button label
-    const btn = document.getElementById('langToggleBtn');
-    if (btn) btn.textContent = t('lang.switchTo');
+    _updateToggleBtnLabel();
 
     // Notify dynamic renderers (e.g. renderSidebar in app.js) to re-render
     document.dispatchEvent(new CustomEvent('dacum:langchange'));
 }
 
 // ══════════════════════════════════════════════════════════════
-//  toggleLang() — flip between en ↔ ar
+//  toggleLang() — cycle EN → FR → AR → EN → …
 // ══════════════════════════════════════════════════════════════
 export function toggleLang() {
-    setLang(_lang === 'en' ? 'ar' : 'en');
+    const idx  = LANG_ORDER.indexOf(_lang);
+    const next = LANG_ORDER[(idx + 1) % LANG_ORDER.length];
+    setLang(next);
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -142,7 +173,7 @@ export function initI18n() {
     // Apply <html> attributes immediately (before paint if possible)
     const html = document.documentElement;
     html.lang  = _lang;
-    html.dir   = _lang === 'ar' ? 'rtl' : 'ltr';
+    html.dir   = RTL_LANGS.includes(_lang) ? 'rtl' : 'ltr';
 
     // Translate static DOM
     applyTranslations();
@@ -150,7 +181,7 @@ export function initI18n() {
     // Wire toggle button
     const btn = document.getElementById('langToggleBtn');
     if (btn) {
-        btn.textContent = t('lang.switchTo');
+        _updateToggleBtnLabel();
         btn.addEventListener('click', toggleLang);
     }
 }

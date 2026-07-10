@@ -20,7 +20,7 @@ export const translations = {
     en: {
 
         // ── Language toggle ───────────────────────────────────
-        'lang.switchTo': 'AR',
+        'lang.switchTo': 'FR',
 
         // ── Sidebar — brand ───────────────────────────────────
         'sidebar.brandTagline': 'Chart Generator',
@@ -361,6 +361,346 @@ export const translations = {
         // Disclaimer — shown only in Help tab
         'help.disclaimerTitle':  'Disclaimer',
         'help.disclaimerText':   'This tool is provided "as is" without warranty of any kind. The developer assumes no responsibility for any inaccuracies, errors, omissions, or inconsistencies in the generated documents. Users are solely responsible for verifying and validating all content before use.',
+    },
+
+    // ══════════════════════════════════════════════════════════
+    //  FRENCH
+    // ══════════════════════════════════════════════════════════
+    fr: {
+
+        // ── Language toggle ───────────────────────────────────
+        'lang.switchTo': 'AR',
+
+        // ── Sidebar — brand ───────────────────────────────────
+        'sidebar.brandTagline': 'Générateur de graphiques',
+
+        // ── Sidebar — navigation ──────────────────────────────
+        'sidebar.navLabel':           'NAVIGATION',
+        'sidebar.nav.chartInfo':      'Infos du graphique',
+        'sidebar.nav.dutiesTasks':    'Fonctions et tâches',
+        'sidebar.nav.additionalInfo': 'Infos complémentaires',
+        'sidebar.nav.help':           'Aide',
+
+        // ── Sidebar — projects section ────────────────────────
+        'sidebar.projectsLabel':      '📁 PROJETS',
+        'sidebar.newBtn':             '+ Nouveau',
+        'sidebar.searchPlaceholder':  '🔍  Rechercher des projets…',
+        'sidebar.installApp':         "Installer l'application",
+        'sidebar.noProjects':         'Aucun projet trouvé',
+
+        // ── Sidebar — project counts (interpolated) ───────────
+        'sidebar.projectCount.one':   '1 projet',
+        'sidebar.projectCount.other': '{{n}} projets',
+        'sidebar.dutyCount.one':      '1 fonction',
+        'sidebar.dutyCount.other':    '{{n}} fonctions',
+
+        // ── Relative time (used in sidebar project cards) ─────
+        'time.justNow':     "à l'instant",
+        'time.minutesAgo':  'il y a {{n}} min',
+        'time.hoursAgo':    'il y a {{n}} h',
+        'time.daysAgo':     'il y a {{n}} j',
+
+        // ── Project actions ───────────────────────────────────
+        'project.renameTip':          'Renommer le projet',
+        'project.deleteTip':          'Supprimer le projet',
+        'project.untitled':           'Projet sans titre',
+        'project.prompt.new':         'Nom du projet :',
+        'project.prompt.newDefault':  'Nouveau projet',
+        'project.prompt.rename':      'Renommer le projet :',
+        'project.alert.cannotDelete': "Impossible de supprimer le seul projet existant.",
+        'project.confirm.delete':     'Supprimer « {{name}} » ?\nCette action est irréversible.',
+
+        // ── Status — project operations ───────────────────────
+        'status.projectImported': 'Projet « {{name}} » importé ✓',
+        'status.projectCreated':  '« {{name}} » créé ✓',
+        'status.projectSwitched': 'Basculé vers « {{name}} » ✓',
+        'status.projectDeleted':  'Projet supprimé. Basculé vers « {{name}} »',
+
+        // ── Top Toolbar ───────────────────────────────────────
+        'toolbar.snapshot':      'Instantané',
+        'toolbar.exportProject': 'Exporter le projet',
+        'toolbar.export':        'Exporter',
+        'toolbar.importProject': 'Importer un projet',
+        'toolbar.import':        'Importer',
+        'toolbar.pdf':           'PDF',
+        'toolbar.word':          'Word',
+        'toolbar.clearAll':      'Tout effacer',
+        'toolbar.clear':         'Effacer',
+        'toolbar.undo':          'Annuler',
+        'toolbar.redo':          'Rétablir',
+
+        // ── Tab 1 — Chart Info ────────────────────────────────
+        'chartInfo.heading':             'Informations du graphique DACUM',
+        'chartInfo.dacumDate':           '📅 Date DACUM :',
+        'chartInfo.producedFor':         '🏢 Préparé pour :',
+        'chartInfo.producedFor.ph':      "ex. : nom de l'entreprise / organisation",
+        'chartInfo.producedBy':          '🎓 Préparé par :',
+        'chartInfo.producedBy.ph':       "ex. : nom de l'établissement de formation",
+        'chartInfo.sector':              '🏭 Secteur :',
+        'chartInfo.sector.ph':           'ex. : Industriel',
+        'chartInfo.occupationTitle':     '💼 Titre de la profession :',
+        'chartInfo.occupationTitle.ph':  'ex. : Technicien automobile',
+        'chartInfo.jobTitle':            '👔 Titre du poste :',
+        'chartInfo.jobTitle.ph':         'ex. : Technicien de service niveau 2',
+        'chartInfo.noImage':             'Aucune image',
+        'chartInfo.addLogo':             '🖼️ Ajouter un logo',
+        'chartInfo.remove':              '🗑️ Supprimer',
+        'chartInfo.scopeLabel':          "📋 Champ d'application / Définition de la profession :",
+        'chartInfo.scopeHint':           "Un paragraphe concis décrivant ce que couvre la profession et où se situent ses limites. Utilisé dans les exports et pour la génération des fonctions/tâches.",
+        'chartInfo.scopePlaceholder':    "Définit les principales responsabilités et les limites de cette profession dans son contexte de travail. Inclut les tâches, outils et environnements de travail typiques, et exclut les rôles ou fonctions relevant d'autres professions ou spécialisations.",
+        'chartInfo.workshopPanel':       "👥 Panel de l'atelier",
+        'chartInfo.facilitators':        '👥 Animateurs :',
+        'chartInfo.facilitators.ph':     "Entrez les noms des animateurs (un par ligne)",
+        'chartInfo.observers':           '👁️ Observateurs :',
+        'chartInfo.observers.ph':        'Entrez les noms des observateurs (un par ligne)',
+        'chartInfo.panelMembers':        '🎯 Membres du panel :',
+        'chartInfo.panelMembers.ph':     'Entrez les noms des membres du panel (un par ligne)',
+
+        // ── Tab 2 — Duties & Tasks ────────────────────────────
+        'duties.heading':       'Fonctions et tâches',
+        'duties.addDuty':       '➕ Ajouter une fonction',
+        'duties.cardHeading':   '🃏 Vue en cartes — Fonctions et tâches',
+        'duties.viewTable':     '📋 Tableau',
+        'duties.viewCard':      '🃏 Cartes',
+        'duties.viewWall':      '🧱 Mur',
+
+        // ── Tab 3 — Additional Info ───────────────────────────
+        'additionalInfo.heading': 'Informations complémentaires',
+        'additionalInfo.intro':   '📝 Renseignez les informations de chaque section. Cliquez sur le bouton renommer pour personnaliser les titres de section.',
+        'additionalInfo.rename':  '✏️ Renommer',
+        'additionalInfo.clear':   '🗑️ Effacer',
+        'additionalInfo.addSection': '➕ Ajouter une section',
+        'section.removeBtn':         '❌ Supprimer',
+
+        // Default section headings
+        // IMPORTANT: These values must match the defaults used in clearAll()
+        // and clearSection() — the JS modules read them via t() at runtime.
+        'section.knowledge': 'Connaissances requises',
+        'section.skills':    'Habiletés requises',
+        'section.behaviors': "Comportements et traits professionnels",
+        'section.tools':     'Outils, équipements, fournitures et matériaux',
+        'section.trends':    'Tendances et préoccupations futures',
+        'section.acronyms':  'Acronymes',
+        'section.careerPath':'Cheminement de carrière',
+        'section.custom':    'Section personnalisée {{n}}',
+
+        // Additional Info — textarea placeholders
+        'section.knowledge.ph':
+            'Entrez chaque connaissance requise sur une nouvelle ligne\nExemple :\n• Compréhension des systèmes électriques\n• Connaissance des protocoles de sécurité\n• Familiarité avec les outils de diagnostic',
+        'section.skills.ph':
+            'Entrez chaque habileté requise sur une nouvelle ligne\nExemple :\n• Capacité à lire des schémas techniques\n• Maîtrise des outils manuels\n• Bonnes capacités de résolution de problèmes',
+        'section.behaviors.ph':
+            'Entrez chaque comportement ou trait sur une nouvelle ligne\nExemple :\n• Souci du détail\n• Bonnes compétences en communication\n• Esprit d\u2019équipe\n• Sensibilisation à la sécurité',
+        'section.tools.ph':
+            'Entrez chaque outil/équipement sur une nouvelle ligne\nExemple :\n• Multimètre numérique\n• Clé à chocs pneumatique\n• Lunettes de sécurité\n• Pont élévateur hydraulique',
+        'section.trends.ph':
+            'Entrez chaque tendance/préoccupation sur une nouvelle ligne\nExemple :\n• Usage accru des véhicules électriques\n• Systèmes avancés d\u2019aide à la conduite\n• Exigences de durabilité\n• Automatisation de la fabrication',
+        'section.acronyms.ph':
+            'Entrez les acronymes et leurs définitions sur des lignes séparées\nExemple :\n• OBD - Diagnostic embarqué\n• ECU - Unité de commande moteur\n• TPMS - Système de surveillance de la pression des pneus\n• ABS - Système antiblocage des roues',
+        'section.careerPath.ph':
+            'Entrez les informations de progression de carrière sur des lignes séparées\nExemple :\n• Niveau débutant : apprenti technicien\n• Niveau intermédiaire : technicien certifié\n• Niveau avancé : technicien senior / spécialiste\n• Gestion : chef d\u2019atelier / responsable du service',
+        'section.custom.ph':
+            'Entrez les informations de cette section personnalisée sur des lignes séparées',
+
+        // ── Snapshot Panel ────────────────────────────────────
+        'snapshot.panelTitle':       '📸 Instantanés enregistrés',
+        'snapshot.empty':            'Aucun instantané pour le moment. Cliquez sur 📸 pour en enregistrer un.',
+        'snapshot.restore':          'Restaurer',
+        'snapshot.dutyCount.one':    '1 fonction',
+        'snapshot.dutyCount.other':  '{{n}} fonctions',
+        'snapshot.prompt':           'Nommez cet instantané (laissez vide pour un nom automatique) :',
+        'snapshot.autoName':         'Instantané {{n}}',
+
+        // ── Status — snapshots ────────────────────────────────
+        'status.snapshotSaved':    'Instantané enregistré : « {{label}} » ✓',
+        'status.snapshotRestored': 'Instantané restauré : « {{label}} » ✓',
+
+        // ── Status — undo / redo ──────────────────────────────
+        'status.undone': '↩ Annulé : {{type}}',
+        'status.redone': '↪ Rétabli : {{type}}',
+
+        // ── Confirm / Alert dialogs ───────────────────────────
+        'confirm.clearDuty':    'Voulez-vous vraiment effacer cette fonction et toutes ses tâches ?',
+        'confirm.clearAll':     'Voulez-vous vraiment effacer TOUTES les données ? Cette action est irréversible !',
+        'confirm.removeImage':  'Voulez-vous vraiment supprimer ce logo ?',
+        'confirm.clearSection': 'Voulez-vous vraiment effacer cette section ?',
+        'confirm.removeSection':'Voulez-vous vraiment supprimer cette section ? Cette action est irréversible !',
+        'confirm.removeDuty':   'Supprimer cette fonction et toutes ses tâches ?',
+        'confirm.wallDelDuty':  'Supprimer « {{title}} » et toutes ses tâches ?',
+
+        // ── Status — duties & tasks ───────────────────────────
+        'status.dutyCleared':        'Fonction effacée ! ✓',
+        'status.allCleared':         'Toutes les données ont été effacées ! ✓',
+        'status.headingUpdated':     'Titre mis à jour ! ✓',
+        'status.sectionCleared':     'Section effacée ! ✓',
+        'status.customSectionAdded': 'Section personnalisée ajoutée ! ✓',
+        'status.sectionRemoved':     'Section supprimée ! ✓',
+
+        // ── Status — images ───────────────────────────────────
+        'status.imageBadType':   'Veuillez importer un fichier image valide (JPG, JPEG, PNG ou BMP)',
+        'status.imageUploaded':  'Image importée avec succès ! ✓',
+        'status.imageRemoved':   'Image supprimée ! ✓',
+
+        // ── Status — save / load ──────────────────────────────
+        'status.dataSaved':      'Données enregistrées avec succès ! ✓',
+        'status.dataSaveError':  "Erreur lors de l'enregistrement des données : {{msg}}",
+        'status.dataLoaded':     'Données chargées avec succès ! ✓',
+        'status.jsonParseError': 'Erreur : fichier JSON invalide',
+        'status.fileLoadError':  'Erreur lors du chargement du fichier : {{msg}}',
+
+        // ── Status — export ───────────────────────────────────
+        'status.wordLibMissing':  "Erreur : la bibliothèque d'export Word n'est pas chargée. Veuillez actualiser la page.",
+        'status.wordGenerating':  'Génération du document Word en cours…',
+        'status.wordExported':    'Document Word exporté avec succès ! ✓',
+        'status.wordExportError': 'Erreur lors de la génération du document Word : {{msg}}',
+        'status.pdfMissingFields':'Veuillez renseigner au moins le titre de la profession et le titre du poste',
+        'status.pdfGenerating':       'Génération du PDF, veuillez patienter…',
+        'status.html2canvasMissing':  "La bibliothèque html2canvas n'est pas chargée. Vérifiez votre connexion internet.",
+        'status.pdfNoDuties':     'Veuillez ajouter au moins une fonction avec des tâches',
+        'status.pdfExported':     'PDF exporté avec succès ! ✓',
+        'status.pdfExportError':  'Erreur lors de la génération du PDF : {{msg}}',
+
+        // ── Renderer — table view ─────────────────────────────
+        'renderer.dutyLabel':        'Fonction {{letter}}',
+        'renderer.dragDuty':         'Glisser pour réorganiser les fonctions',
+        'renderer.dragTask':         'Glisser pour réorganiser ou déplacer vers une autre fonction',
+        'renderer.clearDutyBtn':     '🗑️ Effacer',
+        'renderer.removeDutyBtn':    '🗑️ Supprimer la fonction',
+        'renderer.addTaskBtn':       '➕ Ajouter une tâche',
+        'renderer.dutyPlaceholder':  'Entrez la description de la fonction',
+        'renderer.taskPlaceholder':  'Entrez la description de la tâche',
+
+        // ── Renderer — card view ──────────────────────────────
+        'renderer.noDuties':            'Aucune fonction ajoutée pour le moment.',
+        'renderer.noTasks':             'Aucune tâche pour le moment.',
+        'renderer.removeDutyTitle':     'Supprimer la fonction',
+        'renderer.removeTaskTitle':     'Supprimer la tâche',
+        'renderer.dragTaskCard':        'Glisser pour réorganiser ou déplacer la tâche',
+        'renderer.addTaskCard':         '➕ Tâche',
+        'renderer.addTaskCardTitle':    'Ajouter une tâche à cette fonction',
+        'renderer.dutyPlaceholderCard': 'Entrez la fonction',
+        'renderer.taskPlaceholderCard': 'Entrez la tâche',
+
+        // ── Renderer — wall view ──────────────────────────────
+        'renderer.wallNoDuties':        "Aucune fonction ajoutée pour le moment. Allez à l'onglet Fonctions et tâches pour en ajouter.",
+        'renderer.wallNoTasks':         'Aucune tâche pour le moment — déposez ici ou utilisez ＋',
+        'renderer.wallDutyBadge':       'Fonction {{letter}}',
+        'renderer.wallTaskLabel':       'Tâche {{letter}}{{n}}',
+        'renderer.wallDragDuty':        'Glisser pour réorganiser les fonctions',
+        'renderer.wallDragTask':        'Glisser pour réorganiser ou déplacer vers une autre fonction',
+        'renderer.wallAddDutyTitle':    'Ajouter une nouvelle fonction ci-dessous',
+        'renderer.wallDelDutyTitle':    'Supprimer cette fonction',
+        'renderer.wallDelDutyConfirm':  'Supprimer « {{title}} » et toutes ses tâches ?',
+        'renderer.wallAddTaskTitle':    'Ajouter une nouvelle tâche après celle-ci',
+        'renderer.wallDelTaskTitle':    'Supprimer cette tâche',
+        'renderer.wallDutyPlaceholder': 'Entrez la fonction…',
+        'renderer.wallTaskPlaceholder': 'Entrez la tâche…',
+
+        // ── InfoBox ───────────────────────────────────────────
+        'infobox.hide': 'Masquer',
+        'infobox.show': 'Afficher',
+
+        // ── Wall View overlay controls ────────────────────────
+        'wall.exit':           '✕ Quitter',
+        'wall.reset':          '↺ Réinitialiser',
+        'wall.print':          '🖨️ Imprimer',
+        'wall.full':           '⛶ Plein',
+        'wall.title':          '🧱 Vue murale',
+        'wall.fullscreen':     '⛶ Plein écran',
+        'wall.exitFullscreen': '⛶ Quitter le plein écran',
+
+        // ── Wall View — view tabs ─────────────────────────────
+        'wall.tabCard':  '🃏 Cartes',
+        'wall.tabTable': '📋 Tableau',
+        'wall.tabWall':  '🧱 Mur',
+
+        // ── File Engine ───────────────────────────────────────
+        'fileEngine.exportFailed':      "Échec de l'export :\n\n{{msg}}",
+        'fileEngine.readFailed':        "Impossible de lire le fichier sélectionné.\nVeuillez vérifier le fichier et réessayer.",
+        'fileEngine.importInvalidJson': "Le fichier sélectionné n'est pas un JSON valide.\nIl est peut-être corrompu ou dans un mauvais format.",
+        'fileEngine.importFailed':      "Échec de l'import — ce n'est pas un fichier de projet DACUM valide.\n\nRaison : {{reason}}",
+        'fileEngine.importError':       "Échec de l'import :\n\n{{msg}}",
+        'fileEngine.importedSuffix':    ' (Importé)',
+
+        // ── PDF export — embedded text strings ───────────────
+        // NOTE : le support de la police arabe dans jsPDF nécessite un
+        // module tiers dédié. Ce commentaire est conservé tel quel de
+        // la version anglaise à titre de documentation technique.
+        'pdf.chartTitle':        'Graphique de recherche DACUM pour {{title}}',
+        'pdf.producedFor':       'Préparé pour',
+        'pdf.producedBy':        'Préparé par',
+        'pdf.sector':            'Secteur :',
+        'pdf.occupationTitle':   'Titre de la profession :',
+        'pdf.jobTitle':          'Titre du poste :',
+        'pdf.dutiesAndTasks':    'FONCTIONS ET TÂCHES',
+        'pdf.dutiesAndTasksCont':'FONCTIONS ET TÂCHES (suite)',
+        'pdf.generalKnowledge':  'Connaissances et habiletés générales',
+        'pdf.dutyLabel':         'FONCTION {{letter}} : {{title}}',
+        'pdf.taskLabel':         'Tâche {{letter}}{{n}} :',
+
+        // ── Word export — embedded text strings ───────────────
+        'word.occupationTitle': 'Titre de la profession : {{title}}',
+        'word.jobTitle':        'Titre du poste : {{title}}',
+        'word.sector':          'Secteur : {{name}}',
+        'word.dacumDate':       'Date DACUM : {{date}}',
+        'word.producedFor':     'Préparé pour : {{name}}',
+        'word.producedBy':      'Préparé par : {{name}}',
+        'word.dutiesAndTasks':  'Fonctions et tâches',
+        'word.additionalInfo':  'Informations complémentaires',
+        'word.dutyLabel':       'FONCTION {{letter}} : {{title}}',
+        'word.taskLabel':       'Tâche {{letter}}{{n}} : {{text}}',
+
+        // ── Copyright ─────────────────────────────────────────
+        'copyright.main':
+            '© 2026 DACUM Lite | par Husham Jawad Kadhim | Version 3.1.0 | Tous droits réservés',
+        'copyright.disclaimer':
+            'Cet outil est fourni "tel quel" sans garantie d\u2019aucune sorte. Le développeur décline ' +
+            'toute responsabilité concernant les inexactitudes, erreurs, omissions ou incohérences dans les ' +
+            'documents générés. Les utilisateurs sont seuls responsables de la vérification et de la validation ' +
+            'de tout contenu avant utilisation.',
+
+        // ── Help Center ───────────────────────────────────────
+        'help.heroTitle':       "Centre d'aide",
+        'help.heroSub':         'Tout ce dont vous avez besoin pour utiliser DACUM Lite efficacement',
+        'help.quickStartTitle': 'Démarrage rapide : comment utiliser DACUM Lite',
+
+        'help.step1':  "Entrez le <strong>Secteur</strong>, le <strong>Titre de la profession</strong> et le <strong>Titre du poste</strong> dans l'onglet <em>Infos du graphique</em>.",
+        'help.step2':  "Ajoutez un <strong>Champ d'application</strong> pour définir les limites de la profession.",
+        'help.step3':  "Allez dans <em>Fonctions et tâches</em> — chaque nouvelle fonction commence automatiquement avec une tâche.",
+        'help.step4':  "Utilisez <strong>➕ Ajouter une tâche</strong> dans chaque fonction. Les fonctions sont étiquetées <strong>A, B, C…</strong> et les tâches <strong>A1, A2, B1…</strong> automatiquement.",
+        'help.step5':  "<strong>Glissez-déposez</strong> n'importe quelle tâche ou fonction pour la réorganiser — les étiquettes se mettent à jour instantanément.",
+        'help.step6':  "Basculez vers la <strong>🃏 Vue en cartes</strong> ou la <strong>🧱 Vue murale</strong> pour différents modes d'affichage.",
+        'help.step7':  "Complétez les <em>Infos complémentaires</em> (Connaissances, Habiletés, Outils, Tendances…) selon vos besoins.",
+        'help.step8':  "Complétez le <strong>Panel de l'atelier</strong> (Animateurs, Observateurs, Membres du panel) dans Infos du graphique.",
+        'help.step9':  "<strong>Exportez</strong> en PDF ou en document Word depuis la barre d'outils supérieure.",
+        'help.step10': "Utilisez les <strong>📸 Instantanés</strong> pour enregistrer des versions nommées avant des modifications importantes.",
+
+        'help.tipUndoTitle':     'Annuler / Rétablir',
+        'help.tipUndoText':      "Chaque action est réversible. Utilisez Ctrl+Z / Ctrl+Y ou les boutons de la barre d'outils.",
+        'help.tipAutoSaveTitle': 'Enregistrement automatique',
+        'help.tipAutoSaveText':  'Votre travail est enregistré automatiquement dans le navigateur. Utilisez les Projets pour gérer plusieurs graphiques.',
+        'help.tipWallTitle':     'Vue murale',
+        'help.tipWallText':      "Modifiez, réorganisez, ajoutez et supprimez des fonctions et tâches directement sur le mur — sans changer de vue.",
+        'help.tipPrintTitle':    'Impression du mur',
+        'help.tipPrintText':     "Utilisez le bouton d'impression dans la Vue murale pour une sortie A3 paysage — idéal pour la projection en atelier.",
+
+        'help.userGuideTitle':  "Guide de l'utilisateur",
+        'help.userGuideDesc':   "Accédez à la documentation complète de DACUM Lite — comprend des instructions détaillées, des captures d'écran et les meilleures pratiques.",
+        'help.openUserGuide':   "📘 Ouvrir le guide de l'utilisateur",
+        'help.viewNewTab':      '🔗 Afficher dans un nouvel onglet',
+        'help.qrCaption':       "Scannez pour ouvrir le guide de l'utilisateur sur votre mobile",
+
+        'help.aboutTitle':      'À propos du créateur',
+        'help.creatorRole':     'Créateur de DACUM Lite',
+        'help.creatorBio':      "Développeur de programmes d'EFTP et innovateur en technologie éducative",
+        'help.emailLabel':      'COURRIEL',
+        'help.linkedinLabel':   'LINKEDIN',
+        'help.getInTouchTitle': 'Nous contacter',
+        'help.getInTouchText':  'Pour toute question, commentaire, suggestion ou opportunité de collaboration, veuillez nous contacter via les coordonnées ci-dessus.',
+
+        // Disclaimer — shown only in Help tab
+        'help.disclaimerTitle': 'Avertissement',
+        'help.disclaimerText':  'Cet outil est fourni "tel quel" sans garantie d\u2019aucune sorte. Le développeur décline toute responsabilité concernant les inexactitudes, erreurs, omissions ou incohérences dans les documents générés. Les utilisateurs sont seuls responsables de la vérification et de la validation de tout contenu avant utilisation.',
     },
 
     // ══════════════════════════════════════════════════════════
