@@ -4,7 +4,7 @@
 // ============================================================
 
 export const VERSION = {
-    major: 3,
+    major: 4,
     minor: 1,
     patch: 0,
 
@@ -19,7 +19,7 @@ export const VERSION = {
 
     changelog: [
         {
-            version: '3.1.0',
+            version: '4.1.0',
             date: '2026-05-05',
             changes: [
                 'Renamed application to DACUM Lite',
@@ -31,8 +31,8 @@ export const VERSION = {
             ]
         },
         {
-            version: '3.0.0',
-            date: '2026-01-01',
+            version: '4.0.0',
+            date: '2026-11-07',
             changes: [
                 'Initial public release as DACUM Chart Generator',
                 'Multi-project support with sidebar',
