@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DACUM Lite — من الورشة إلى المخطط الجاهز</title>
-<meta name="description" content="أداة مجانية ثنائية اللغة لبناء وتحرير وتصدير مخططات داكم (DACUM) مباشرة من ورشة العمل.">
+<title>DACUM Lite &amp; DACUM Live Pro — From Workshop to Ready Chart</title>
+<meta name="description" content="Free bilingual tools to build, edit, and export DACUM occupational analysis charts — plus an AI-powered Pro edition with live workshop voting and curriculum mapping.">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -153,6 +153,8 @@ a:focus-visible, button:focus-visible{ outline:3px solid var(--indigo); outline-
 }
 .nav-inner{ display:flex; align-items:center; justify-content:space-between; padding:14px 24px; max-width:1120px; margin:0 auto; }
 .brand{ display:flex; align-items:center; gap:10px; font-weight:800; font-size:1.05em; }
+.brand-short{ display:none; }
+@media(max-width:640px){ .brand-full{ display:none; } .brand-short{ display:inline; } }
 .brand-logo{
     width:34px; height:34px; border-radius:9px; flex-shrink:0;
     background:linear-gradient(135deg,var(--indigo),var(--violet));
@@ -480,11 +482,12 @@ html[lang="fr"] h1[data-fr], html[lang="fr"] h2[data-fr], html[lang="fr"] h3[dat
     <div class="nav-inner">
         <div class="brand">
             <div class="brand-logo">📊</div>
-            <span>DACUM Lite</span>
+            <span class="brand-full">DACUM Lite &amp; DACUM Live Pro</span>
+            <span class="brand-short">DACUM Lite</span>
         </div>
         <div class="nav-actions">
             <select class="lang-select" id="langSelect" title="Language / اللغة / Langue">
-                <option value="en">English</option>
+                <option value="en" selected>English</option>
                 <option value="fr">Français</option>
                 <option value="ar">العربية</option>
             </select>
@@ -496,7 +499,7 @@ html[lang="fr"] h1[data-fr], html[lang="fr"] h2[data-fr], html[lang="fr"] h3[dat
                 <span data-ar>داكم لايف برو</span><span data-en>DACUM Live Pro</span><span data-fr>DACUM Live Pro</span>
             </a>
             <a class="btn btn-primary" href="./app/index.html">
-                <span data-ar>افتح الأداة</span><span data-en>Open the App</span><span data-fr>Ouvrir l'appli</span>
+                <span data-ar>افتح DACUM Lite</span><span data-en>Open DACUM Lite</span><span data-fr>Ouvrir DACUM Lite</span>
             </a>
         </div>
     </div>
@@ -903,6 +906,21 @@ const LANG_KEY   = 'dacum_lang';
 const LANG_ORDER = ['en', 'fr', 'ar'];
 const RTL_LANGS  = ['ar'];
 
+const PAGE_META = {
+    en: {
+        title: "DACUM Lite & DACUM Live Pro — From Workshop to Ready Chart",
+        desc:  "Free bilingual tools to build, edit, and export DACUM occupational analysis charts — plus an AI-powered Pro edition with live workshop voting and curriculum mapping."
+    },
+    fr: {
+        title: "DACUM Lite et DACUM Live Pro — De l'atelier au graphique finalisé",
+        desc:  "Outils gratuits et multilingues pour créer, modifier et exporter des graphiques d'analyse de profession DACUM — avec une édition Pro propulsée par l'IA."
+    },
+    ar: {
+        title: "DACUM Lite و DACUM Live Pro — من الورشة إلى المخطط الجاهز",
+        desc:  "أدوات مجانية متعددة اللغات لبناء وتحرير وتصدير مخططات تحليل المهن (داكم) — مع نسخة احترافية مدعومة بالذكاء الاصطناعي."
+    }
+};
+
 function applyLang(lang){
     if (!LANG_ORDER.includes(lang)) lang = 'en';
     const html = document.documentElement;
@@ -911,6 +929,11 @@ function applyLang(lang){
 
     const sel = document.getElementById('langSelect');
     if (sel && sel.value !== lang) sel.value = lang;
+
+    const meta = PAGE_META[lang] || PAGE_META.en;
+    document.title = meta.title;
+    const descTag = document.querySelector('meta[name="description"]');
+    if (descTag) descTag.setAttribute('content', meta.desc);
 
     try { localStorage.setItem(LANG_KEY, lang); } catch (e) { /* storage unavailable */ }
 }
