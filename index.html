@@ -166,6 +166,34 @@ a:focus-visible, button:focus-visible{ outline:3px solid var(--indigo); outline-
     padding:8px 13px; border-radius:8px; cursor:pointer;
 }
 .lang-btn:hover{ border-color:var(--indigo); color:var(--indigo); }
+
+.lang-select{
+    appearance:none; -webkit-appearance:none; -moz-appearance:none;
+    background:#fff; border:1.5px solid var(--line); color:var(--body);
+    font-weight:700; font-size:.78em; letter-spacing:.04em;
+    padding:8px 30px 8px 13px; border-radius:8px; cursor:pointer;
+    font-family:inherit;
+    background-image:url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%2394a3b8' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat; background-position:right 11px center; background-size:10px 6px;
+}
+.lang-select:hover{ border-color:var(--indigo); color:var(--indigo); }
+html[dir="rtl"] .lang-select{ padding:8px 13px 8px 30px; background-position:left 11px center; }
+
+.btn-pro{
+    background:linear-gradient(135deg,#0f172a,#334155);
+    color:#fff; font-weight:800; font-size:.78em; letter-spacing:.02em;
+    padding:9px 14px; border-radius:8px; text-decoration:none;
+    display:inline-flex; align-items:center; gap:6px;
+    box-shadow:0 4px 14px rgba(15,23,42,.28);
+    border:1px solid rgba(255,255,255,.08);
+}
+.btn-pro:hover{ box-shadow:0 6px 18px rgba(15,23,42,.4); transform:translateY(-1px); }
+.btn-pro .pro-badge{
+    background:linear-gradient(135deg,var(--indigo),var(--violet));
+    color:#fff; font-size:.82em; font-weight:800; letter-spacing:.06em;
+    padding:1px 6px; border-radius:5px;
+}
+@media(max-width:760px){ .nav-actions{ flex-wrap:wrap; justify-content:flex-end; row-gap:8px; } }
 .btn{
     display:inline-flex; align-items:center; gap:8px;
     font-weight:700; font-size:.92em; text-decoration:none;
@@ -328,6 +356,42 @@ html[dir="rtl"] .t4{ right:auto; left:130px; transform:rotate(3deg); }
 .mock-task b{ color:var(--indigo-deep); font-size:.85em; }
 
 /* ══════════════════════════════════════════════════════════
+   DACUM LIVE PRO — promotional panel
+   ══════════════════════════════════════════════════════════ */
+.pro-panel{
+    background:linear-gradient(160deg,#0f172a,#1e293b);
+    border-radius:22px; padding:48px 40px; color:#fff;
+    position:relative; overflow:hidden;
+}
+.pro-panel::before{
+    content:''; position:absolute; inset:0;
+    background:radial-gradient(circle at 12% 10%, rgba(99,102,241,.28), transparent 45%),
+               radial-gradient(circle at 88% 90%, rgba(139,92,246,.22), transparent 45%);
+    pointer-events:none;
+}
+.pro-panel > *{ position:relative; }
+.pro-eyebrow{ background:rgba(255,255,255,.1) !important; color:#c7d2fe !important; }
+.pro-panel h2{ color:#fff; font-size:1.85em; font-weight:800; margin:14px 0 12px; max-width:640px; }
+.pro-sub{ color:rgba(255,255,255,.75); font-size:1.05em; max-width:660px; margin-bottom:34px; }
+
+.pro-feat-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-bottom:36px; }
+@media(max-width:900px){ .pro-feat-grid{ grid-template-columns:repeat(2,1fr); } }
+@media(max-width:600px){ .pro-feat-grid{ grid-template-columns:1fr; } }
+.pro-feat{ display:flex; gap:12px; align-items:flex-start; }
+.pro-feat-icon{
+    width:38px; height:38px; border-radius:10px; flex-shrink:0;
+    background:rgba(255,255,255,.1); display:flex; align-items:center; justify-content:center; font-size:1.15em;
+}
+.pro-feat h4{ color:#fff; font-size:.95em; font-weight:700; margin-bottom:4px; }
+.pro-feat p{ color:rgba(255,255,255,.65); font-size:.85em; line-height:1.55; }
+
+.btn-pro-cta{
+    background:linear-gradient(135deg,var(--indigo),var(--violet));
+    color:#fff; box-shadow:0 8px 24px rgba(99,102,241,.4);
+}
+.btn-pro-cta:hover{ box-shadow:0 10px 30px rgba(99,102,241,.55); }
+
+/* ══════════════════════════════════════════════════════════
    ABOUT CREATOR
    ══════════════════════════════════════════════════════════ */
 .about{ background:var(--panel); border-top:1px solid var(--line); }
@@ -380,16 +444,36 @@ footer{ padding:40px 0 50px; }
 .foot-links a{ color:var(--body); text-decoration:none; }
 .foot-links a:hover{ color:var(--indigo-btn); }
 
-/* ── language visibility swap ─────────────────────────────── */
-[data-en]{ display:none; }
-html[dir="ltr"] [data-ar]{ display:none; }
-html[dir="ltr"] [data-en]{ display:inline; }
-h1[data-en], h2[data-en], p[data-en], div[data-en]{ display:none; }
-html[dir="ltr"] h1[data-en], html[dir="ltr"] h2[data-en], html[dir="ltr"] p[data-en], html[dir="ltr"] div[data-en]{ display:block; }
-html[dir="ltr"] span[data-en]{ display:inline; }
+/* ── language visibility swap (EN / FR / AR) ──────────────────
+   Decoupled from `dir` on purpose — French is LTR like English,
+   so visibility must key off `lang`, while `dir` (used by the
+   RTL layout-mirroring rules elsewhere in this file) is only
+   ever "rtl" for Arabic. */
+[data-ar],[data-en],[data-fr]{ display:none; }
+
+html[lang="ar"] [data-ar]{ display:inline; }
+html[lang="en"] [data-en]{ display:inline; }
+html[lang="fr"] [data-fr]{ display:inline; }
+
+html[lang="ar"] h1[data-ar], html[lang="ar"] h2[data-ar], html[lang="ar"] h3[data-ar], html[lang="ar"] h4[data-ar], html[lang="ar"] p[data-ar], html[lang="ar"] div[data-ar]{ display:block; }
+html[lang="en"] h1[data-en], html[lang="en"] h2[data-en], html[lang="en"] h3[data-en], html[lang="en"] h4[data-en], html[lang="en"] p[data-en], html[lang="en"] div[data-en]{ display:block; }
+html[lang="fr"] h1[data-fr], html[lang="fr"] h2[data-fr], html[lang="fr"] h3[data-fr], html[lang="fr"] h4[data-fr], html[lang="fr"] p[data-fr], html[lang="fr"] div[data-fr]{ display:block; }
 </style>
 </head>
 <body>
+
+<!-- Apply stored language before first paint (avoids a flash of the wrong language) -->
+<script>
+(function(){
+    try {
+        var l = localStorage.getItem('dacum_lang');
+        if (l === 'en' || l === 'fr' || l === 'ar') {
+            document.documentElement.lang = l;
+            document.documentElement.dir  = (l === 'ar') ? 'rtl' : 'ltr';
+        }
+    } catch (e) { /* localStorage unavailable — keep the default lang="ar" */ }
+})();
+</script>
 
 <!-- ══════════════════════════════════ NAV ══════════════════════════════════ -->
 <div class="nav">
@@ -399,12 +483,20 @@ html[dir="ltr"] span[data-en]{ display:inline; }
             <span>DACUM Lite</span>
         </div>
         <div class="nav-actions">
-            <button class="lang-btn" id="langBtn" onclick="toggleLang()">English</button>
+            <select class="lang-select" id="langSelect" title="Language / اللغة / Langue">
+                <option value="en">English</option>
+                <option value="fr">Français</option>
+                <option value="ar">العربية</option>
+            </select>
             <button class="lang-btn theme-btn" id="themeBtn" onclick="toggleTheme()" title="Cycle color theme">
-                <span data-ar>الألوان: الحالي</span><span data-en>Colors: Default</span>
+                <span data-ar>الألوان 1</span><span data-en>Theme 1</span><span data-fr>Thème 1</span>
             </button>
+            <a class="btn-pro" href="https://dacumlivepropilot.hshaam77.workers.dev/" target="_blank" rel="noopener">
+                <span class="pro-badge">PRO</span>
+                <span data-ar>داكم لايف برو</span><span data-en>DACUM Live Pro</span><span data-fr>DACUM Live Pro</span>
+            </a>
             <a class="btn btn-primary" href="./app/index.html">
-                <span data-ar>افتح الأداة</span><span data-en>Open the App</span>
+                <span data-ar>افتح الأداة</span><span data-en>Open the App</span><span data-fr>Ouvrir l'appli</span>
             </a>
         </div>
     </div>
@@ -417,6 +509,7 @@ html[dir="ltr"] span[data-en]{ display:inline; }
             <div class="eyebrow">
                 <span data-ar>🆓 مجاني · ثنائي اللغة · يعمل من المتصفح</span>
                 <span data-en>🆓 Free · Bilingual · Runs in your browser</span>
+                <span data-fr>🆓 Gratuit · Multilingue · Fonctionne dans le navigateur</span>
             </div>
             <h1 data-ar>
                 من ورشة عمل داكم إلى <span class="accent">مخطط جاهز للتصدير</span> — بلا تعقيد
@@ -424,23 +517,30 @@ html[dir="ltr"] span[data-en]{ display:inline; }
             <h1 data-en>
                 From a DACUM workshop to a <span class="accent">finished chart</span> — with nothing lost in translation
             </h1>
+            <h1 data-fr>
+                D'un atelier DACUM à un <span class="accent">graphique finalisé</span> — sans rien perdre en traduction
+            </h1>
             <p class="hero-sub" data-ar>
                 أداة DACUM Lite تساعد مطوّري المناهج وميسّري ورش العمل على بناء وتحرير وتصدير مخططات تحليل المهن (داكم) بسهولة، بدعم كامل للعربية والإنجليزية معًا.
             </p>
             <p class="hero-sub" data-en>
                 DACUM Lite helps curriculum developers and workshop facilitators build, edit, and export occupational analysis charts — with full Arabic and English support, right-to-left included.
             </p>
+            <p class="hero-sub" data-fr>
+                DACUM Lite aide les concepteurs de programmes et les animateurs d'atelier à créer, modifier et exporter facilement des graphiques d'analyse de profession — avec prise en charge complète de l'arabe, du français et de l'anglais.
+            </p>
             <div class="hero-ctas">
                 <a class="btn btn-primary" href="./app/index.html">
-                    <span data-ar>ابدأ الآن مجانًا ←</span><span data-en>Start free ←</span>
+                    <span data-ar>ابدأ الآن مجانًا ←</span><span data-en>Start free ←</span><span data-fr>Commencer gratuitement ←</span>
                 </a>
                 <a class="btn btn-ghost" href="./app/user-guide.html">
-                    <span data-ar>📘 دليل الاستخدام</span><span data-en>📘 User guide</span>
+                    <span data-ar>📘 دليل الاستخدام</span><span data-en>📘 User guide</span><span data-fr>📘 Guide d'utilisation</span>
                 </a>
             </div>
             <div class="hero-note">
                 <span data-ar>✅ لا حاجة لتسجيل أو تنزيل — يعمل مباشرة داخل المتصفح</span>
                 <span data-en>✅ No sign-up, no install — works directly in your browser</span>
+                <span data-fr>✅ Aucune inscription, aucune installation — fonctionne directement dans le navigateur</span>
             </div>
         </div>
 
@@ -448,28 +548,34 @@ html[dir="ltr"] span[data-en]{ display:inline; }
             <div class="duty-tile">
                 <div class="badge" data-ar>الواجبة A</div>
                 <div class="badge" data-en>DUTY A</div>
+                <div class="badge" data-fr>FONCTION A</div>
                 <div class="title" data-ar>صيانة المعدات الكهربائية</div>
                 <div class="title" data-en>Maintaining Electrical Equipment</div>
+                <div class="title" data-fr>Entretien des équipements électriques</div>
             </div>
             <div class="task-tile t1">
                 <div class="lbl">A1</div>
                 <div class="txt" data-ar>فحص الدوائر الكهربائية</div>
                 <div class="txt" data-en>Inspect electrical circuits</div>
+                <div class="txt" data-fr>Inspecter les circuits électriques</div>
             </div>
             <div class="task-tile t2">
                 <div class="lbl">A2</div>
                 <div class="txt" data-ar>استبدال القطع التالفة</div>
                 <div class="txt" data-en>Replace faulty components</div>
+                <div class="txt" data-fr>Remplacer les composants défectueux</div>
             </div>
             <div class="task-tile t3">
                 <div class="lbl">A3</div>
                 <div class="txt" data-ar>توثيق نتائج الفحص</div>
                 <div class="txt" data-en>Document inspection results</div>
+                <div class="txt" data-fr>Documenter les résultats d'inspection</div>
             </div>
             <div class="task-tile t4">
                 <div class="lbl">A4</div>
                 <div class="txt" data-ar>اختبار السلامة النهائي</div>
                 <div class="txt" data-en>Run final safety test</div>
+                <div class="txt" data-fr>Effectuer le test de sécurité final</div>
             </div>
         </div>
     </div>
@@ -480,15 +586,17 @@ html[dir="ltr"] span[data-en]{ display:inline; }
     <div class="container">
         <div class="strip-grid" style="padding:44px 0;">
             <div class="strip-col before reveal">
-                <h3><span data-ar>قبل</span><span data-en>Before</span></h3>
+                <h3><span data-ar>قبل</span><span data-en>Before</span><span data-fr>Avant</span></h3>
                 <p data-ar>بناء مخطط داكم يدويًا في Word أو Excel، ثم إعادة تنسيقه بالكامل عند أي تعديل، وترجمته يدويًا للعربية.</p>
                 <p data-en>Building a DACUM chart by hand in Word or Excel, reformatting everything after every edit, and translating it manually for Arabic audiences.</p>
+                <p data-fr>Construire un graphique DACUM à la main dans Word ou Excel, tout reformater après chaque modification, et le traduire manuellement pour un public arabophone.</p>
             </div>
             <div class="strip-arrow reveal">→</div>
             <div class="strip-col after reveal">
-                <h3><span data-ar>مع DACUM Lite</span><span data-en>With DACUM Lite</span></h3>
+                <h3><span data-ar>مع DACUM Lite</span><span data-en>With DACUM Lite</span><span data-fr>Avec DACUM Lite</span></h3>
                 <p data-ar>تبني الواجبات والمهام بالسحب والإفلات، وتصدّر Word أو PDF جاهزين للطباعة بلغتين — خلال دقائق.</p>
                 <p data-en>Drag duties and tasks into place, then export a print-ready Word or PDF in either language — in minutes, not hours.</p>
+                <p data-fr>Organisez les fonctions et tâches par glisser-déposer, puis exportez un document Word ou PDF prêt à imprimer dans la langue de votre choix — en quelques minutes.</p>
             </div>
         </div>
     </div>
@@ -499,50 +607,58 @@ html[dir="ltr"] span[data-en]{ display:inline; }
     <div class="container">
         <div class="section-head reveal">
             <div class="eyebrow">
-                <span data-ar>الإمكانيات</span><span data-en>Capabilities</span>
+                <span data-ar>الإمكانيات</span><span data-en>Capabilities</span><span data-fr>Fonctionnalités</span>
             </div>
             <h2 data-ar>كل ما تحتاجه لإدارة ورشة داكم</h2>
             <h2 data-en>Everything a DACUM workshop needs</h2>
+            <h2 data-fr>Tout ce dont un atelier DACUM a besoin</h2>
             <p data-ar>من أول جلسة عصف ذهني إلى آخر مستند مُصدّر.</p>
             <p data-en>From the first brainstorm to the final exported document.</p>
+            <p data-fr>Du premier remue-méninges au document final exporté.</p>
         </div>
 
         <div class="feat-grid">
             <div class="feat-card reveal">
                 <div class="feat-icon">📁</div>
-                <h3><span data-ar>مشاريع متعددة</span><span data-en>Multiple projects</span></h3>
+                <h3><span data-ar>مشاريع متعددة</span><span data-en>Multiple projects</span><span data-fr>Projets multiples</span></h3>
                 <p data-ar>أنشئ وأدر عدة مخططات داكم منفصلة، وانتقل بينها بنقرة واحدة.</p>
                 <p data-en>Create and switch between separate DACUM charts with a single click.</p>
+                <p data-fr>Créez et gérez plusieurs graphiques DACUM distincts, et passez de l'un à l'autre en un clic.</p>
             </div>
             <div class="feat-card reveal">
                 <div class="feat-icon">🌐</div>
-                <h3><span data-ar>عربي وإنجليزي بالكامل</span><span data-en>Fully bilingual</span></h3>
+                <h3><span data-ar>عربي وإنجليزي بالكامل</span><span data-en>Fully bilingual</span><span data-fr>Multilingue complet</span></h3>
                 <p data-ar>واجهة تدعم الاتجاه من اليمين لليسار بشكل أصلي، وليس كإضافة لاحقة.</p>
                 <p data-en>Native right-to-left support — not bolted on as an afterthought.</p>
+                <p data-fr>Prise en charge native de l'arabe, du français et de l'anglais, y compris l'affichage de droite à gauche.</p>
             </div>
             <div class="feat-card reveal">
                 <div class="feat-icon">📤</div>
-                <h3><span data-ar>تصدير Word و PDF</span><span data-en>Word &amp; PDF export</span></h3>
+                <h3><span data-ar>تصدير Word و PDF</span><span data-en>Word &amp; PDF export</span><span data-fr>Export Word et PDF</span></h3>
                 <p data-ar>مستندات جاهزة للطباعة والمشاركة مع الجهة المستفيدة مباشرة.</p>
                 <p data-en>Print-ready documents you can hand straight to the client or panel.</p>
+                <p data-fr>Des documents prêts à imprimer que vous pouvez remettre directement au client ou au panel.</p>
             </div>
             <div class="feat-card reveal">
                 <div class="feat-icon">🧱</div>
-                <h3><span data-ar>عرض الجدار للورش الحية</span><span data-en>Live Wall View</span></h3>
+                <h3><span data-ar>عرض الجدار للورش الحية</span><span data-en>Live Wall View</span><span data-fr>Vue murale en direct</span></h3>
                 <p data-ar>اعرض الواجبات والمهام على الشاشة وحرّرها مباشرة أثناء الورشة.</p>
                 <p data-en>Project duties and tasks on screen and edit them live during the session.</p>
+                <p data-fr>Projetez les fonctions et tâches à l'écran et modifiez-les en direct pendant la session.</p>
             </div>
             <div class="feat-card reveal">
                 <div class="feat-icon">↩️</div>
-                <h3><span data-ar>تراجع ولقطات محفوظة</span><span data-en>Undo &amp; snapshots</span></h3>
+                <h3><span data-ar>تراجع ولقطات محفوظة</span><span data-en>Undo &amp; snapshots</span><span data-fr>Annulation et instantanés</span></h3>
                 <p data-ar>كل إجراء قابل للتراجع، وبإمكانك حفظ نسخة مسمّاة قبل أي تعديل كبير.</p>
                 <p data-en>Every action is reversible, and you can save a named snapshot before big changes.</p>
+                <p data-fr>Chaque action est réversible, et vous pouvez enregistrer un instantané nommé avant toute modification importante.</p>
             </div>
             <div class="feat-card reveal">
                 <div class="feat-icon">📶</div>
-                <h3><span data-ar>يعمل بدون إنترنت</span><span data-en>Works offline</span></h3>
+                <h3><span data-ar>يعمل بدون إنترنت</span><span data-en>Works offline</span><span data-fr>Fonctionne hors ligne</span></h3>
                 <p data-ar>ثبّت الأداة كتطبيق على جهازك واستخدمها حتى بدون اتصال.</p>
                 <p data-en>Install it as an app on your device and keep working without a connection.</p>
+                <p data-fr>Installez-la comme application sur votre appareil et continuez à travailler même sans connexion.</p>
             </div>
         </div>
     </div>
@@ -554,28 +670,35 @@ html[dir="ltr"] span[data-en]{ display:inline; }
         <div class="section-head reveal">
             <h2 data-ar>لمن صُممت هذه الأداة؟</h2>
             <h2 data-en>Who is it for?</h2>
+            <h2 data-fr>À qui s'adresse cet outil ?</h2>
         </div>
         <div class="aud-grid">
             <div class="aud-card reveal">
                 <div class="em">🧑‍🏫</div>
                 <h4 data-ar>ميسّرو ورش داكم</h4>
                 <h4 data-en>DACUM facilitators</h4>
+                <h4 data-fr>Animateurs DACUM</h4>
                 <p data-ar>لإدارة الجلسة وتوثيق مخرجاتها لحظيًا</p>
                 <p data-en>Run the session and capture its output live</p>
+                <p data-fr>Animer la session et capturer ses résultats en direct</p>
             </div>
             <div class="aud-card reveal">
                 <div class="em">📚</div>
                 <h4 data-ar>مطوّرو المناهج المهنية</h4>
                 <h4 data-en>TVET curriculum developers</h4>
+                <h4 data-fr>Concepteurs de programmes EFTP</h4>
                 <p data-ar>لتحويل تحليل المهنة إلى مخطط منهجي منظم</p>
                 <p data-en>Turn occupational analysis into a structured chart</p>
+                <p data-fr>Transformer une analyse de profession en graphique structuré</p>
             </div>
             <div class="aud-card reveal">
                 <div class="em">🏢</div>
                 <h4 data-ar>جهات ومعاهد التدريب</h4>
                 <h4 data-en>Training institutions</h4>
+                <h4 data-fr>Établissements de formation</h4>
                 <p data-ar>لإنتاج مستندات رسمية جاهزة للجهات المستفيدة</p>
                 <p data-en>Produce official documents ready for stakeholders</p>
+                <p data-fr>Produire des documents officiels prêts pour les parties prenantes</p>
             </div>
         </div>
     </div>
@@ -587,8 +710,10 @@ html[dir="ltr"] span[data-en]{ display:inline; }
         <div class="section-head reveal">
             <h2 data-ar>هكذا تبدو مخططاتك</h2>
             <h2 data-en>This is what your chart looks like</h2>
+            <h2 data-fr>Voici à quoi ressemble votre graphique</h2>
             <p data-ar>عرض البطاقات — سحب وإفلات، تحرير مباشر، وترقيم تلقائي (A1، A2…)</p>
             <p data-en>Card view — drag and drop, inline editing, automatic numbering (A1, A2…)</p>
+            <p data-fr>Vue en cartes — glisser-déposer, édition directe, numérotation automatique (A1, A2…)</p>
         </div>
         <div class="mock-frame reveal">
             <div class="mock-topbar"><span class="mock-dot"></span><span class="mock-dot"></span><span class="mock-dot"></span></div>
@@ -598,11 +723,12 @@ html[dir="ltr"] span[data-en]{ display:inline; }
                         <div class="mock-duty-head">DUTY A</div>
                         <div class="mock-duty-title" data-ar>خدمة العملاء</div>
                         <div class="mock-duty-title" data-en>Customer Service</div>
+                        <div class="mock-duty-title" data-fr>Service à la clientèle</div>
                     </div>
                     <div class="mock-tasks">
-                        <div class="mock-task"><b>A1</b><span data-ar>استقبال الطلبات</span><span data-en>Receive requests</span></div>
-                        <div class="mock-task"><b>A2</b><span data-ar>معالجة الشكاوى</span><span data-en>Handle complaints</span></div>
-                        <div class="mock-task"><b>A3</b><span data-ar>متابعة رضا العملاء</span><span data-en>Follow up on satisfaction</span></div>
+                        <div class="mock-task"><b>A1</b><span data-ar>استقبال الطلبات</span><span data-en>Receive requests</span><span data-fr>Recevoir les demandes</span></div>
+                        <div class="mock-task"><b>A2</b><span data-ar>معالجة الشكاوى</span><span data-en>Handle complaints</span><span data-fr>Traiter les plaintes</span></div>
+                        <div class="mock-task"><b>A3</b><span data-ar>متابعة رضا العملاء</span><span data-en>Follow up on satisfaction</span><span data-fr>Assurer le suivi de la satisfaction</span></div>
                     </div>
                 </div>
                 <div class="mock-duty-row">
@@ -610,11 +736,12 @@ html[dir="ltr"] span[data-en]{ display:inline; }
                         <div class="mock-duty-head">DUTY B</div>
                         <div class="mock-duty-title" data-ar>إدارة المخزون</div>
                         <div class="mock-duty-title" data-en>Inventory Management</div>
+                        <div class="mock-duty-title" data-fr>Gestion des stocks</div>
                     </div>
                     <div class="mock-tasks">
-                        <div class="mock-task"><b>B1</b><span data-ar>جرد المواد</span><span data-en>Count stock</span></div>
-                        <div class="mock-task"><b>B2</b><span data-ar>إعداد التقارير</span><span data-en>Prepare reports</span></div>
-                        <div class="mock-task"><b>B3</b><span data-ar>طلب التوريد</span><span data-en>Place supply orders</span></div>
+                        <div class="mock-task"><b>B1</b><span data-ar>جرد المواد</span><span data-en>Count stock</span><span data-fr>Compter les stocks</span></div>
+                        <div class="mock-task"><b>B2</b><span data-ar>إعداد التقارير</span><span data-en>Prepare reports</span><span data-fr>Préparer les rapports</span></div>
+                        <div class="mock-task"><b>B3</b><span data-ar>طلب التوريد</span><span data-en>Place supply orders</span><span data-fr>Passer les commandes de fournitures</span></div>
                     </div>
                 </div>
                 <div class="mock-duty-row">
@@ -622,13 +749,90 @@ html[dir="ltr"] span[data-en]{ display:inline; }
                         <div class="mock-duty-head">DUTY C</div>
                         <div class="mock-duty-title" data-ar>ضبط الجودة</div>
                         <div class="mock-duty-title" data-en>Quality Control</div>
+                        <div class="mock-duty-title" data-fr>Contrôle qualité</div>
                     </div>
                     <div class="mock-tasks">
-                        <div class="mock-task"><b>C1</b><span data-ar>فحص العينات</span><span data-en>Inspect samples</span></div>
-                        <div class="mock-task"><b>C2</b><span data-ar>توثيق النتائج</span><span data-en>Log results</span></div>
-                        <div class="mock-task"><b>C3</b><span data-ar>تحديث المعايير</span><span data-en>Update standards</span></div>
+                        <div class="mock-task"><b>C1</b><span data-ar>فحص العينات</span><span data-en>Inspect samples</span><span data-fr>Inspecter les échantillons</span></div>
+                        <div class="mock-task"><b>C2</b><span data-ar>توثيق النتائج</span><span data-en>Log results</span><span data-fr>Consigner les résultats</span></div>
+                        <div class="mock-task"><b>C3</b><span data-ar>تحديث المعايير</span><span data-en>Update standards</span><span data-fr>Mettre à jour les normes</span></div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ══════════════════════════════════ DACUM LIVE PRO ══════════════════════════════════ -->
+<section>
+    <div class="container">
+        <div class="pro-panel reveal">
+            <div class="eyebrow pro-eyebrow">
+                <span data-ar>✨ النسخة الاحترافية</span>
+                <span data-en>✨ The Professional Edition</span>
+                <span data-fr>✨ L'édition professionnelle</span>
+            </div>
+            <h2 data-ar>جاهز لورشة داكم مدعومة بالذكاء الاصطناعي؟</h2>
+            <h2 data-en>Ready for an AI-powered DACUM workshop?</h2>
+            <h2 data-fr>Prêt pour un atelier DACUM propulsé par l'IA ?</h2>
+            <p class="pro-sub" data-ar>
+                DACUM Live Pro يأخذ كل ما تحبه في DACUM Lite ويضيف له توليدًا بالذكاء الاصطناعي، وتصويتًا حيًا أثناء الورشة، وأدوات كاملة لبناء المنهج — من تحليل المهنة إلى الوحدات التدريبية الجاهزة.
+            </p>
+            <p class="pro-sub" data-en>
+                DACUM Live Pro takes everything you like about DACUM Lite and adds AI-powered generation, live in-workshop voting, and complete curriculum-building tools — from occupational analysis all the way to finished training modules.
+            </p>
+            <p class="pro-sub" data-fr>
+                DACUM Live Pro reprend tout ce que vous aimez dans DACUM Lite et y ajoute la génération par IA, le vote en direct pendant l'atelier, et des outils complets de conception de programme — de l'analyse de la profession jusqu'aux modules de formation finalisés.
+            </p>
+
+            <div class="pro-feat-grid">
+                <div class="pro-feat">
+                    <div class="pro-feat-icon">🤖</div>
+                    <div>
+                        <h4><span data-ar>توليد بالذكاء الاصطناعي</span><span data-en>AI-Powered Generation</span><span data-fr>Génération par IA</span></h4>
+                        <p><span data-ar>مسودة كاملة من الواجبات والمهام تُولَّد تلقائيًا من عنوان المهنة ونطاق العمل.</span><span data-en>A complete duties-and-tasks draft generated automatically from the occupation title and scope of work.</span><span data-fr>Un brouillon complet de fonctions et tâches généré automatiquement à partir du titre de la profession et du champ d'application.</span></p>
+                    </div>
+                </div>
+                <div class="pro-feat">
+                    <div class="pro-feat-icon">🎯</div>
+                    <div>
+                        <h4><span data-ar>التحقق من المهام وأولوية التدريب</span><span data-en>Task Verification &amp; Training Priority</span><span data-fr>Vérification des tâches et priorité de formation</span></h4>
+                        <p><span data-ar>جلسات تصويت حية أثناء الورشة — يقيّم المشاركون كل مهمة (الأهمية، التكرار، الصعوبة) مباشرة من هواتفهم.</span><span data-en>Live voting sessions during the workshop — participants rate every task (importance, frequency, difficulty) right from their phones.</span><span data-fr>Sessions de vote en direct pendant l'atelier — les participants évaluent chaque tâche (importance, fréquence, difficulté) directement depuis leur téléphone.</span></p>
+                    </div>
+                </div>
+                <div class="pro-feat">
+                    <div class="pro-feat-icon">🧩</div>
+                    <div>
+                        <h4><span data-ar>مجموعات الكفايات</span><span data-en>Competency Clusters</span><span data-fr>Regroupements de compétences</span></h4>
+                        <p><span data-ar>تجميع المهام المترابطة في كفايات محددة، مع معايير الأداء ونطاقها.</span><span data-en>Group related tasks into competency clusters with defined performance criteria and range.</span><span data-fr>Regroupez les tâches liées en compétences, avec critères de performance et portée définis.</span></p>
+                    </div>
+                </div>
+                <div class="pro-feat">
+                    <div class="pro-feat-icon">🎓</div>
+                    <div>
+                        <h4><span data-ar>مخرجات التعلّم</span><span data-en>Learning Outcomes</span><span data-fr>Résultats d'apprentissage</span></h4>
+                        <p><span data-ar>ربط معايير الأداء بمخرجات تعلّم منهجية جاهزة للتصميم التعليمي.</span><span data-en>Map performance criteria to structured learning outcomes, ready for instructional design.</span><span data-fr>Associez les critères de performance à des résultats d'apprentissage structurés, prêts pour la conception pédagogique.</span></p>
+                    </div>
+                </div>
+                <div class="pro-feat">
+                    <div class="pro-feat-icon">📦</div>
+                    <div>
+                        <h4><span data-ar>خرائط الوحدات التدريبية</span><span data-en>Module Mapping</span><span data-fr>Cartographie des modules</span></h4>
+                        <p><span data-ar>تنظيم مخرجات التعلّم في وحدات تدريبية جاهزة لبناء المنهج الكامل.</span><span data-en>Organize learning outcomes into training modules, ready for full curriculum development.</span><span data-fr>Organisez les résultats d'apprentissage en modules de formation, prêts pour l'élaboration complète du programme.</span></p>
+                    </div>
+                </div>
+                <div class="pro-feat">
+                    <div class="pro-feat-icon">📊</div>
+                    <div>
+                        <h4><span data-ar>لوحة نتائج الورشة</span><span data-en>Workshop Results Dashboard</span><span data-fr>Tableau de bord des résultats</span></h4>
+                        <p><span data-ar>ترتيب المهام حسب الأولوية وحساب عبء التدريب لكل واجب تلقائيًا.</span><span data-en>Automatic priority ranking and training-load calculation for every duty.</span><span data-fr>Classement automatique des priorités et calcul de la charge de formation pour chaque fonction.</span></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-ctas">
+                <a class="btn btn-pro-cta" href="https://dacumlivepropilot.hshaam77.workers.dev/" target="_blank" rel="noopener">
+                    <span data-ar>افتح DACUM Live Pro ↗</span><span data-en>Open DACUM Live Pro ↗</span><span data-fr>Ouvrir DACUM Live Pro ↗</span>
+                </a>
             </div>
         </div>
     </div>
@@ -641,9 +845,10 @@ html[dir="ltr"] span[data-en]{ display:inline; }
             <div class="avatar">HJ</div>
             <div>
                 <div class="about-name">Husham Jawad Kadhim</div>
-                <div class="about-role"><span data-ar>مطوّر مناهج مهنية ومبتكر تقني تعليمي</span><span data-en>TVET Curriculum Developer &amp; Ed-Tech Innovator</span></div>
+                <div class="about-role"><span data-ar>مطوّر مناهج مهنية ومبتكر تقني تعليمي</span><span data-en>TVET Curriculum Developer &amp; Ed-Tech Innovator</span><span data-fr>Concepteur de programmes EFTP et innovateur en technologie éducative</span></div>
                 <p class="about-bio" data-ar>صمّم DACUM Lite لتسهيل عمل الميسّرين والمختصين في التدريب المهني والتقني.</p>
                 <p class="about-bio" data-en>Built DACUM Lite to make life easier for TVET facilitators and specialists.</p>
+                <p class="about-bio" data-fr>A conçu DACUM Lite pour faciliter le travail des animateurs et spécialistes de l'EFTP.</p>
                 <div class="about-links">
                     <a href="mailto:hshaam77@gmail.com">📧 hshaam77@gmail.com</a>
                     <a href="https://www.linkedin.com/in/husham-jawad-kadhim-954006200/" target="_blank" rel="noopener">💼 LinkedIn</a>
@@ -658,14 +863,16 @@ html[dir="ltr"] span[data-en]{ display:inline; }
     <div class="final-cta reveal">
         <h2 data-ar>جاهز تبني أول مخطط داكم؟</h2>
         <h2 data-en>Ready to build your first DACUM chart?</h2>
+        <h2 data-fr>Prêt à créer votre premier graphique DACUM ?</h2>
         <p data-ar>مجاني بالكامل، لا يتطلب تسجيلًا، ويعمل من أي متصفح حديث.</p>
         <p data-en>Completely free, no account needed, works in any modern browser.</p>
+        <p data-fr>Entièrement gratuit, sans compte requis, fonctionne dans tout navigateur moderne.</p>
         <div class="hero-ctas">
             <a class="btn btn-primary" href="./app/index.html">
-                <span data-ar>افتح DACUM Lite ←</span><span data-en>Open DACUM Lite ←</span>
+                <span data-ar>افتح DACUM Lite ←</span><span data-en>Open DACUM Lite ←</span><span data-fr>Ouvrir DACUM Lite ←</span>
             </a>
             <a class="btn btn-ghost" href="./app/user-guide.html">
-                <span data-ar>📘 اقرأ الدليل</span><span data-en>📘 Read the guide</span>
+                <span data-ar>📘 اقرأ الدليل</span><span data-en>📘 Read the guide</span><span data-fr>📘 Lire le guide</span>
             </a>
         </div>
     </div>
@@ -676,32 +883,55 @@ html[dir="ltr"] span[data-en]{ display:inline; }
     <div class="container foot-inner">
         <span data-ar>© 2026 DACUM Lite — كل الحقوق محفوظة</span>
         <span data-en>© 2026 DACUM Lite — All rights reserved</span>
+        <span data-fr>© 2026 DACUM Lite — Tous droits réservés</span>
         <div class="foot-links">
             <a href="mailto:hshaam77@gmail.com" data-ar>راسلنا</a>
             <a href="mailto:hshaam77@gmail.com" data-en>Contact</a>
+            <a href="mailto:hshaam77@gmail.com" data-fr>Contact</a>
             <a href="./app/user-guide.html" data-ar>الدليل</a>
             <a href="./app/user-guide.html" data-en>Guide</a>
+            <a href="./app/user-guide.html" data-fr>Guide</a>
         </div>
     </div>
 </footer>
 
 <script>
-// ── Language toggle — mirrors the same EN/AR pattern used in the app ──
-function toggleLang(){
+// ── Language — dropdown-driven, cycles EN / FR / AR ───────────
+// Shares the 'dacum_lang' localStorage key with the app itself,
+// so a preference set on either page carries over to the other.
+const LANG_KEY   = 'dacum_lang';
+const LANG_ORDER = ['en', 'fr', 'ar'];
+const RTL_LANGS  = ['ar'];
+
+function applyLang(lang){
+    if (!LANG_ORDER.includes(lang)) lang = 'en';
     const html = document.documentElement;
-    const goingLtr = html.dir === 'rtl';
-    html.dir  = goingLtr ? 'ltr' : 'rtl';
-    html.lang = goingLtr ? 'en' : 'ar';
-    document.getElementById('langBtn').textContent = goingLtr ? 'العربية' : 'English';
+    html.lang = lang;
+    html.dir  = RTL_LANGS.includes(lang) ? 'rtl' : 'ltr';
+
+    const sel = document.getElementById('langSelect');
+    if (sel && sel.value !== lang) sel.value = lang;
+
+    try { localStorage.setItem(LANG_KEY, lang); } catch (e) { /* storage unavailable */ }
 }
 
-// ── Theme toggle — cycles Default → Palette 1 → Palette 2 → Default ──
+// Apply whatever the early bootstrap script (in <head>) already set,
+// so the dropdown reflects it, then wire the change handler.
+document.addEventListener('DOMContentLoaded', () => {
+    const sel = document.getElementById('langSelect');
+    if (sel) {
+        sel.value = document.documentElement.lang;
+        sel.addEventListener('change', () => applyLang(sel.value));
+    }
+});
+
+// ── Theme toggle — cycles Theme 1 → Theme 2 → Theme 3 → Theme 1 ──
 const THEME_KEY   = 'dacum_theme_palette';
 const THEME_ORDER = ['default', 'palette1', 'palette2'];
 const THEME_LABELS = {
-    default:  { ar: 'الألوان: الحالي',      en: 'Colors: Default'   },
-    palette1: { ar: 'الألوان: Palette 1',   en: 'Colors: Palette 1' },
-    palette2: { ar: 'الألوان: Palette 2',   en: 'Colors: Palette 2' },
+    default:  { ar: 'الألوان 1', en: 'Theme 1', fr: 'Thème 1' },
+    palette1: { ar: 'الألوان 2', en: 'Theme 2', fr: 'Thème 2' },
+    palette2: { ar: 'الألوان 3', en: 'Theme 3', fr: 'Thème 3' },
 };
 
 function _applyTheme(theme){
@@ -711,11 +941,13 @@ function _applyTheme(theme){
 
     const btn = document.getElementById('themeBtn');
     if (btn){
+        const labels = THEME_LABELS[theme] || THEME_LABELS.default;
         const arLabel = btn.querySelector('[data-ar]');
         const enLabel = btn.querySelector('[data-en]');
-        const labels  = THEME_LABELS[theme] || THEME_LABELS.default;
+        const frLabel = btn.querySelector('[data-fr]');
         if (arLabel) arLabel.textContent = labels.ar;
         if (enLabel) enLabel.textContent = labels.en;
+        if (frLabel) frLabel.textContent = labels.fr;
     }
 }
 
