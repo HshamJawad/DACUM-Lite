@@ -60,9 +60,11 @@
   /* ── Brand identity (theme-toggle tokens) ───────────────────
      Everything below drives the color-theme switcher. Defaults
      reproduce today's look exactly (zero drift when no theme is
-     selected); status colors above (success/danger/sky/slate)
-     are NOT touched by the theme so destructive/undo/restore
-     actions keep their normal meaning regardless of palette. */
+     selected). Most status colors (success/danger/sky/slate) stay
+     fixed across themes so undo/restore keep their normal meaning;
+     the Add Task/Add Duty/Add Section/Add Logo/Clear buttons are
+     the deliberate exception — see the palette override block
+     below, which recolors just those under palette1 & palette2. */
   --brand-primary:       #6366f1;
   --brand-primary-deep:  #4338ca;
   --brand-primary-btn:   #4f46e5;
@@ -92,6 +94,62 @@ html[data-theme="palette2"] {
   --brand-secondary:    #827DBD;
   --brand-accent:       #D87757;
   --brand-accent-dark:  #A8482D;
+}
+
+/* ── Action-button overrides for Theme 2 & Theme 3 ────────────
+   Add Task / Add Duty / Add Section / Add Logo / Clear buttons
+   use fixed status colors (success/purple/danger) by default so
+   Theme 1 is untouched. Under palette1 & palette2 they switch to
+   the active palette so every action button reads as "on brand". */
+html[data-theme="palette1"] .btn-add,
+html[data-theme="palette1"] .btn-add-section-main,
+html[data-theme="palette1"] .cv-add-task,
+html[data-theme="palette1"] .cv-add-duty,
+html[data-theme="palette2"] .btn-add,
+html[data-theme="palette2"] .btn-add-section-main,
+html[data-theme="palette2"] .cv-add-task,
+html[data-theme="palette2"] .cv-add-duty {
+  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-deep) 100%);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--brand-primary) 25%, transparent);
+}
+html[data-theme="palette1"] .btn-add:hover,
+html[data-theme="palette1"] .btn-add-section-main:hover,
+html[data-theme="palette1"] .cv-add-task:hover,
+html[data-theme="palette1"] .cv-add-duty:hover,
+html[data-theme="palette2"] .btn-add:hover,
+html[data-theme="palette2"] .btn-add-section-main:hover,
+html[data-theme="palette2"] .cv-add-task:hover,
+html[data-theme="palette2"] .cv-add-duty:hover {
+  background: linear-gradient(135deg, var(--brand-primary-deep) 0%, var(--brand-primary-deep) 100%);
+  box-shadow: 0 5px 15px color-mix(in srgb, var(--brand-primary) 40%, transparent);
+}
+
+html[data-theme="palette1"] .btn-add-image,
+html[data-theme="palette2"] .btn-add-image {
+  background: linear-gradient(135deg, var(--brand-secondary) 0%, color-mix(in srgb, var(--brand-secondary) 65%, black) 100%);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--brand-secondary) 25%, transparent);
+}
+html[data-theme="palette1"] .btn-add-image:hover,
+html[data-theme="palette2"] .btn-add-image:hover {
+  box-shadow: 0 5px 15px color-mix(in srgb, var(--brand-secondary) 40%, transparent);
+}
+
+html[data-theme="palette1"] #btnClearAll,
+html[data-theme="palette1"] .btn-clear-all,
+html[data-theme="palette1"] .btn-clear-section,
+html[data-theme="palette2"] #btnClearAll,
+html[data-theme="palette2"] .btn-clear-all,
+html[data-theme="palette2"] .btn-clear-section {
+  background: linear-gradient(135deg, var(--brand-accent) 0%, var(--brand-accent-dark) 100%);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--brand-accent-dark) 25%, transparent);
+}
+html[data-theme="palette1"] #btnClearAll:hover,
+html[data-theme="palette1"] .btn-clear-all:hover,
+html[data-theme="palette1"] .btn-clear-section:hover,
+html[data-theme="palette2"] #btnClearAll:hover,
+html[data-theme="palette2"] .btn-clear-all:hover,
+html[data-theme="palette2"] .btn-clear-section:hover {
+  box-shadow: 0 5px 15px color-mix(in srgb, var(--brand-accent-dark) 40%, transparent);
 }
 
 /* ── Reset ─────────────────────────────────────────────────── */

@@ -712,7 +712,7 @@ export const translations = {
         'lang.switchTo': 'EN',
 
         // ── Sidebar — brand ───────────────────────────────────
-        'sidebar.brandTagline': 'مولّد مخططات داكم',
+        'sidebar.brandTagline': 'مولّد مخططات DACUM',
 
         // ── Sidebar — navigation ──────────────────────────────
         'sidebar.navLabel':           'التنقل',
