@@ -17,9 +17,15 @@
 //     (they were missing, so a first-ever offline visit could
 //     fail to load them).
 //   • Removed './version.js' — not part of the current file set.
+//
+// v3.2.1 change log:
+//   • Added './fonts/Cairo.woff2' to the pre-cache list so the
+//     self-hosted Arabic font is available offline (it replaces
+//     the external Google Fonts request).
+//   • Bumped CACHE_NAME accordingly.
 // ============================================================
 
-const CACHE_NAME    = 'dacum-lite-v3.2.0';   // bump this on every deploy that changes shell files
+const CACHE_NAME    = 'dacum-lite-v3.2.1';   // bump this on every deploy that changes shell files
 const SHELL_ASSETS  = [
     './',
     './index.html',
@@ -37,7 +43,8 @@ const SHELL_ASSETS  = [
     './renderer.js',
     './state.js',
     './storage.js',
-    './manifest.json'
+    './manifest.json',
+    './fonts/Cairo.woff2'
 ];
 
 // ── Install: pre-cache the app shell ─────────────────────────
