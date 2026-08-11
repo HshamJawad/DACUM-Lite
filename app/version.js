@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.2.0';        // Semantic Versioning
+export const APP_VERSION  = '4.2.1';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-11';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -56,7 +56,7 @@ export const VERSION = {
 
     changelog: [
         {
-            version: '4.2.0',
+            version: '4.2.1',
             date: '2026-08-11',
             changes: [
                 'Added an update notification bar — the app never reloads on its own',
