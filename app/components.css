@@ -947,16 +947,73 @@ body.sb-sidebar-closed #appWrapper {
 
 .sb-project-card.sb-active .sb-meta-item { color: #94a3b8; }  /* was #374e72 — more readable on active blue border */
 
-/* ── Delete button (revealed on hover) ──────────────────────── */
+/* ── Card actions (rename / delete) ─────────────────────────────
+   v4.2.0 — visibility is now decided by the INPUT DEVICE, not by a
+   blanket hover rule.
+
+   The old code was:  opacity:0  →  opacity:1 on .sb-project-card:hover
+   A touch screen never fires :hover, so on phones and in the installed
+   PWA these two buttons were permanently invisible — the user could
+   neither rename nor delete a project. Below, hover-reveal is kept for
+   mice (it keeps the sidebar calm) and the buttons are shown
+   permanently wherever hover does not exist. */
 .sb-card-actions {
   display: flex;
   align-items: center;
   gap: 4px;
   padding: 0 7px 0 3px;
-  opacity: 0;
+  opacity: 1;                 /* visible by default — see the hover query below */
   transition: opacity 0.18s;
 }
-.sb-project-card:hover .sb-card-actions { opacity: 1; }
+
+/* Mirror the asymmetric padding in Arabic (actions sit on the left) */
+html[dir="rtl"] .sb-card-actions { padding: 0 3px 0 7px; }
+
+/* ── Devices WITH a real pointer (mouse / trackpad) ───────────── */
+@media (hover: hover) and (pointer: fine) {
+  .sb-card-actions { opacity: 0; }
+  .sb-project-card:hover .sb-card-actions { opacity: 1; }
+
+  /* Keyboard users tab to these buttons too. Without this, focus can
+     land on a fully transparent control — a real accessibility bug,
+     not a cosmetic one. */
+  .sb-card-actions:focus-within { opacity: 1; }
+
+  /* Keep the actions of the ACTIVE project visible at all times: it is
+     the card the user is most likely to rename, and it stops the
+     sidebar from feeling empty when nothing is hovered. */
+  .sb-project-card.sb-active .sb-card-actions { opacity: 1; }
+}
+
+/* ── Touch devices: always visible, and big enough to tap ─────── */
+/* 22px is well under the ~44px comfortable touch target, so the two
+   buttons grow here only. Desktop sizing is untouched. */
+@media (hover: none), (pointer: coarse) {
+  .sb-card-actions { opacity: 1; gap: 6px; padding: 0 6px; }
+
+  .sb-rename-btn,
+  .sb-delete-btn {
+    width: 30px;
+    height: 30px;
+    min-width: 30px;
+    opacity: 1;               /* no resting fade — nothing sharpens it on touch */
+  }
+  .sb-rename-btn { font-size: 15px; }
+  .sb-delete-btn { font-size: 18px; }
+
+  /* :hover sticks after a tap on touch; suppress the grow so a tapped
+     button does not stay enlarged. */
+  .sb-rename-btn:hover,
+  .sb-delete-btn:hover { transform: none; }
+}
+
+/* Visible focus ring for keyboard navigation (all devices) */
+.sb-rename-btn:focus-visible,
+.sb-delete-btn:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+  opacity: 1;
+}
 
 /* Rename button — neutral blue-grey, matches sidebar palette */
 .sb-rename-btn {
