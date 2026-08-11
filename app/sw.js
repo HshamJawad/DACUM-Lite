@@ -23,9 +23,33 @@
 //     self-hosted Arabic font is available offline (it replaces
 //     the external Google Fonts request).
 //   • Bumped CACHE_NAME accordingly.
+//
+// v4.2.0 change log:
+//   • CACHE_NAME is no longer hard-coded. It is derived from the
+//     ?v= query string that index.html appends when registering
+//     this worker, so version.js is the single source of truth.
+//     A version bump also changes this script's URL, which by
+//     itself forces the browser to run an update check.
+//   • REMOVED self.skipWaiting() from install. This is the core
+//     behavioural fix: the previous code activated the new worker
+//     immediately and claimed open pages, which is exactly what a
+//     live workshop must never experience. The new worker now
+//     stays in the "waiting" state until the user presses
+//     "Update now", which posts a SKIP_WAITING message.
+//   • Added a SW_UPDATED broadcast after activation so the page
+//     can offer the switch (see update-notifier.js).
+//   • Re-added './version.js' and added './update-notifier.js' to
+//     the pre-cache list — both are part of the shell again.
 // ============================================================
 
-const CACHE_NAME    = 'dacum-lite-v3.2.1';   // bump this on every deploy that changes shell files
+// ── Version, derived from the registration URL ───────────────
+// index.html registers  ./sw.js?v=4.2.0  — see version.js.
+// The '0.0.0' fallback only applies to an old cached page that
+// still registers the plain URL; it self-heals on the next visit.
+const APP_VERSION = new URL(self.location.href).searchParams.get('v') || '0.0.0';
+const CACHE_NAME  = `dacum-lite-v${APP_VERSION}`;
+const CACHE_PREFIX = 'dacum-lite-v';
+
 const SHELL_ASSETS  = [
     './',
     './index.html',
@@ -43,11 +67,15 @@ const SHELL_ASSETS  = [
     './renderer.js',
     './state.js',
     './storage.js',
+    './version.js',
+    './update-notifier.js',
     './manifest.json',
     './fonts/Cairo.woff2'
 ];
 
 // ── Install: pre-cache the app shell ─────────────────────────
+// NOTE: deliberately NO skipWaiting() here. The new worker must
+// stay in the waiting state until the user consents.
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME).then(cache => {
@@ -59,21 +87,54 @@ self.addEventListener('install', event => {
                     )
                 )
             );
-        }).then(() => self.skipWaiting())
+        })
     );
 });
 
-// ── Activate: delete old caches (purges the stale v3.1.0 cache) ─
+// ── Activate: purge old caches, claim, then announce ─────────
 self.addEventListener('activate', event => {
-    event.waitUntil(
-        caches.keys().then(keys =>
-            Promise.all(
-                keys
-                    .filter(key => key !== CACHE_NAME)
-                    .map(key => caches.delete(key))
-            )
-        ).then(() => self.clients.claim())
-    );
+    event.waitUntil((async () => {
+        const keys  = await caches.keys();
+        const stale = keys.filter(key => key !== CACHE_NAME);
+
+        // If a previous DACUM cache existed, this activation is an
+        // UPDATE rather than a first-ever install.
+        const isUpdate = stale.some(key => key.startsWith(CACHE_PREFIX));
+
+        await Promise.all(stale.map(key => caches.delete(key)));
+        await self.clients.claim();
+
+        if (isUpdate) {
+            const windows = await self.clients.matchAll({
+                type: 'window',
+                includeUncontrolled: true
+            });
+            windows.forEach(client =>
+                client.postMessage({ type: 'SW_UPDATED', version: APP_VERSION })
+            );
+        }
+    })());
+});
+
+// ── Message: the page asks us to take over (user pressed
+//    "Update now") ─────────────────────────────────────────────
+self.addEventListener('message', event => {
+    const data = event.data;
+    if (!data) return;
+
+    if (data === 'SKIP_WAITING' || data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+        return;
+    }
+
+    // Lets the page ask which version this worker is.
+    if (data.type === 'GET_VERSION' && event.source) {
+        event.source.postMessage({
+            type: 'SW_VERSION',
+            version: APP_VERSION,
+            cache: CACHE_NAME
+        });
+    }
 });
 
 // ── Fetch: network-first for the app shell, cache is the

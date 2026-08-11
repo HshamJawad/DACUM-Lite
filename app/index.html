@@ -37,16 +37,47 @@
     <style>
         /* ══ SELF-HOSTED ARABIC FONT — Cairo ══════════════════ */
         /* File lives in the repo at:  ./fonts/Cairo.woff2       */
-        /* No external Google Fonts request is made.            */
         @font-face {
             font-family: 'Cairo';
             src: url('./fonts/Cairo.woff2') format('woff2');
-            font-weight: 100 900;   /* variable-font range; harmless for static files */
+            font-weight: 100 900;
             font-style: normal;
             font-display: swap;
             unicode-range: U+0000-00FF, U+0600-06FF, U+0750-077F, U+08A0-08FF,
                            U+FB50-FDFF, U+FE70-FEFF, U+0660-0669, U+2000-206F,
                            U+2070-209F, U+20A0-20BF, U+2190-21BF, U+2200-22FF;
+        }
+
+        /* ══ VERSION BADGE (toolbar) ══════════════════════════ */
+        .tb-version {
+            font-size:.72em;font-weight:700;letter-spacing:.02em;
+            opacity:.72;cursor:default;
+        }
+        .tb-version:disabled { cursor:default; }
+        .tb-version.tb-version--update {
+            opacity:1;cursor:pointer;
+            background:linear-gradient(135deg,#6366f1,#8b5cf6);
+            color:#fff;border-color:transparent;
+        }
+        .tb-version.tb-version--update:hover { filter:brightness(1.08); }
+
+        /* ══ UPDATE BAR ═══════════════════════════════════════ */
+        @keyframes dacumUpdateIn {
+            from { opacity:0; transform:translate(-50%,14px); }
+            to   { opacity:1; transform:translate(-50%,0); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            #updateBanner { animation:none !important; }
+        }
+        @media (max-width:520px) {
+            #updateBanner { left:12px;right:12px;transform:none;flex-wrap:wrap; }
+        }
+        @media print { #updateBanner { display:none !important; } }
+
+        /* ══ HELP TAB — version footer ════════════════════════ */
+        .hc-version-footer {
+            margin-top:14px;text-align:center;
+            font-size:.8em;color:#94a3b8;letter-spacing:.02em;
         }
 
         /* ── Sidebar brand ───────────────────────────────────── */
@@ -473,25 +504,16 @@
             html[dir="rtl"] .top-toolbar { right:0 !important;left:0 !important; }
         }
 
-        /* Arabic text: use the self-hosted Cairo font, with the
-           previous stack kept as a fallback if the file is missing. */
+        /* Arabic text: self-hosted Cairo, previous stack as fallback */
         html[dir="rtl"] body,
         html[dir="rtl"] input,
         html[dir="rtl"] textarea,
         html[dir="rtl"] select,
         html[dir="rtl"] button,
-        html[dir="rtl"] h1,
-        html[dir="rtl"] h2,
-        html[dir="rtl"] h3,
-        html[dir="rtl"] h4,
-        html[dir="rtl"] h5,
-        html[dir="rtl"] h6,
-        html[dir="rtl"] label,
-        html[dir="rtl"] p,
-        html[dir="rtl"] span,
-        html[dir="rtl"] div,
-        html[dir="rtl"] a,
-        html[dir="rtl"] li {
+        html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3,
+        html[dir="rtl"] h4, html[dir="rtl"] h5, html[dir="rtl"] h6,
+        html[dir="rtl"] label, html[dir="rtl"] p, html[dir="rtl"] span,
+        html[dir="rtl"] div, html[dir="rtl"] a, html[dir="rtl"] li {
             font-family:'Cairo','Segoe UI',Tahoma,'Arial',sans-serif;
         }
 
@@ -501,8 +523,13 @@
             font-family:'Cairo','Segoe UI',Tahoma,'Arial',sans-serif;
         }
 
-        /* Arabic option inside the language dropdown stays readable
-           even while the interface is still in EN / FR (LTR). */
+        /* The update bar is appended to <body> with inline styles */
+        html[dir="rtl"] #updateBanner,
+        html[dir="rtl"] #updateBanner * {
+            font-family:'Cairo','Segoe UI',Tahoma,'Arial',sans-serif;
+        }
+
+        /* Arabic option stays readable while the UI is still EN / FR */
         #langSelect option[value="ar"] {
             font-family:'Cairo','Segoe UI',Tahoma,'Arial',sans-serif;
         }
@@ -527,11 +554,29 @@
         document.addEventListener('DOMContentLoaded', initI18n);
     </script>
 
+    <!-- ── Update Notifier (version badge + update bar) ─────────── -->
+    <script type="module">
+        import { initUpdateNotifier } from './update-notifier.js';
+        // Runs after initI18n (registered above) so t() is ready.
+        document.addEventListener('DOMContentLoaded', initUpdateNotifier);
+    </script>
+
     <!-- ── App Bootstrap (ES Module) ────────────────────────── -->
     <script type="module" src="./app.js"></script>
 
     <!-- ── PWA: Service Worker Registration ─────────────────── -->
-    <script>
+    <!--
+        Amended in v4.2.0 (the original guard and flow are preserved):
+          • './sw.js?v=<APP_VERSION>' — sw.js rebuilds CACHE_NAME from
+            this query string, so version.js stays the single source of
+            truth, and the changed URL alone forces an update check.
+          • updateViaCache:'none'    — never let the HTTP cache hand the
+            browser a stale copy of sw.js.
+          • window.__dacumSWRegistration — handed to update-notifier.js.
+    -->
+    <script type="module">
+        import { APP_VERSION } from './version.js';
+
         // Only register SW when running as a real installed app (not in preview)
         const _swAllowed = location.hostname !== 'www.claudeusercontent.com'
                         && location.hostname !== 'claudeusercontent.com'
@@ -539,11 +584,29 @@
 
         if (_swAllowed && 'serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('[PWA] SW registered:', reg.scope))
-                    .catch(err => console.warn('[PWA] SW registration failed:', err));
+                window.__dacumSWRegistration =
+                    navigator.serviceWorker.register(`./sw.js?v=${APP_VERSION}`, {
+                        updateViaCache: 'none'
+                    })
+                    .then(reg => {
+                        console.log('[PWA] SW registered:', reg.scope, 'v' + APP_VERSION);
+                        // Ask the browser to look for a newer worker now, and
+                        // again whenever the tab is brought back to the front.
+                        reg.update().catch(() => {});
+                        document.addEventListener('visibilitychange', () => {
+                            if (!document.hidden) reg.update().catch(() => {});
+                        });
+                        return reg;
+                    })
+                    .catch(err => {
+                        console.warn('[PWA] SW registration failed:', err);
+                        return null;
+                    });
             });
         }
+    </script>
+
+    <script>
 
         // ── PWA Install Prompt ────────────────────────────────
         let _deferredInstallPrompt = null;
@@ -749,6 +812,10 @@
                     title="Cycle interface color theme">
                 <span class="tb-icon">🎨</span><span class="tb-label" id="themeLabelFull"> Theme 1</span><span class="tb-mlabel" id="themeLabelMobile">Theme 1</span>
             </button>
+            <button id="versionBadge"
+                    class="tb-btn tb-btn--neutral tb-version"
+                    type="button"
+                    disabled>v0.0.0</button>
             <select id="langSelect" class="tb-btn tb-btn--neutral tb-lang-select" title="Interface language">
                 <option value="en">English</option>
                 <option value="fr">Français</option>
@@ -1065,7 +1132,7 @@
         <div class="hc-section hc-quickstart">
             <div class="hc-section-head"><span class="hc-section-icon">🚀</span><h3 data-i18n="help.quickStartTitle">Quick Start: How to Use DACUM Lite</h3></div>
             <ol class="hc-steps">
-                <li><span class="hc-step-n">1</span><span data-i18n="help.step1" data-i18n-html="true">Enter the <strong>Occupation Title</strong> and <strong>Job Title</strong> in the <em>Chart Info</em> tab.</span></li>
+                <li><span class="hc-step-n">1</span><span data-i18n="help.step1" data-i18n-html="true">Enter the <strong>Sector</strong>, <strong>Occupation Title</strong> and <strong>Job Title</strong> in the <em>Chart Info</em> tab.</span></li>
                 <li><span class="hc-step-n">2</span><span data-i18n="help.step2" data-i18n-html="true">Add a <strong>Scope of Work</strong> to define the occupational boundary.</span></li>
                 <li><span class="hc-step-n">3</span><span data-i18n="help.step3" data-i18n-html="true">Go to <em>Duties &amp; Tasks</em> — each new duty starts with one task automatically.</span></li>
                 <li><span class="hc-step-n">4</span><span data-i18n="help.step4" data-i18n-html="true">Use <strong>➕ Add Task</strong> inside each duty. Duties are labelled <strong>A, B, C…</strong> and tasks <strong>A1, A2, B1…</strong> automatically.</span></li>
@@ -1123,11 +1190,18 @@
             </div>
         </div>
 
+        <!-- Version footer — filled by update-notifier.js -->
+        <p class="hc-version-footer" id="helpVersionFooter"></p>
+
     </div><!-- /#help-tab -->
 
     <!-- Copyright ─────────────────────────────────────── -->
     <div class="copyright">
-        <p class="copyright-main" data-i18n="copyright.main">© 2026 DACUM Lite | by Husham Jawad Kadhim | Version 3.1.0 | All Rights Reserved</p>
+        <!-- NOTE: no data-i18n here on purpose — 'copyright.main' contains a
+             {{version}} token and applyTranslations() calls t() without vars.
+             update-notifier.js renders this element (and re-renders it on
+             every language change). -->
+        <p class="copyright-main" id="copyrightMain">© 2026 DACUM Lite | by Husham Jawad Kadhim | Version 4.2.0 | All Rights Reserved</p>
     </div>
 
 </div><!-- /.container -->
