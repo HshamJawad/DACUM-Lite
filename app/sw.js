@@ -40,6 +40,14 @@
 //     can offer the switch (see update-notifier.js).
 //   • Re-added './version.js' and added './update-notifier.js' to
 //     the pre-cache list — both are part of the shell again.
+//
+// v4.2.2 change log:
+//   • Added './arabic-font.js' to the shell. It was missing, so an
+//     offline Arabic PDF export failed at the point the module was
+//     first imported.
+//   • Added OPTIONAL_ASSETS for the jsPDF Arabic TTF candidates.
+//     Caching the loader without the font it fetches would only have
+//     moved the offline failure one step later.
 // ============================================================
 
 // ── Version, derived from the registration URL ───────────────
@@ -54,6 +62,7 @@ const SHELL_ASSETS  = [
     './',
     './index.html',
     './app.js',
+    './arabic-font.js',
     './base.css',
     './layout.css',
     './components.css',
@@ -73,6 +82,26 @@ const SHELL_ASSETS  = [
     './fonts/Cairo.woff2'
 ];
 
+// ── Optional assets: cached if present, ignored if not ───────
+// arabic-font.js fetches ONE of these TTFs from the repo root at
+// the first Arabic PDF export and registers it with jsPDF. Caching
+// the module alone would not be enough — offline it would load and
+// then fail on the fetch, producing a PDF with no Arabic glyphs.
+//
+// These are TTFs, not the woff2 above: that one styles the web UI,
+// while jsPDF's addFileToVFS needs a TTF. They are separate files
+// serving separate purposes, and both have to be cached.
+//
+// Listed separately because only one is expected to exist in any
+// given deployment. A 404 here is normal and is swallowed by the
+// per-asset catch in install, exactly as a missing optional asset
+// should be.
+const OPTIONAL_ASSETS = [
+    './Tajawal-Regular.ttf',
+    './Cairo-Regular.ttf',
+    './Calibri.ttf'
+];
+
 // ── Install: pre-cache the app shell ─────────────────────────
 // NOTE: deliberately NO skipWaiting() here. The new worker must
 // stay in the waiting state until the user consents.
@@ -81,7 +110,7 @@ self.addEventListener('install', event => {
         caches.open(CACHE_NAME).then(cache => {
             // Use individual requests so one failure doesn't block all
             return Promise.allSettled(
-                SHELL_ASSETS.map(url =>
+                SHELL_ASSETS.concat(OPTIONAL_ASSETS).map(url =>
                     cache.add(url).catch(err =>
                         console.warn('[SW] Failed to cache:', url, err)
                     )

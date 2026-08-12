@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.2.2';        // Semantic Versioning
+export const APP_VERSION  = '4.2.3';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-12';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -56,13 +56,15 @@ export const VERSION = {
 
     changelog: [
         {
-            version: '4.2.2',
+            version: '4.2.3',
             date: '2026-08-12',
             changes: [
                 'Word export: Arabic text is now tagged ar-IQ, so Word stops marking every word as a spelling error',
                 'Word export: paragraphs and table columns follow the interface language instead of being locked left-to-right',
                 'Word export: Arial is set as the document font so Arabic glyphs never fall back to boxes',
                 'Word export: Arabic file names are preserved instead of being reduced to underscores',
+                'Word export: the duty bar is light grey again — it was rendering as a solid black band',
+                'Offline: the Arabic PDF font loader and its font files are now part of the cached shell',
             ]
         },
         {

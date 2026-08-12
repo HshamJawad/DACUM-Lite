@@ -768,6 +768,12 @@ export async function exportToWord() {
                 WidthType, AlignmentType, BorderStyle, Packer, PageBreak,
                 convertInchesToTwip, ShadingType, TextDirection, ImageRun } = window.docx;
 
+        /* Cell shading uses ShadingType.CLEAR, never SOLID. In OOXML,
+           w:val="solid" paints the PATTERN foreground over the whole
+           cell, and w:color defaults to "auto" — so a "solid E8E8E8"
+           cell renders as a solid BLACK bar with the fill never shown.
+           CLEAR means "no pattern", which is what lets w:fill through. */
+
         /* Every run and shorthand paragraph below is built through these,
            so Arabic carries <w:lang> without touching each call site. */
         const TextRun   = _withArabicLang(_TextRun);
@@ -833,7 +839,7 @@ export async function exportToWord() {
             const numTaskRows = Math.ceil(dutyData.tasks.length / tasksPerRow);
             const tableRows = [];
 
-            tableRows.push(new TableRow({ children: [new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: dutyLabel, bold: true, size: 24 })], bidirectional: _rtl() })], columnSpan: 4, shading: { fill: 'E8E8E8', type: ShadingType.SOLID }, width: { size: 100, type: WidthType.PERCENTAGE } })] }));
+            tableRows.push(new TableRow({ children: [new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: dutyLabel, bold: true, size: 24 })], bidirectional: _rtl() })], columnSpan: 4, shading: { fill: 'E8E8E8', type: ShadingType.CLEAR }, width: { size: 100, type: WidthType.PERCENTAGE } })] }));
 
             for (let row = 0; row < numTaskRows; row++) {
                 const rowCells = [];
@@ -867,7 +873,7 @@ export async function exportToWord() {
         additionalInfoSections.forEach((section, index) => {
             if (index === 3 && section.content1) {
                 const row = new TableRow({ children: [
-                    new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: section.heading1, bold: true, size: 24 })], bidirectional: _rtl() })], shading: { fill: 'E8E8E8', type: ShadingType.SOLID }, width: { size: 30, type: WidthType.PERCENTAGE } }),
+                    new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: section.heading1, bold: true, size: 24 })], bidirectional: _rtl() })], shading: { fill: 'E8E8E8', type: ShadingType.CLEAR }, width: { size: 30, type: WidthType.PERCENTAGE } }),
                     new TableCell({ children: makeTextRuns(section.content1), width: { size: 70, type: WidthType.PERCENTAGE } })
                 ] });
                 children.push(new Table({ visuallyRightToLeft: _rtl(), width: { size: 9071, type: WidthType.DXA }, layout: 'fixed', rows: [row] }));
