@@ -27,8 +27,8 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.2.1';        // Semantic Versioning
-export const APP_RELEASED = '2026-08-11';   // ISO 8601 (YYYY-MM-DD)
+export const APP_VERSION  = '4.2.2';        // Semantic Versioning
+export const APP_RELEASED = '2026-08-12';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
 // index.html registers  ./sw.js?v=<APP_VERSION>  and sw.js rebuilds
@@ -55,6 +55,16 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.2.2',
+            date: '2026-08-12',
+            changes: [
+                'Word export: Arabic text is now tagged ar-IQ, so Word stops marking every word as a spelling error',
+                'Word export: paragraphs and table columns follow the interface language instead of being locked left-to-right',
+                'Word export: Arial is set as the document font so Arabic glyphs never fall back to boxes',
+                'Word export: Arabic file names are preserved instead of being reduced to underscores',
+            ]
+        },
         {
             version: '4.2.1',
             date: '2026-08-11',

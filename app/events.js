@@ -16,6 +16,140 @@ import { Renderer } from './renderer.js';
 import { showStatus } from './design-system.js';
 import { exportProject, importProject } from './fileEngine.js';
 
+
+/* ══════════════════════════════════════════════════════════════
+   ARABIC WORD EXPORT SUPPORT
+   Three separate problems, three separate fixes — none of them
+   substitutes for the others:
+
+     1. READING ORDER  → <w:bidi/> on the paragraph, <w:bidiVisual/>
+        on the table. Without these, an Arabic line ends with its
+        full stop on the left and table columns run left-to-right.
+     2. PROOFING LANGUAGE → <w:lang>. This is what removes the red
+        underlines. Word marks every Arabic word as a misspelled
+        English one until the run declares its language, and no
+        amount of direction setting changes that.
+     3. GLYPH COVERAGE → a font that actually carries Arabic.
+
+   docx@7.8.2 (loaded from the CDN in index.html) has NO `language`
+   option on runs — <w:lang> exists in its source only as an XSD
+   comment. The wrappers below add the element to the tree the
+   library builds, which needs no fork and no version upgrade.
+   ══════════════════════════════════════════════════════════════ */
+
+const _rtl = () => getLang() === 'ar';
+
+/* Word silently falls back when a face lacks Arabic glyphs, which is
+   how a document ends up full of boxes on someone else's machine.
+   Arial ships everywhere and has full Arabic coverage. */
+const _wordFont = () => (_rtl() ? 'Arial' : 'Calibri');
+
+/* w:val is the language of the Latin text in a run, w:bidi the
+   language of the Arabic. Keeping the document default's w:val at
+   en-US stops Word from checking English fragments — ISO codes,
+   tool names — against an Arabic dictionary, which would simply
+   move the red underlines somewhere else. */
+const _LANG_AR    = 'ar-IQ';
+const _LANG_LATIN = 'en-US';
+
+/* Arabic + Supplement/Extended + Presentation Forms A and B. */
+const _ARABIC_RE = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+const _hasArabic = (v) => _ARABIC_RE.test(String(v ?? ''));
+
+/* The library exposes no class for <w:lang>, but its serializer passes
+   any non-XmlComponent child straight through to the XML writer, so a
+   plain node in the writer's own shape is a supported escape hatch. */
+const _langNode = (val, bidi) => ({
+    'w:lang': { _attr: { 'w:val': val, 'w:bidi': bidi } }
+});
+
+function _runText(o) {
+    const kids = Array.isArray(o.children) ? o.children.filter(c => typeof c === 'string') : [];
+    return [o.text || '', ...kids].join(' ');
+}
+
+/* Wrapping TextRun at the point it is pulled off window.docx tags
+   every Arabic run in one place, and covers any run added later. */
+function _withArabicLang(BaseRun) {
+    return class extends BaseRun {
+        constructor(options) {
+            const o = (typeof options === 'string') ? { text: options } : (options || {});
+            const isAr = _rtl() && _hasArabic(_runText(o));
+            /* w:rtl marks the run as complex script, which is what makes
+               Word read w:bidi as the proofing language and apply the
+               w:cs font rather than the Latin one. */
+            super(isAr ? { ...o, rightToLeft: true } : o);
+            if (isAr) {
+                try {
+                    /* Appended last — also where <w:lang> belongs in the
+                       EG_RPrBase sequence, after w:rtl. */
+                    this.properties.addChildElement(_langNode(_LANG_AR, _LANG_AR));
+                } catch (e) {
+                    console.warn('[Word] w:lang not applied to run:', e);
+                }
+            }
+        }
+    };
+}
+
+/* `new Paragraph('')` and `new Paragraph({ text })` build their run
+   internally with the library's own TextRun, bypassing the wrapper.
+   Rewriting the shorthand keeps those from being the one gap. */
+function _withArabicLangParagraph(BaseParagraph, WrappedRun) {
+    return class extends BaseParagraph {
+        constructor(options) {
+            const o = (typeof options === 'string') ? { text: options } : (options || {});
+            if (_rtl() && o.text && _hasArabic(o.text)) {
+                const { text, ...rest } = o;
+                super({ ...rest, children: [new WrappedRun({ text }), ...(o.children || [])] });
+            } else {
+                super(options);
+            }
+        }
+    };
+}
+
+/* Document-level fallback: <w:lang> inside docDefaults/rPrDefault, so
+   text the user types into the exported file afterwards behaves too.
+   docDefaults is built from styles.default.document.run, which has the
+   same missing option, so the node is added to the built tree. */
+function _applyDocDefaultsLang(doc) {
+    if (!_rtl()) return;
+    try {
+        const find = (node, key) => {
+            if (!node || typeof node !== 'object') return null;
+            if (node.rootKey === key) return node;
+            if (!Array.isArray(node.root)) return null;
+            for (const child of node.root) {
+                const hit = find(child, key);
+                if (hit) return hit;
+            }
+            return null;
+        };
+        const defaults = find(doc.Styles, 'w:docDefaults');
+        const rPr = defaults && find(defaults, 'w:rPr');
+        if (rPr) rPr.addChildElement(_langNode(_LANG_LATIN, _LANG_AR));
+    } catch (e) {
+        /* Per-run tags already carry the fix; a missed default is cosmetic. */
+        console.warn('[Word] w:lang not applied to docDefaults:', e);
+    }
+}
+
+/* /[^a-z0-9]/gi turns an Arabic occupation title into a row of
+   underscores — every Arabic export arrived as "____.docx". Keep
+   Unicode letters and digits, strip only what a filesystem rejects. */
+function _safeFilename(parts, suffix) {
+    const base = parts
+        .filter(Boolean)
+        .join('_')
+        .replace(/[\\/:*?"<>|\u0000-\u001F]/g, '')
+        .replace(/\s+/g, '_')
+        .replace(/_+/g, '_')
+        .replace(/^_|_$/g, '')
+        .slice(0, 80);
+    return (base || 'DACUM') + suffix;
+}
+
 // ── Image state (module-level) ────────────────────────────────
 export let producedForImage = null;
 export let producedByImage  = null;
@@ -630,9 +764,14 @@ export async function exportToWord() {
             return;
         }
 
-        const { Document, Paragraph, TextRun, Table, TableRow, TableCell,
+        const { Document, Paragraph: _Paragraph, TextRun: _TextRun, Table, TableRow, TableCell,
                 WidthType, AlignmentType, BorderStyle, Packer, PageBreak,
                 convertInchesToTwip, ShadingType, TextDirection, ImageRun } = window.docx;
+
+        /* Every run and shorthand paragraph below is built through these,
+           so Arabic carries <w:lang> without touching each call site. */
+        const TextRun   = _withArabicLang(_TextRun);
+        const Paragraph = _withArabicLangParagraph(_Paragraph, TextRun);
 
         const dacumDateValue = document.getElementById('dacumDate').value;
         let dacumDate = '';
@@ -653,12 +792,12 @@ export async function exportToWord() {
         const children = [];
 
         // Title page
-        children.push(new Paragraph({ children: [new TextRun({ text: t('word.occupationTitle', { title: occupationTitle }), bold: true, size: 28 })], spacing: { after: 200 }, bidirectional: false }));
-        children.push(new Paragraph({ children: [new TextRun({ text: t('word.jobTitle', { title: jobTitle }), bold: true, size: 28 })], spacing: { after: 200 }, bidirectional: false }));
-        if (dacumDate) children.push(new Paragraph({ children: [new TextRun({ text: t('word.dacumDate', { date: dacumDate }), bold: true, size: 24 })], spacing: { after: 200 }, bidirectional: false }));
+        children.push(new Paragraph({ children: [new TextRun({ text: t('word.occupationTitle', { title: occupationTitle }), bold: true, size: 28 })], spacing: { after: 200 }, bidirectional: _rtl() }));
+        children.push(new Paragraph({ children: [new TextRun({ text: t('word.jobTitle', { title: jobTitle }), bold: true, size: 28 })], spacing: { after: 200 }, bidirectional: _rtl() }));
+        if (dacumDate) children.push(new Paragraph({ children: [new TextRun({ text: t('word.dacumDate', { date: dacumDate }), bold: true, size: 24 })], spacing: { after: 200 }, bidirectional: _rtl() }));
 
         if (producedFor) {
-            children.push(new Paragraph({ children: [new TextRun({ text: t('word.producedFor', { name: producedFor }), bold: true, size: 24 })], spacing: { after: 200 }, bidirectional: false }));
+            children.push(new Paragraph({ children: [new TextRun({ text: t('word.producedFor', { name: producedFor }), bold: true, size: 24 })], spacing: { after: 200 }, bidirectional: _rtl() }));
             if (producedForImage) {
                 try {
                     const base64Data = producedForImage.split(',')[1];
@@ -668,7 +807,7 @@ export async function exportToWord() {
         }
 
         if (producedBy) {
-            children.push(new Paragraph({ children: [new TextRun({ text: t('word.producedBy', { name: producedBy }), bold: true, size: 24 })], spacing: { after: 200 }, bidirectional: false }));
+            children.push(new Paragraph({ children: [new TextRun({ text: t('word.producedBy', { name: producedBy }), bold: true, size: 24 })], spacing: { after: 200 }, bidirectional: _rtl() }));
             if (producedByImage) {
                 try {
                     const base64Data = producedByImage.split(',')[1];
@@ -680,7 +819,7 @@ export async function exportToWord() {
         }
 
         // Duties and tasks — read from central AppState (works in any view)
-        children.push(new Paragraph({ children: [new PageBreak(), new TextRun({ text: t('word.dutiesAndTasks'), bold: true, size: 28 })], alignment: AlignmentType.CENTER, spacing: { after: 300 }, bidirectional: false }));
+        children.push(new Paragraph({ children: [new PageBreak(), new TextRun({ text: t('word.dutiesAndTasks'), bold: true, size: 28 })], alignment: AlignmentType.CENTER, spacing: { after: 300 }, bidirectional: _rtl() }));
 
         const duties = AppState.duties.map(d => ({
             duty:  d.title,
@@ -694,7 +833,7 @@ export async function exportToWord() {
             const numTaskRows = Math.ceil(dutyData.tasks.length / tasksPerRow);
             const tableRows = [];
 
-            tableRows.push(new TableRow({ children: [new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: dutyLabel, bold: true, size: 24 })], bidirectional: false })], columnSpan: 4, shading: { fill: 'E8E8E8', type: ShadingType.SOLID }, width: { size: 100, type: WidthType.PERCENTAGE } })] }));
+            tableRows.push(new TableRow({ children: [new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: dutyLabel, bold: true, size: 24 })], bidirectional: _rtl() })], columnSpan: 4, shading: { fill: 'E8E8E8', type: ShadingType.SOLID }, width: { size: 100, type: WidthType.PERCENTAGE } })] }));
 
             for (let row = 0; row < numTaskRows; row++) {
                 const rowCells = [];
@@ -702,19 +841,19 @@ export async function exportToWord() {
                     const ti = row * tasksPerRow + col;
                     if (ti < dutyData.tasks.length) {
                         const tLabel = t('word.taskLabel', { letter, n: ti + 1, text: dutyData.tasks[ti] });
-                        rowCells.push(new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: tLabel, size: 24 })], bidirectional: false })], width: { size: 25, type: WidthType.PERCENTAGE } }));
+                        rowCells.push(new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: tLabel, size: 24 })], bidirectional: _rtl() })], width: { size: 25, type: WidthType.PERCENTAGE } }));
                     } else {
                         rowCells.push(new TableCell({ children: [new Paragraph('')], width: { size: 25, type: WidthType.PERCENTAGE } }));
                     }
                 }
                 tableRows.push(new TableRow({ children: rowCells }));
             }
-            children.push(new Table({ width: { size: 9071, type: WidthType.DXA }, layout: 'fixed', rows: tableRows }));
+            children.push(new Table({ visuallyRightToLeft: _rtl(), width: { size: 9071, type: WidthType.DXA }, layout: 'fixed', rows: tableRows }));
             children.push(new Paragraph({ spacing: { after: 200 } }));
         });
 
         // Additional info
-        children.push(new Paragraph({ children: [new PageBreak(), new TextRun({ text: t('word.additionalInfo'), bold: true, size: 24 })], spacing: { after: 300 }, bidirectional: false }));
+        children.push(new Paragraph({ children: [new PageBreak(), new TextRun({ text: t('word.additionalInfo'), bold: true, size: 24 })], spacing: { after: 300 }, bidirectional: _rtl() }));
 
         const additionalInfoSections = [
             { heading1: document.getElementById('knowledgeHeading').textContent, content1: document.getElementById('knowledgeInput').value.trim(), heading2: document.getElementById('behaviorsHeading').textContent, content2: document.getElementById('behaviorsInput').value.trim() },
@@ -723,22 +862,22 @@ export async function exportToWord() {
             { heading1: document.getElementById('acronymsHeading').textContent,  content1: document.getElementById('acronymsInput').value.trim(),  heading2: document.getElementById('careerPathHeading').textContent, content2: document.getElementById('careerPathInput').value.trim() }
         ];
 
-        const makeTextRuns = (text, size = 24) => text.split('\n').filter(l => l.trim()).map(l => new Paragraph({ children: [new TextRun({ text: l.trim().replace(/^[•\-*]\s*/, '• '), size })], bidirectional: false }));
+        const makeTextRuns = (text, size = 24) => text.split('\n').filter(l => l.trim()).map(l => new Paragraph({ children: [new TextRun({ text: l.trim().replace(/^[•\-*]\s*/, '• '), size })], bidirectional: _rtl() }));
 
         additionalInfoSections.forEach((section, index) => {
             if (index === 3 && section.content1) {
                 const row = new TableRow({ children: [
-                    new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: section.heading1, bold: true, size: 24 })], bidirectional: false })], shading: { fill: 'E8E8E8', type: ShadingType.SOLID }, width: { size: 30, type: WidthType.PERCENTAGE } }),
+                    new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: section.heading1, bold: true, size: 24 })], bidirectional: _rtl() })], shading: { fill: 'E8E8E8', type: ShadingType.SOLID }, width: { size: 30, type: WidthType.PERCENTAGE } }),
                     new TableCell({ children: makeTextRuns(section.content1), width: { size: 70, type: WidthType.PERCENTAGE } })
                 ] });
-                children.push(new Table({ width: { size: 9071, type: WidthType.DXA }, layout: 'fixed', rows: [row] }));
+                children.push(new Table({ visuallyRightToLeft: _rtl(), width: { size: 9071, type: WidthType.DXA }, layout: 'fixed', rows: [row] }));
                 children.push(new Paragraph({ spacing: { after: 200 } }));
             } else if (section.content1 || section.content2) {
                 const row = new TableRow({ children: [
-                    new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: section.heading1, bold: true, size: 24 })], bidirectional: false }), ...makeTextRuns(section.content1)], width: { size: 50, type: WidthType.PERCENTAGE } }),
-                    new TableCell({ children: section.content2 ? [new Paragraph({ children: [new TextRun({ text: section.heading2, bold: true, size: 24 })], bidirectional: false }), ...makeTextRuns(section.content2)] : [new Paragraph('')], width: { size: 50, type: WidthType.PERCENTAGE } })
+                    new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: section.heading1, bold: true, size: 24 })], bidirectional: _rtl() }), ...makeTextRuns(section.content1)], width: { size: 50, type: WidthType.PERCENTAGE } }),
+                    new TableCell({ children: section.content2 ? [new Paragraph({ children: [new TextRun({ text: section.heading2, bold: true, size: 24 })], bidirectional: _rtl() }), ...makeTextRuns(section.content2)] : [new Paragraph('')], width: { size: 50, type: WidthType.PERCENTAGE } })
                 ] });
-                children.push(new Table({ width: { size: 9071, type: WidthType.DXA }, layout: 'fixed', rows: [row] }));
+                children.push(new Table({ visuallyRightToLeft: _rtl(), width: { size: 9071, type: WidthType.DXA }, layout: 'fixed', rows: [row] }));
                 children.push(new Paragraph({ spacing: { after: 200 } }));
             }
         });
@@ -748,18 +887,27 @@ export async function exportToWord() {
             const h = div.querySelector('h3');
             const t = div.querySelector('textarea');
             if (h && t && t.value.trim()) {
-                const row = new TableRow({ children: [new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: h.textContent, bold: true, size: 24 })], bidirectional: false }), ...makeTextRuns(t.value)], columnSpan: 2, width: { size: 100, type: WidthType.PERCENTAGE } })] });
-                children.push(new Table({ width: { size: 9071, type: WidthType.DXA }, layout: 'fixed', rows: [row] }));
+                const row = new TableRow({ children: [new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: h.textContent, bold: true, size: 24 })], bidirectional: _rtl() }), ...makeTextRuns(t.value)], columnSpan: 2, width: { size: 100, type: WidthType.PERCENTAGE } })] });
+                children.push(new Table({ visuallyRightToLeft: _rtl(), width: { size: 9071, type: WidthType.DXA }, layout: 'fixed', rows: [row] }));
                 children.push(new Paragraph({ spacing: { after: 200 } }));
             }
         });
 
-        const doc = new Document({ sections: [{ properties: { page: { margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 } } }, children }] });
+        const doc = new Document({
+            /* Arabic needs a face that carries the glyphs; this also
+               becomes the w:cs font for every complex-script run. */
+            styles: { default: { document: { run: { font: _wordFont() } } } },
+            sections: [{ properties: { page: { margin: { top: 1440, right: 1440, bottom: 1440, left: 1440 } } }, children }]
+        });
+
+        /* The safety net under the per-run tags. */
+        _applyDocDefaultsLang(doc);
+
         const blob = await Packer.toBlob(doc);
         const url  = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = `${occupationTitle.replace(/[^a-z0-9]/gi,'_')}_${jobTitle.replace(/[^a-z0-9]/gi,'_')}_DACUM_Chart.docx`;
+        link.download = _safeFilename([occupationTitle, jobTitle], '_DACUM_Chart.docx');
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
