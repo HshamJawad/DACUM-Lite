@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.2.2';        // Semantic Versioning
+export const APP_VERSION  = '4.2.3';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-12';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -56,7 +56,7 @@ export const VERSION = {
 
     changelog: [
         {
-            version: '4.2.2',
+            version: '4.2.3',
             date: '2026-08-12',
             changes: [
                 'Word export: Arabic text is now tagged ar-IQ, so Word stops marking every word as a spelling error',
