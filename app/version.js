@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.3.3';        // Semantic Versioning
+export const APP_VERSION  = '4.4.0';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-13';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,16 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.4.0',
+            date: '2026-08-13',
+            changes: [
+                'Arabic PDF is correct — verified by generating a real PDF against the actual Cairo file and rendering it, not by reading console output',
+                'Root cause: jsPDF runs TWO text processors, not one. Detaching the Arabic shaper left the BidiEngine on postProcessText still reordering every finished line back to logical order',
+                'The BidiEngine is now told the truth about our input through its own documented options — visual in, visual out, same direction — so it returns the string untouched',
+                'Cairo remains the export font; Arabic, Latin, numbers and mixed lines all render and wrap correctly, and the text stays selectable and copyable',
+            ]
+        },
         {
             version: '4.3.3',
             date: '2026-08-13',

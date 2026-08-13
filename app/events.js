@@ -946,6 +946,11 @@ export async function exportToWord() {
 
    Both entry points have to be closed, and both are restored in
    the finally block so nothing else in the app is affected.
+
+   NOTE: this handles the SHAPER only. jsPDF's second text processor,
+   the BidiEngine on postProcessText, is neutralised per-call through
+   the isInputVisual/isOutputVisual options in exportToPDF() — that
+   one is configurable, so there is nothing to detach.
    ────────────────────────────────────────────────────────────── */
 function _suspendJsPdfArabicParser(pdf, jsPDFClass) {
     const restores = [];
@@ -1028,13 +1033,31 @@ export async function exportToPDF() {
             const lines = pdf.splitTextToSize(src, w);
             return RTL ? lines.map(l => bidiVisual(l)) : lines;
         };
-        const ALIGN = RTL ? { align: 'right' } : { align: 'left' };
+        /* jsPDF also runs a BidiEngine on every string, subscribed to
+           the postProcessText event. Its default is isInputVisual:true
+           with isOutputVisual undefined, i.e. "this text is visual,
+           give me back logical" — so it reordered our finished visual
+           string right back again.
+
+           Declaring the text as visual IN and visual OUT, with the
+           same direction on both sides, lands on none of the engine's
+           conversion branches, so doBidiReorder() returns the string
+           untouched. This is the documented option set, not a patch:
+           we are telling the engine the truth about our input.
+
+           A fresh object per call — jsPDF writes into the options it
+           is handed. */
+        const opts = (align) => RTL
+            ? { align, isInputVisual: true, isOutputVisual: true,
+                       isInputRtl: false,   isOutputRtl: false }
+            : { align };
+        const lead  = RTL ? 'right' : 'left';
         /** Draw already-wrapped lines anchored to the leading edge of a box. */
         const drawLines = (lines, boxX, boxW, y, padX) =>
-            pdf.text(lines, RTL ? (boxX + boxW - padX) : (boxX + padX), y, ALIGN);
+            pdf.text(lines, RTL ? (boxX + boxW - padX) : (boxX + padX), y, opts(lead));
         /** Draw a short string anchored to the leading edge of a box. */
         const drawText = (s, boxX, boxW, y, padX) =>
-            pdf.text(prep(s), RTL ? (boxX + boxW - padX) : (boxX + padX), y, ALIGN);
+            pdf.text(prep(s), RTL ? (boxX + boxW - padX) : (boxX + padX), y, opts(lead));
 
         // ── Inputs ────────────────────────────────────────────────
         const dacumDateInput        = document.getElementById('dacumDate');
@@ -1076,7 +1099,7 @@ export async function exportToPDF() {
         // ══════════════════════════════════════════════════════════
         pdf.setFontSize(18); setBoldFont();
         pdf.text(prep(t('pdf.chartTitle', { title: occupationTitleInput.value })),
-                 pageWidth / 2, yPos, { align: 'center' });
+                 pageWidth / 2, yPos, opts('center'));
         yPos += 18;
 
         // In Arabic the identity column sits on the right and the
@@ -1146,7 +1169,7 @@ export async function exportToPDF() {
             pdf.setFillColor(200, 200, 200);
             pdf.rect(margin, yPos, chartWidth, 10, 'FD');
             pdf.setFontSize(14); setBoldFont();
-            pdf.text(prep(t(key)), pageWidth / 2, yPos + 7, { align: 'center' });
+            pdf.text(prep(t(key)), pageWidth / 2, yPos + 7, opts('center'));
             yPos += 10;
         };
 
@@ -1235,7 +1258,7 @@ export async function exportToPDF() {
         if (kt || st || bt) {
             pdf.addPage('a4', 'landscape'); yPos = margin + 5;
             pdf.setFontSize(14); setBoldFont();
-            pdf.text(prep(t('pdf.generalKnowledge')), pageWidth / 2, yPos, { align: 'center' });
+            pdf.text(prep(t('pdf.generalKnowledge')), pageWidth / 2, yPos, opts('center'));
             yPos += 10;
 
             const tw = chartWidth / 3;
