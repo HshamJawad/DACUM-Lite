@@ -25,6 +25,26 @@
 //   3. arabicVisual(str) — the two steps combined. This is what
 //      events.js calls.
 //
+// GLYPH-COVERAGE FALLBACK — the second half of the bug
+// ─────────────────────────────────────────────────────
+// Shaping alone is not enough. Cairo (and most modern Arabic
+// webfonts) deliberately omit the ISOLATED presentation forms —
+// U+FE8D alef, U+FE8F beh, U+FEDD lam and 30-odd others simply do
+// not exist in the font's cmap, because the isolated shape is
+// already the base code point. jsPDF silently drops any character
+// it cannot map, which is why whole letters were vanishing from
+// the Arabic sheet while the joined ones survived.
+//
+// So the loader now reads the cmap out of the TTF it just fetched
+// and records exactly which code points the font can draw.
+// shapeArabic() consults that set and degrades gracefully:
+//   medial  → final   → base
+//   initial → isolated → base
+//   final   → base
+//   isolated → base
+// The base code point is always the isolated shape, so nothing is
+// lost visually and no character can ever disappear again.
+//
 // With this in place `pdf.setR2L()` MUST stay false, otherwise the
 // text is reversed twice.
 //
@@ -54,7 +74,8 @@ const FONT_CANDIDATES = [
 ];
 
 // ── Module-level cache ────────────────────────────────────────
-let _cachedFont = null;  // { name: string, b64: string } | null
+let _cachedFont = null;  // { name, b64, coverage } | null
+let _coverage   = null;  // Set<number> of drawable code points | null
 
 // ─────────────────────────────────────────────────────────────
 //  loadArabicFont(pdf)
@@ -64,13 +85,15 @@ let _cachedFont = null;  // { name: string, b64: string } | null
 export async function loadArabicFont(pdf) {
     if (_cachedFont) {
         _registerFont(pdf, _cachedFont.name, _cachedFont.b64);
+        _coverage = _cachedFont.coverage;
         return _cachedFont.name;
     }
 
     for (const candidate of FONT_CANDIDATES) {
         try {
-            const b64 = await _fetchBase64(candidate.file);
-            _cachedFont = { name: candidate.name, b64 };
+            const { b64, coverage } = await _fetchFont(candidate.file);
+            _cachedFont = { name: candidate.name, b64, coverage };
+            _coverage   = coverage;
             _registerFont(pdf, candidate.name, b64);
             console.info(`[ArabicFont] Loaded "${candidate.file}" → family "${candidate.name}"`);
             return candidate.name;
@@ -89,6 +112,13 @@ export async function loadArabicFont(pdf) {
 export function isArabicFontLoaded() { return _cachedFont !== null; }
 export function getArabicFontName()  { return _cachedFont ? _cachedFont.name : null; }
 
+/**
+ * Override the glyph-coverage set used by the shaper. Only needed
+ * for tests — loadArabicFont() sets this automatically.
+ * @param {Set<number>|null} set
+ */
+export function setFontCoverage(set) { _coverage = set || null; }
+
 // ── Private: register font with jsPDF ────────────────────────
 function _registerFont(pdf, name, b64) {
     const vfsName = name + '-Regular.ttf';
@@ -97,18 +127,120 @@ function _registerFont(pdf, name, b64) {
     pdf.addFont(vfsName, name, 'bold');   // same face — keeps setFont(name,'bold') safe
 }
 
-// ── Private: fetch font file and return base64 ───────────────
-async function _fetchBase64(filename) {
+// ── Private: fetch font file → base64 + cmap coverage ────────
+async function _fetchFont(filename) {
     const res = await fetch(filename, { cache: 'force-cache' });
     if (!res.ok) throw new Error(`HTTP ${res.status} for ${filename}`);
 
-    const bytes = new Uint8Array(await res.arrayBuffer());
+    const buffer = await res.arrayBuffer();
+    const bytes  = new Uint8Array(buffer);
+
     let binary  = '';
     const chunk = 8192;
     for (let i = 0; i < bytes.length; i += chunk) {
         binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
     }
-    return btoa(binary);
+
+    let coverage = null;
+    try {
+        coverage = parseFontCoverage(buffer);
+    } catch (e) {
+        console.warn('[ArabicFont] cmap unreadable — falling back to base forms only.', e);
+    }
+
+    return { b64: btoa(binary), coverage };
+}
+
+// ══════════════════════════════════════════════════════════════
+//  cmap READER
+//  Returns a Set of every code point the font can actually draw,
+//  or null when the table cannot be read (in which case the
+//  shaper assumes nothing and stays on the safe base forms).
+// ══════════════════════════════════════════════════════════════
+export function parseFontCoverage(buffer) {
+    const dv = new DataView(buffer);
+    if (buffer.byteLength < 12) return null;
+
+    // ── Locate the cmap table in the sfnt directory ───────────
+    const numTables = dv.getUint16(4);
+    let cmapOff = 0;
+    for (let i = 0; i < numTables; i++) {
+        const rec = 12 + i * 16;
+        if (rec + 16 > buffer.byteLength) break;
+        const tag = String.fromCharCode(
+            dv.getUint8(rec), dv.getUint8(rec + 1),
+            dv.getUint8(rec + 2), dv.getUint8(rec + 3)
+        );
+        if (tag === 'cmap') { cmapOff = dv.getUint32(rec + 8); break; }
+    }
+    if (!cmapOff || cmapOff + 4 > buffer.byteLength) return null;
+
+    // ── Pick the best subtable: (3,10) > (3,1) > (0,x) ───────
+    const nSub = dv.getUint16(cmapOff + 2);
+    let best = 0, bestScore = -1;
+    for (let i = 0; i < nSub; i++) {
+        const rec = cmapOff + 4 + i * 8;
+        if (rec + 8 > buffer.byteLength) break;
+        const pid = dv.getUint16(rec);
+        const eid = dv.getUint16(rec + 2);
+        const off = dv.getUint32(rec + 4);
+        let score = -1;
+        if (pid === 3 && eid === 10)     score = 4;
+        else if (pid === 3 && eid === 1) score = 3;
+        else if (pid === 0)              score = 2;
+        if (score > bestScore) { bestScore = score; best = cmapOff + off; }
+    }
+    if (!best || best + 4 > buffer.byteLength) return null;
+
+    const set = new Set();
+    const fmt = dv.getUint16(best);
+
+    if (fmt === 4) {
+        const segX2  = dv.getUint16(best + 6);
+        const seg    = segX2 / 2;
+        const endO   = best + 14;
+        const startO = endO + segX2 + 2;
+        const deltaO = startO + segX2;
+        const rangeO = deltaO + segX2;
+        for (let s = 0; s < seg; s++) {
+            const end   = dv.getUint16(endO + s * 2);
+            const start = dv.getUint16(startO + s * 2);
+            if (start > end || start === 0xFFFF) continue;
+            const delta = dv.getInt16(deltaO + s * 2);
+            const ro    = dv.getUint16(rangeO + s * 2);
+            for (let c = start; c <= end; c++) {
+                let g;
+                if (ro === 0) {
+                    g = (c + delta) & 0xFFFF;
+                } else {
+                    const gi = rangeO + s * 2 + ro + (c - start) * 2;
+                    if (gi + 2 > buffer.byteLength) continue;
+                    g = dv.getUint16(gi);
+                    if (g !== 0) g = (g + delta) & 0xFFFF;
+                }
+                if (g) set.add(c);
+            }
+        }
+    } else if (fmt === 12) {
+        const nGroups = dv.getUint32(best + 12);
+        for (let g = 0; g < nGroups; g++) {
+            const o = best + 16 + g * 12;
+            if (o + 12 > buffer.byteLength) break;
+            const s = dv.getUint32(o);
+            const e = dv.getUint32(o + 4);
+            for (let c = s; c <= e && c - s < 0x10000; c++) set.add(c);
+        }
+    } else if (fmt === 6) {
+        const first = dv.getUint16(best + 6);
+        const count = dv.getUint16(best + 8);
+        for (let i = 0; i < count; i++) {
+            if (dv.getUint16(best + 10 + i * 2)) set.add(first + i);
+        }
+    } else {
+        return null;
+    }
+
+    return set.size ? set : null;
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -193,6 +325,19 @@ function _isMark(cp) {
 const _canStart = (cp) => !!FORMS[cp] && FORMS[cp].length === 4;  // joins to the next letter
 const _canEnd   = (cp) => !!FORMS[cp];                            // joins to the previous letter
 
+/* Can the loaded font actually draw this code point? When no cmap
+   was read, assume nothing and let _pick() fall through to the
+   base letter, which every Arabic font carries. */
+const _has = (cp) => _coverage ? _coverage.has(cp) : false;
+
+/* Return the first candidate the font can draw, otherwise the base
+   code point — whose glyph IS the isolated shape. Nothing is ever
+   dropped. */
+function _pick(candidates, base) {
+    for (const c of candidates) if (_has(c)) return c;
+    return base;
+}
+
 /**
  * Convert Arabic text into contextual presentation forms.
  * Logical order is preserved — call bidiVisual() afterwards.
@@ -223,26 +368,34 @@ export function shapeArabic(input) {
         const nextCp    = n < cps.length ? cps[n] : -1;
         const nextJoins = nextCp !== -1 && _canEnd(nextCp);
 
+        const f  = FORMS[cp];
+        const fw = _canStart(cp) && nextJoins;   // joins forward
+        const bw = prevJoins;                    // joins backward
+
         // ── Lam-Alef ligature ─────────────────────────────────
+        // Falls back to two separate letters when the font has no
+        // ligature glyph, rather than dropping the pair.
         if (cp === 0x0644 && LAM_ALEF[nextCp]) {
-            const lig = LAM_ALEF[nextCp];
-            out.push(prevJoins ? lig[1] : lig[0]);
+            const lig  = LAM_ALEF[nextCp];
+            const want = bw ? lig[1] : lig[0];
+            if (_has(want)) {
+                out.push(want);
+            } else {
+                out.push(_pick([bw ? f[1] : f[0]], cp));           // lam
+                out.push(_pick([FORMS[nextCp][1]], nextCp));       // alef, final
+            }
             i = n;                     // consume the alef
             continue;
         }
 
-        // ── Standard contextual form ──────────────────────────
-        const f  = FORMS[cp];
-        const fw = _canStart(cp) && nextJoins;
-        const bw = prevJoins;
-
+        // ── Standard contextual form, with graceful degradation ─
         if (f.length === 4) {
-            if (bw && fw)  out.push(f[3]);   // medial
-            else if (bw)   out.push(f[1]);   // final
-            else if (fw)   out.push(f[2]);   // initial
-            else           out.push(f[0]);   // isolated
+            if (bw && fw)  out.push(_pick([f[3], f[1]], cp));      // medial  → final  → base
+            else if (bw)   out.push(_pick([f[1]], cp));            // final   → base
+            else if (fw)   out.push(_pick([f[2], f[0]], cp));      // initial → isolated → base
+            else           out.push(_pick([f[0]], cp));            // isolated → base
         } else {
-            out.push(bw ? f[1] : f[0]);
+            out.push(bw ? _pick([f[1]], cp) : _pick([f[0]], cp));
         }
     }
 

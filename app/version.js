@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.3.0';        // Semantic Versioning
+export const APP_VERSION  = '4.3.1';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-13';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,16 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.3.1',
+            date: '2026-08-13',
+            changes: [
+                'Arabic PDF: letters no longer vanish — Cairo omits the isolated presentation forms, and jsPDF was silently dropping every character it could not map',
+                'Arabic PDF: the font loader now reads the cmap out of the TTF it fetched and records exactly which glyphs that font can draw',
+                'Arabic PDF: the shaper degrades gracefully against that list — medial to final, initial to isolated, isolated to the base letter — so no character is ever lost, whichever font is installed',
+                'Arabic PDF: lam-alef falls back to two separate letters when a font carries no ligature glyph',
+            ]
+        },
         {
             version: '4.3.0',
             date: '2026-08-13',
