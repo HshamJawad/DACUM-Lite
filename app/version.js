@@ -27,8 +27,8 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.2.3';        // Semantic Versioning
-export const APP_RELEASED = '2026-08-12';   // ISO 8601 (YYYY-MM-DD)
+export const APP_VERSION  = '4.3.0';        // Semantic Versioning
+export const APP_RELEASED = '2026-08-13';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
 // index.html registers  ./sw.js?v=<APP_VERSION>  and sw.js rebuilds
@@ -55,6 +55,19 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.3.0',
+            date: '2026-08-13',
+            changes: [
+                'PDF export: Arabic letters are now joined and read right-to-left — shaping and bidi are done in the app instead of relying on the PDF viewer',
+                'PDF export: Latin words, acronyms and numbers stay left-to-right inside Arabic lines, and brackets are mirrored correctly',
+                'PDF export: lam-alef ligatures and harakat are handled, and line wrapping is measured on the shaped text so cells no longer overflow',
+                'PDF export: the chart is now laid out horizontally — one duty band per row with its task cells underneath, in all three languages',
+                'PDF export: duty headers repeat after a page break, and a duty header is never left stranded at the foot of a page',
+                'PDF export: Arabic pages mirror their columns and anchor every heading, list and cell to the right edge',
+                'PDF export: the Arabic font loader now looks for Amiri, Cairo or Tajawal in ./fonts/ as well as the repo root',
+            ]
+        },
         {
             version: '4.2.3',
             date: '2026-08-12',
