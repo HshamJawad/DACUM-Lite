@@ -14,7 +14,8 @@
 // Responsibilities:
 //   1. Toolbar version badge  (#versionBadge)
 //   2. Help-tab version footer (#helpVersionFooter)
-//   3. Copyright line          (#copyrightMain)
+//   3. Copyright line          (#copyrightMain / .copyright) —
+//      relocated into the Help tab, see relocateCopyright()
 //   4. The update bar itself   (#updateBanner)
 //
 // Update detection listens to THREE signals, because browsers do
@@ -125,6 +126,33 @@ function paintVersionText() {
 // ══════════════════════════════════════════════════════════════
 //  The update bar
 // ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
+//  Copyright line — Help tab only
+//
+//  The line used to sit at the foot of .container, which put it
+//  under EVERY tab and cost a strip of vertical space on screens
+//  that need it for the chart. It belongs in one place: the Help
+//  tab, next to the version footer it repeats.
+//
+//  Moving the node instead of duplicating it keeps a single source
+//  of truth — data-i18n still resolves on language switch, and
+//  paintVersionText() still finds #copyrightMain. Because .tab-content
+//  is hidden unless .active, visibility then follows the tab for
+//  free, with no extra CSS and no listener.
+//
+//  Idempotent: safe to call on every language change or re-init.
+// ══════════════════════════════════════════════════════════════
+function relocateCopyright() {
+    const help = document.getElementById('help-tab');
+    if (!help) return;
+
+    const block = document.querySelector('.copyright');
+    if (!block || help.contains(block)) return;
+
+    block.classList.add('copyright--in-help');
+    help.appendChild(block);
+}
+
 function prefersReducedMotion() {
     return window.matchMedia &&
            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -296,6 +324,7 @@ function wireRegistration(reg) {
 export function initUpdateNotifier() {
     // Version surfaces first — they must work even without a worker
     // (preview mode, unsupported browser, file:// …).
+    relocateCopyright();
     paintVersionBadge();
     paintVersionText();
 
@@ -307,6 +336,7 @@ export function initUpdateNotifier() {
     // Re-render on language switch: the bar lives outside the reach of
     // applyTranslations(), and dir must follow the interface language.
     document.addEventListener('dacum:langchange', () => {
+        relocateCopyright();
         paintVersionBadge();
         paintVersionText();
         const el = document.getElementById(BANNER_ID);

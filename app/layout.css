@@ -391,6 +391,16 @@ body.sb-sidebar-closed #appWrapper {
   font-size: 1.05em;
 }
 
+/* Inside the Help tab the line no longer has to separate itself from
+   the whole page, so it sits closer and lighter than it did as a page
+   footer. update-notifier.js adds this class when it moves the node. */
+.copyright--in-help {
+  margin-top: 24px;
+  padding-top: 14px;
+  border-top-width: 1px;
+  font-size: 0.95em;
+}
+
 .copyright-main {
   margin-bottom: 8px;
   font-size: 1em;

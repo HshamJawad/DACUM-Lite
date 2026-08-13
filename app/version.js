@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.3.2';        // Semantic Versioning
+export const APP_VERSION  = '4.3.3';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-13';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,14 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.3.3',
+            date: '2026-08-13',
+            changes: [
+                'The copyright line no longer sits under every tab — it now appears in the Help tab only, in all three languages',
+                'Frees a strip of vertical space on the Info, Duties and Additional Information tabs',
+            ]
+        },
         {
             version: '4.3.2',
             date: '2026-08-13',
