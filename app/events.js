@@ -930,8 +930,62 @@ export async function exportToWord() {
 //  EXPORT TO PDF
 // ══════════════════════════════════════════════════════════════
 
+/* ──────────────────────────────────────────────────────────────
+   jsPDF 2.5.1 ships its OWN Arabic parser and wires it up as a
+   `preProcessText` subscriber, so it re-shapes every string that
+   reaches pdf.text(). getStringUnitWidth() calls it a second time
+   while measuring, which is how splitTextToSize() got dragged in
+   too.
+
+   That parser has no idea our text has already been shaped and
+   reordered by arabic-font.js. It treats the finished visual
+   string as raw logical input and shapes it again against the
+   REVERSED neighbours — which is exactly why the Arabic sheet came
+   out as connected-but-meaningless letters while English and
+   French were fine (the parser only fires on Arabic).
+
+   Both entry points have to be closed, and both are restored in
+   the finally block so nothing else in the app is affected.
+   ────────────────────────────────────────────────────────────── */
+function _suspendJsPdfArabicParser(pdf, jsPDFClass) {
+    const restores = [];
+
+    // 1. The preProcessText subscription on this document instance.
+    try {
+        const events = pdf.internal && pdf.internal.events;
+        const topics = events && typeof events.getTopics === 'function'
+            ? events.getTopics() : null;
+        if (topics && topics.preProcessText) {
+            Object.keys(topics.preProcessText).forEach(token => {
+                const fn = topics.preProcessText[token][0];
+                if (fn === jsPDFClass.API.processArabic ||
+                    (jsPDFClass.API.__arabicParser__ && fn === jsPDFClass.API.__arabicParser__.processArabic)) {
+                    events.unsubscribe(token);
+                    restores.push(() => events.subscribe('preProcessText', fn));
+                }
+            });
+        }
+    } catch (e) {
+        console.warn('[PDF] Could not detach the jsPDF Arabic parser event.', e);
+    }
+
+    // 2. The direct API.processArabic call inside getStringUnitWidth.
+    try {
+        const original = jsPDFClass.API.processArabic;
+        if (original) {
+            jsPDFClass.API.processArabic = undefined;
+            restores.push(() => { jsPDFClass.API.processArabic = original; });
+        }
+    } catch (e) {
+        console.warn('[PDF] Could not suspend API.processArabic.', e);
+    }
+
+    return () => restores.forEach(fn => { try { fn(); } catch (e) {} });
+}
+
 export async function exportToPDF() {
     const isArabic = getLang() === 'ar';
+    let restoreArabicParser = null;
     try {
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
@@ -939,9 +993,12 @@ export async function exportToPDF() {
         // ── Arabic font ───────────────────────────────────────────
         // Shaping and bidi are done in JS (arabic-font.js), so R2L
         // must stay OFF here — jsPDF would otherwise reverse the
-        // already-reversed visual string a second time.
+        // already-reversed visual string a second time — and jsPDF's
+        // own Arabic parser has to be taken out of the pipeline for
+        // the duration of this export.
         let arabicFontName = null;
         if (isArabic) {
+            restoreArabicParser = _suspendJsPdfArabicParser(pdf, jsPDF);
             arabicFontName = await loadArabicFont(pdf);
             if (!arabicFontName) {
                 console.warn('[PDF] No Arabic TTF found — Arabic text will not render correctly.');
@@ -1254,6 +1311,8 @@ export async function exportToPDF() {
     } catch (err) {
         console.error('Error generating PDF:', err);
         showStatus(t('status.pdfExportError', { msg: err.message }), 'error');
+    } finally {
+        if (restoreArabicParser) restoreArabicParser();
     }
 }
 

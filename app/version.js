@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.3.1';        // Semantic Versioning
+export const APP_VERSION  = '4.3.2';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-13';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,17 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.3.2',
+            date: '2026-08-13',
+            changes: [
+                'Arabic PDF: fixed the real cause — jsPDF 2.5.1 carries its own Arabic parser and re-shaped every line a second time, against the already-reversed letters',
+                'Arabic PDF: that parser is now detached from the preProcessText event and from the width-measuring path for the duration of the export, then restored',
+                'Arabic PDF: shaping, bidi and line wrapping are handled solely by arabic-font.js, so the output finally matches the Word export',
+                'Arabic PDF: Cairo is the first font tried again — verified against the real Cairo file, every shaped character it produces has a drawable glyph',
+                'Amiri stays as the automatic fallback for any font that lacks a form',
+            ]
+        },
         {
             version: '4.3.1',
             date: '2026-08-13',

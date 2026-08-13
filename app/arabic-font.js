@@ -53,10 +53,13 @@
 // jsPDF needs a TTF (not woff2). Place ONE of these next to
 // index.html, or inside a ./fonts/ folder:
 //
-//   1. fonts/Amiri-Regular.ttf   ← recommended, complete coverage
-//      of the Arabic Presentation Forms blocks
-//      github.com/aliftype/amiri/releases
-//   2. fonts/Cairo-Regular.ttf
+//   1. Cairo-Regular.ttf   ← current choice. Cairo omits the
+//      isolated presentation forms, but it does carry the isolated
+//      shape on the base code point, and the coverage fallback
+//      below routes to it, so nothing is lost.
+//   2. fonts/Amiri-Regular.ttf   ← the safety net. Amiri carries
+//      the full U+FE70–U+FEFF range, isolated forms included, so
+//      the fallback never has to fire.
 //   3. fonts/Tajawal-Regular.ttf
 //
 // The loader tries every path in order and caches the first hit,
@@ -65,10 +68,10 @@
 
 // ── Font candidates (tried in order) ─────────────────────────
 const FONT_CANDIDATES = [
+    { file: './Cairo-Regular.ttf',         name: 'Cairo'   },
+    { file: './fonts/Cairo-Regular.ttf',   name: 'Cairo'   },
     { file: './fonts/Amiri-Regular.ttf',   name: 'Amiri'   },
     { file: './Amiri-Regular.ttf',         name: 'Amiri'   },
-    { file: './fonts/Cairo-Regular.ttf',   name: 'Cairo'   },
-    { file: './Cairo-Regular.ttf',         name: 'Cairo'   },
     { file: './fonts/Tajawal-Regular.ttf', name: 'Tajawal' },
     { file: './Tajawal-Regular.ttf',       name: 'Tajawal' },
 ];
