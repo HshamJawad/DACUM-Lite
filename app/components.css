@@ -1225,3 +1225,116 @@ html[dir="rtl"] .sb-card-actions { padding: 0 3px 0 7px; }
 .btn.btn-ghost:active:not(:disabled) {
   background: #0f172a;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   MOBILE — TASK ROW GEOMETRY (≤ 600px)
+   ──────────────────────────────────────────────────────────────
+   On a portrait phone the task row ran out of room: the label
+   (90px), the ⠿ grip, the 12px gaps, the 20px list indent and a
+   full-size 🗑️ button (12px 24px padding) consumed almost the
+   whole viewport, leaving the text field a few characters wide.
+
+   Two changes fix it:
+     1. Every fixed element shrinks — the grip becomes a narrow
+        column, the label sizes to its own text ("A1:"), the trash
+        becomes a square icon button, the indent is dropped.
+     2. The input gets  min-width: 0. Without it a flex item may
+        not shrink below its intrinsic width, which for <input> is
+        its default character size — this is what actually pinned
+        the field at its old width no matter how much space was
+        freed elsewhere.
+
+   Desktop layout is untouched: everything here is inside the
+   ≤600px query, and the same rules apply to the K&S and Behaviour
+   rows, which share the identical structure.
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+
+  /* Indent removed — logical properties so RTL mirrors correctly */
+  .task-list, .ks-list, .behavior-list {
+    margin-left: 0;
+    margin-right: 0;
+    margin-inline-start: 0;
+  }
+
+  .task-item, .ks-item, .behavior-item {
+    gap: 6px;
+    margin-bottom: 10px;
+    min-width: 0;
+  }
+
+  /* ── Grip: narrow column, still a comfortable drag target ── */
+  .task-drag-handle {
+    width: 16px;
+    min-width: 16px;
+    padding: 0;
+    font-size: 15px;
+    text-align: center;
+  }
+
+  /* ── Label: sized by its own text ("A1:"), not a fixed 90px ─ */
+  .task-label, .ks-label, .behavior-label {
+    width: auto;
+    min-width: 26px;
+    font-size: 0.9em;
+    white-space: nowrap;
+  }
+
+  /* ── The input takes every pixel the row can give it ──────── */
+  .task-item  input[type="text"],
+  .ks-item    input[type="text"],
+  .behavior-item input[type="text"] {
+    flex: 1 1 auto;
+    min-width: 0;              /* the line that makes the rest work */
+    width: auto;
+    padding: 10px 10px;
+    margin-bottom: 0;
+    font-size: 0.95em;
+  }
+
+  /* ── Trash: square icon button, 38px — above the 36px touch
+        minimum, and roughly a third of its former width ──────── */
+  .task-item  .btn-remove,
+  .ks-item    .btn-remove,
+  .behavior-item .btn-remove {
+    flex: 0 0 auto;
+    width: 38px;
+    min-width: 38px;
+    height: 38px;
+    padding: 0;
+    gap: 0;
+    justify-content: center;
+    font-size: 1em;
+    border-radius: 10px;
+  }
+
+  /* Tapped buttons keep :hover on touch — suppress the lift so a
+     tapped row does not stay visually raised. */
+  .task-item .btn-remove:hover,
+  .ks-item .btn-remove:hover,
+  .behavior-item .btn-remove:hover {
+    transform: none;
+  }
+}
+
+/* ── Very narrow phones (≤ 380px): one more notch ───────────── */
+@media (max-width: 380px) {
+  .task-item, .ks-item, .behavior-item { gap: 4px; }
+
+  .task-label, .ks-label, .behavior-label {
+    min-width: 22px;
+    font-size: 0.85em;
+  }
+
+  .task-item  input[type="text"],
+  .ks-item    input[type="text"],
+  .behavior-item input[type="text"] { padding: 9px 8px; }
+
+  .task-item  .btn-remove,
+  .ks-item    .btn-remove,
+  .behavior-item .btn-remove {
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+  }
+}

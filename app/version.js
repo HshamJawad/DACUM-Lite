@@ -27,8 +27,8 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.4.0';        // Semantic Versioning
-export const APP_RELEASED = '2026-08-13';   // ISO 8601 (YYYY-MM-DD)
+export const APP_VERSION  = '4.4.1';        // Semantic Versioning
+export const APP_RELEASED = '2026-08-16';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
 // index.html registers  ./sw.js?v=<APP_VERSION>  and sw.js rebuilds
@@ -55,6 +55,18 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.4.1',
+            date: '2026-08-16',
+            changes: [
+                'Table view on a portrait phone: the task text field is now the widest element in the row instead of the narrowest',
+                'The drag grip became a narrow column, the label sizes to its own text, and the delete button is a 38px square icon button',
+                'The 20px list indent is dropped on small screens, and it uses a logical property so Arabic mirrors correctly',
+                'Root cause of the stuck width: a flex item will not shrink past its intrinsic size, and for an input that is its default character width — min-width: 0 releases it',
+                'The same rules apply to the Knowledge & Skills and Behaviour rows, which share the identical row structure',
+                'Desktop and tablet layout is unchanged — every rule sits inside the 600px and 380px queries',
+            ]
+        },
         {
             version: '4.4.0',
             date: '2026-08-13',
