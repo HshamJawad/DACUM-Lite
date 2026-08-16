@@ -4,11 +4,27 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DACUM Lite &amp; DACUM Live Pro — From Workshop to Ready Chart</title>
-<meta name="description" content="Multilingual tools to build, edit, and export DACUM occupational analysis charts — plus an AI-powered Pro edition with live workshop voting and curriculum mapping.">
+<meta name="description" content="Multilingual tools to build, edit, and export DACUM occupational analysis charts — plus a Pro edition that generates a full six-stage DACUM draft with AI, runs live workshop voting, and maps outcomes to training modules.">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
+
+<style>
+/* Cairo is self-hosted next to this file in the repository root, not
+   loaded from fonts.googleapis.com. Google's CDN silently falls back to
+   a system font whenever it errors (a 503 did exactly that in the app),
+   which leaves the Arabic interface rendering in whatever the OS picks.
+   The variable file covers 400-700 in one request. */
+@font-face{
+    font-family:'Cairo';
+    src:url('Cairo.woff2') format('woff2-variations'),
+        url('Cairo.woff2') format('woff2');
+    font-weight:400 700;
+    font-style:normal;
+    font-display:swap;
+}
+</style>
 
 <style>
 :root{
@@ -120,7 +136,12 @@ body{
     line-height:1.65;
     -webkit-font-smoothing:antialiased;
 }
-html[dir="rtl"] body{ font-family:'Segoe UI',Tahoma,'Manrope',Arial,sans-serif; }
+html[dir="rtl"] body{ font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif; }
+/* Latin text inside an Arabic page (DACUM, PDF, QR…) also renders in
+   Cairo, which carries a full Latin set — mixing two typefaces mid-line
+   was visibly uneven at heading sizes. */
+html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3,
+html[dir="rtl"] h4, html[dir="rtl"] .btn, html[dir="rtl"] .eyebrow{ font-family:'Cairo','Segoe UI',Tahoma,Arial,sans-serif; }
 
 h1,h2,h3{ margin:0; color:var(--ink); letter-spacing:-0.01em; }
 p{ margin:0; }
@@ -393,6 +414,29 @@ html[dir="rtl"] .t4{ right:auto; left:130px; transform:rotate(3deg); }
 }
 .btn-pro-cta:hover{ box-shadow:0 10px 30px rgba(99,102,241,.55); }
 
+/* ── Pro: the six-stage chain strip ── */
+.pro-chain{ display:flex; flex-wrap:wrap; gap:8px; margin:0 0 32px; }
+.pro-chain-step{
+    display:inline-flex; align-items:center; gap:9px;
+    padding:8px 15px; border-radius:999px;
+    background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15);
+    color:rgba(255,255,255,.86); font-size:.82em; font-weight:700; line-height:1.3;
+}
+.pro-chain-step i{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:20px; height:20px; flex-shrink:0; border-radius:50%;
+    background:rgba(255,255,255,.2); font-size:.75em; font-style:normal; font-weight:800;
+}
+/* ── Pro: the "draft, not a replacement" note ── */
+.pro-note{
+    display:flex; gap:14px; align-items:flex-start;
+    padding:16px 20px; margin:0 0 30px; border-radius:12px;
+    background:rgba(255,255,255,.07); border:1px solid rgba(255,255,255,.16);
+}
+.pro-note-icon{ font-size:1.15em; flex-shrink:0; line-height:1.4; }
+.pro-note h4{ color:#fff; font-size:.93em; font-weight:800; margin-bottom:5px; }
+.pro-note p{ color:rgba(255,255,255,.7); font-size:.85em; line-height:1.6; }
+
 /* ══════════════════════════════════════════════════════════
    ABOUT CREATOR
    ══════════════════════════════════════════════════════════ */
@@ -510,40 +554,43 @@ html[lang="fr"] h1[data-fr], html[lang="fr"] h2[data-fr], html[lang="fr"] h3[dat
     <div class="container hero-grid">
         <div class="reveal in">
             <div class="eyebrow">
-                <span data-ar>لغات متعددة · يعمل من المتصفح</span>
-                <span data-en>Multilingual · Runs in your browser</span>
-                <span data-fr>Multilingue · Fonctionne dans le navigateur</span>
+                <span data-ar>ثلاث لغات · يعمل من المتصفّح · مدعوم بالذكاء الاصطناعي</span>
+                <span data-en>Three languages · Runs in your browser · AI-assisted</span>
+                <span data-fr>Trois langues · Fonctionne dans le navigateur · Assisté par IA</span>
             </div>
             <h1 data-ar>
-                من ورشة عمل DACUM إلى <span class="accent">مخطط جاهز للتصدير</span> — بلا تعقيد
+                من عنوان المهنة إلى <span class="accent">مخطط DACUM جاهز للتصدير</span> — ومنهج يُبنى عليه
             </h1>
             <h1 data-en>
-                From a DACUM workshop to a <span class="accent">finished chart</span> — with nothing lost in translation
+                From an occupation title to an <span class="accent">export-ready DACUM chart</span> — and the curriculum built on it
             </h1>
             <h1 data-fr>
-                D'un atelier DACUM à un <span class="accent">graphique finalisé</span> — sans rien perdre en traduction
+                D'un intitulé de métier à un <span class="accent">graphique DACUM prêt à exporter</span> — et au programme qui en découle
             </h1>
             <p class="hero-sub" data-ar>
-                أداة DACUM Lite تساعد مطوّري المناهج وميسّري ورش العمل على بناء وتحرير وتصدير مخططات تحليل المهن (DACUM) بسهولة، بدعم كامل للعربية والفرنسية والإنجليزية معًا.
+                أداتان لمطوّري المناهج وميسّري الورش: <b>DACUM Lite</b> لبناء المخطط وتحريره وتصديره ببساطة، و<b>DACUM Live Pro</b> لتوليد مسودة كاملة من ست مراحل بالذكاء الاصطناعي وإدارة التصويت الحي داخل الورشة. وكلاهما بالعربية والإنجليزية والفرنسية مع دعم RTL كامل.
             </p>
             <p class="hero-sub" data-en>
-                DACUM Lite helps curriculum developers and workshop facilitators build, edit, and export occupational analysis charts — with full Arabic, French, and English support, right-to-left included.
+                Two tools for curriculum developers and workshop facilitators: <b>DACUM Lite</b> to build, edit and export the chart simply, and <b>DACUM Live Pro</b> to generate a complete six-stage draft with AI and run live in-workshop voting. Both in Arabic, English and French, right-to-left included.
             </p>
             <p class="hero-sub" data-fr>
-                DACUM Lite aide les concepteurs de programmes et les animateurs d'atelier à créer, modifier et exporter facilement des graphiques d'analyse de profession — avec prise en charge complète de l'arabe, du français et de l'anglais.
+                Deux outils pour les concepteurs de programmes et les animateurs d'atelier : <b>DACUM Lite</b> pour créer, modifier et exporter le graphique simplement, et <b>DACUM Live Pro</b> pour générer par IA un brouillon complet en six étapes et animer le vote en direct. Les deux en arabe, anglais et français, RTL inclus.
             </p>
             <div class="hero-ctas">
                 <a class="btn btn-primary" href="./app/index.html">
-                    <span data-ar>ابدأ الآن مجانًا ←</span><span data-en>Start free ←</span><span data-fr>Commencer gratuitement ←</span>
+                    <span data-ar>ابدأ مجانًا مع DACUM Lite ←</span><span data-en>Start free with DACUM Lite ←</span><span data-fr>Commencer avec DACUM Lite ←</span>
+                </a>
+                <a class="btn btn-pro-cta" href="https://dacumlivepropilot.hshaam77.workers.dev/" target="_blank" rel="noopener">
+                    <span data-ar>✨ جرّب DACUM Live Pro ↗</span><span data-en>✨ Try DACUM Live Pro ↗</span><span data-fr>✨ Essayer DACUM Live Pro ↗</span>
                 </a>
                 <a class="btn btn-ghost" href="./app/user-guide.html">
                     <span data-ar>📘 دليل الاستخدام</span><span data-en>📘 User guide</span><span data-fr>📘 Guide d'utilisation</span>
                 </a>
             </div>
             <div class="hero-note">
-                <span data-ar>✅ لا حاجة لتسجيل أو تنزيل — يعمل مباشرة داخل المتصفح</span>
-                <span data-en>✅ No sign-up, no install — works directly in your browser</span>
-                <span data-fr>✅ Aucune inscription, aucune installation — fonctionne directement dans le navigateur</span>
+                <span data-ar>✅ بلا تسجيل ولا تنزيل — يعمل داخل المتصفّح، ويواصل العمل في قاعة التدريب حتى مع انقطاع الإنترنت</span>
+                <span data-en>✅ No sign-up, no install — runs in your browser and keeps working in the training room when the network drops</span>
+                <span data-fr>✅ Aucune inscription, aucune installation — fonctionne dans le navigateur et continue en salle même sans réseau</span>
             </div>
         </div>
 
@@ -774,60 +821,79 @@ html[lang="fr"] h1[data-fr], html[lang="fr"] h2[data-fr], html[lang="fr"] h3[dat
                 <span data-en>✨ The Professional Edition</span>
                 <span data-fr>✨ L'édition professionnelle</span>
             </div>
-            <h2 data-ar>جاهز لورشة DACUM مدعومة بالذكاء الاصطناعي؟</h2>
-            <h2 data-en>Ready for an AI-powered DACUM workshop?</h2>
-            <h2 data-fr>Prêt pour un atelier DACUM propulsé par l'IA ?</h2>
+            <h2 data-ar>من عنوان المهنة إلى مسودة DACUM كاملة — ثم إلى الورشة</h2>
+            <h2 data-en>From an occupation title to a complete DACUM draft — then into the workshop</h2>
+            <h2 data-fr>D'un intitulé de métier à un brouillon DACUM complet — puis à l'atelier</h2>
             <p class="pro-sub" data-ar>
-                DACUM Live Pro يأخذ كل ما تحبه في DACUM Lite ويضيف له توليدًا بالذكاء الاصطناعي، وتصويتًا حيًا أثناء الورشة، وأدوات كاملة لبناء المنهج — من تحليل المهنة إلى الوحدات التدريبية الجاهزة.
+                DACUM Live Pro يولّد سلسلة DACUM كاملة بالذكاء الاصطناعي في تسلسل واحد تختار مداه — كل مرحلة تُبنى على ما قبلها، تمامًا كما تسير المنهجية نفسها. تدخل إلى الورشة ومعك مسودة جاهزة للمراجعة، بدل صفحة بيضاء.
             </p>
             <p class="pro-sub" data-en>
-                DACUM Live Pro takes everything you like about DACUM Lite and adds AI-powered generation, live in-workshop voting, and complete curriculum-building tools — from occupational analysis all the way to finished training modules.
+                DACUM Live Pro generates a complete DACUM chain with AI in a single run whose depth you choose — each stage built from the one before it, exactly as the methodology itself proceeds. You walk into the workshop with a draft ready for review instead of a blank wall.
             </p>
             <p class="pro-sub" data-fr>
-                DACUM Live Pro reprend tout ce que vous aimez dans DACUM Lite et y ajoute la génération par IA, le vote en direct pendant l'atelier, et des outils complets de conception de programme — de l'analyse de la profession jusqu'aux modules de formation finalisés.
+                DACUM Live Pro génère par IA une chaîne DACUM complète en une seule séquence dont vous choisissez la profondeur — chaque étape se construit sur la précédente, comme la méthodologie elle-même. Vous entrez en atelier avec un brouillon prêt à être revu, au lieu d'une page blanche.
             </p>
+
+            <!-- The six generated stages, in order -->
+            <div class="pro-chain">
+                <div class="pro-chain-step"><i>1</i><span data-ar>الواجبات والمهام</span><span data-en>Duties &amp; Tasks</span><span data-fr>Fonctions &amp; tâches</span></div>
+                <div class="pro-chain-step"><i>2</i><span data-ar>المعلومات المساندة</span><span data-en>Supporting Information</span><span data-fr>Informations d'appui</span></div>
+                <div class="pro-chain-step"><i>3</i><span data-ar>مجموعات الكفايات</span><span data-en>Competency Clusters</span><span data-fr>Grappes de compétences</span></div>
+                <div class="pro-chain-step"><i>4</i><span data-ar>النطاق ومعايير الأداء</span><span data-en>Range &amp; Performance Criteria</span><span data-fr>Champ &amp; critères de performance</span></div>
+                <div class="pro-chain-step"><i>5</i><span data-ar>مخرجات التعلّم</span><span data-en>Learning Outcomes</span><span data-fr>Résultats d'apprentissage</span></div>
+                <div class="pro-chain-step"><i>6</i><span data-ar>الوحدات التدريبية</span><span data-en>Training Modules</span><span data-fr>Modules de formation</span></div>
+            </div>
+
+            <!-- Honesty note: the draft does not replace the panel -->
+            <div class="pro-note">
+                <div class="pro-note-icon">🛡️</div>
+                <div>
+                    <h4><span data-ar>مسودة تدخل معك إلى الورشة — لا بديلاً عنها</span><span data-en>A draft to take INTO the workshop — not a replacement for it</span><span data-fr>Un brouillon à emporter EN atelier — non un substitut</span></h4>
+                    <p><span data-ar>التحقق من المهام لا يُولّد: الأهمية والتكرار وصعوبة التعلّم هي حكم لجنة الممارسين، وقيمتها تأتي ممّن أنتجها. وإن ولّدت تقديرات مسودة للتحضير، تُوسم «غير محققة» وتُستبعد من كل ملفات التصدير حتى تعتمدها اللجنة بنفسها.</span><span data-en>Task Verification is never generated: importance, frequency and learning difficulty are the judgement of a panel of practitioners, and their value comes from who produced them. If you generate draft ratings for preparation, they are tagged unverified, excluded from every export, and never counted as panel data until the panel accepts them.</span><span data-fr>La vérification des tâches n'est jamais générée : importance, fréquence et difficulté relèvent du jugement d'un panel de praticiens. Les notes générées pour la préparation sont marquées « non vérifiées », exclues de tous les exports, et jamais comptées comme données du panel tant que celui-ci ne les a pas validées.</span></p>
+                </div>
+            </div>
 
             <div class="pro-feat-grid">
                 <div class="pro-feat">
-                    <div class="pro-feat-icon">🤖</div>
+                    <div class="pro-feat-icon">⚡</div>
                     <div>
-                        <h4><span data-ar>توليد بالذكاء الاصطناعي</span><span data-en>AI-Powered Generation</span><span data-fr>Génération par IA</span></h4>
-                        <p><span data-ar>مسودة كاملة من الواجبات والمهام تُولَّد تلقائيًا من عنوان المهنة ونطاق العمل.</span><span data-en>A complete duties-and-tasks draft generated automatically from the occupation title and scope of work.</span><span data-fr>Un brouillon complet de fonctions et tâches généré automatiquement à partir du titre de la profession et du champ d'application.</span></p>
+                        <h4><span data-ar>توليد مسودة كاملة</span><span data-en>Generate Full Draft</span><span data-fr>Générer un brouillon complet</span></h4>
+                        <p><span data-ar>ست مراحل متسلسلة تُولّد في دفعة واحدة، وأنت تحدد إلى أي مرحلة تصل — مع إيقاف في أي لحظة دون فقدان ما أُنجز.</span><span data-en>Six chained stages produced in one run, with you choosing how far it goes — and a stop button that keeps everything already generated.</span><span data-fr>Six étapes enchaînées en une seule séquence, dont vous choisissez la profondeur — l'arrêt conserve tout ce qui est déjà généré.</span></p>
                     </div>
                 </div>
                 <div class="pro-feat">
-                    <div class="pro-feat-icon">🎯</div>
+                    <div class="pro-feat-icon">🔁</div>
                     <div>
-                        <h4><span data-ar>التحقق من المهام وأولوية التدريب</span><span data-en>Task Verification &amp; Training Priority</span><span data-fr>Vérification des tâches et priorité de formation</span></h4>
-                        <p><span data-ar>جلسات تصويت حية أثناء الورشة — يقيّم المشاركون كل مهمة (الأهمية، التكرار، الصعوبة) مباشرة من هواتفهم.</span><span data-en>Live voting sessions during the workshop — participants rate every task (importance, frequency, difficulty) right from their phones.</span><span data-fr>Sessions de vote en direct pendant l'atelier — les participants évaluent chaque tâche (importance, fréquence, difficulté) directement depuis leur téléphone.</span></p>
+                        <h4><span data-ar>إعادة التوليد من هنا</span><span data-en>Regenerate from here</span><span data-fr>Regénérer à partir d'ici</span></h4>
+                        <p><span data-ar>عدّلت مرحلة في السلسلة؟ أعد بناء ما بعدها فقط — وكل ما قبلها يبقى كما هو حرفيًا.</span><span data-en>Changed something upstream? Rebuild only the stages after it — everything before stays exactly as you left it.</span><span data-fr>Une étape modifiée ? Ne reconstruisez que les suivantes — tout ce qui précède reste intact.</span></p>
                     </div>
                 </div>
                 <div class="pro-feat">
-                    <div class="pro-feat-icon">🧩</div>
+                    <div class="pro-feat-icon">🧭</div>
                     <div>
-                        <h4><span data-ar>مجموعات الكفايات</span><span data-en>Competency Clusters</span><span data-fr>Regroupements de compétences</span></h4>
-                        <p><span data-ar>تجميع المهام المترابطة في كفايات محددة، مع معايير الأداء ونطاقها.</span><span data-en>Group related tasks into competency clusters with defined performance criteria and range.</span><span data-fr>Regroupez les tâches liées en compétences, avec critères de performance et portée définis.</span></p>
+                        <h4><span data-ar>حدود المهنة أولاً</span><span data-en>Occupation boundary first</span><span data-fr>Le périmètre du métier d'abord</span></h4>
+                        <p><span data-ar>عنوان المهنة ونطاق العمل يضبطان حدود كل مرحلة، مع فحص للعنوان ينبّه فقط — ولا يُعدّل محتواك تلقائيًا أبدًا.</span><span data-en>Occupation title and scope of work set the boundary every stage inherits, with a title check that flags — and never silently rewrites what you typed.</span><span data-fr>L'intitulé et le champ d'activité définissent le cadre hérité par chaque étape ; la vérification signale sans jamais corriger votre saisie.</span></p>
                     </div>
                 </div>
                 <div class="pro-feat">
-                    <div class="pro-feat-icon">🎓</div>
+                    <div class="pro-feat-icon">🗳️</div>
                     <div>
-                        <h4><span data-ar>مخرجات التعلّم</span><span data-en>Learning Outcomes</span><span data-fr>Résultats d'apprentissage</span></h4>
-                        <p><span data-ar>ربط معايير الأداء بمخرجات تعلّم منهجية جاهزة للتصميم التعليمي.</span><span data-en>Map performance criteria to structured learning outcomes, ready for instructional design.</span><span data-fr>Associez les critères de performance à des résultats d'apprentissage structurés, prêts pour la conception pédagogique.</span></p>
+                        <h4><span data-ar>تصويت حي عبر QR</span><span data-en>Live voting via QR</span><span data-fr>Vote en direct par QR</span></h4>
+                        <p><span data-ar>يمسح المشاركون رمز QR ليقيّموا كل مهمة من هواتفهم، مع لوحة نتائج ترتّب الأولويات وتحسب عبء التدريب تلقائيًا.</span><span data-en>Participants scan a QR code and rate every task from their phones, with a dashboard that ranks priorities and computes training load automatically.</span><span data-fr>Les participants scannent un QR code et évaluent chaque tâche depuis leur téléphone ; le tableau de bord classe les priorités et calcule la charge de formation.</span></p>
                     </div>
                 </div>
                 <div class="pro-feat">
-                    <div class="pro-feat-icon">📦</div>
+                    <div class="pro-feat-icon">🌍</div>
                     <div>
-                        <h4><span data-ar>خرائط الوحدات التدريبية</span><span data-en>Module Mapping</span><span data-fr>Cartographie des modules</span></h4>
-                        <p><span data-ar>تنظيم مخرجات التعلّم في وحدات تدريبية جاهزة لبناء المنهج الكامل.</span><span data-en>Organize learning outcomes into training modules, ready for full curriculum development.</span><span data-fr>Organisez les résultats d'apprentissage en modules de formation, prêts pour l'élaboration complète du programme.</span></p>
+                        <h4><span data-ar>ثلاث لغات وعمل دون إنترنت</span><span data-en>Three languages, works offline</span><span data-fr>Trois langues, fonctionne hors ligne</span></h4>
+                        <p><span data-ar>واجهة عربية وإنجليزية وفرنسية بدعم RTL كامل، وتطبيق PWA يعمل في قاعة التدريب حتى مع انقطاع الشبكة، مع دليل استخدام بثلاث لغات.</span><span data-en>Arabic, English and French interfaces with full RTL support, plus a PWA that keeps running in the training room when the network drops — and a trilingual user guide.</span><span data-fr>Interfaces arabe, anglaise et française avec prise en charge RTL complète, et une PWA qui continue de fonctionner en salle sans réseau — avec un guide trilingue.</span></p>
                     </div>
                 </div>
                 <div class="pro-feat">
-                    <div class="pro-feat-icon">📊</div>
+                    <div class="pro-feat-icon">📤</div>
                     <div>
-                        <h4><span data-ar>لوحة نتائج الورشة</span><span data-en>Workshop Results Dashboard</span><span data-fr>Tableau de bord des résultats</span></h4>
-                        <p><span data-ar>ترتيب المهام حسب الأولوية وحساب عبء التدريب لكل واجب تلقائيًا.</span><span data-en>Automatic priority ranking and training-load calculation for every duty.</span><span data-fr>Classement automatique des priorités et calcul de la charge de formation pour chaque fonction.</span></p>
+                        <h4><span data-ar>تصدير رسمي جاهز</span><span data-en>Export-ready documents</span><span data-fr>Documents prêts à diffuser</span></h4>
+                        <p><span data-ar>PDF وWord بعربية سليمة التشكيل والاتجاه، إلى جانب مصفوفة مستويات المهارة وتقرير التحقق والمخطط الكامل.</span><span data-en>PDF and Word output with correctly shaped, correctly directed Arabic — alongside the skills level matrix, the verification report and the full chart.</span><span data-fr>Export PDF et Word avec un arabe correctement façonné et orienté — avec la matrice des niveaux de compétence, le rapport de vérification et le graphique complet.</span></p>
                     </div>
                 </div>
             </div>
@@ -909,15 +975,15 @@ const RTL_LANGS  = ['ar'];
 const PAGE_META = {
     en: {
         title: "DACUM Lite & DACUM Live Pro — From Workshop to Ready Chart",
-        desc:  "Multilingual tools to build, edit, and export DACUM occupational analysis charts — plus an AI-powered Pro edition with live workshop voting and curriculum mapping."
+        desc:  "Multilingual tools to build, edit, and export DACUM occupational analysis charts — plus a Pro edition that generates a full six-stage DACUM draft with AI and runs live workshop voting."
     },
     fr: {
         title: "DACUM Lite et DACUM Live Pro — De l'atelier au graphique finalisé",
-        desc:  "Outils multilingues pour créer, modifier et exporter des graphiques d'analyse de profession DACUM — avec une édition Pro propulsée par l'IA."
+        desc:  "Outils multilingues pour créer, modifier et exporter des graphiques d'analyse de profession DACUM — avec une édition Pro qui génère par IA un brouillon DACUM complet en six étapes."
     },
     ar: {
         title: "DACUM Lite و DACUM Live Pro — من الورشة إلى المخطط الجاهز",
-        desc:  "أدوات متعددة اللغات لبناء وتحرير وتصدير مخططات تحليل المهن (DACUM) — مع نسخة احترافية مدعومة بالذكاء الاصطناعي."
+        desc:  "أدوات متعددة اللغات لبناء وتحرير وتصدير مخططات تحليل المهن (DACUM) — مع نسخة احترافية تولّد مسودة DACUM كاملة من ست مراحل بالذكاء الاصطناعي."
     }
 };
 
