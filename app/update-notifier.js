@@ -14,16 +14,30 @@
 // Responsibilities:
 //   1. Toolbar version badge  (#versionBadge)
 //   2. Help-tab version footer (#helpVersionFooter)
-//   3. Copyright line          (#copyrightMain / .copyright) —
-//      relocated into the Help tab, see relocateCopyright()
+//   3. Copyright line          (#copyrightMain)
 //   4. The update bar itself   (#updateBanner)
 //
-// Update detection listens to THREE signals, because browsers do
-// not agree on which one they fire:
+// Update detection listens to FOUR signals, because browsers do
+// not agree on which one they fire — and on some devices none of
+// the service-worker ones fire at all:
 //   • 'SW_UPDATED' message posted by sw.js after activation
 //   • 'updatefound' on the registration → worker state 'installed'
 //   • 'controllerchange' on navigator.serviceWorker
-// Relying on any single one means some users never see the bar.
+//   • a VERSION POLL: ./version.js is fetched directly and its
+//     APP_VERSION compared with the one this page was built from
+//
+// v4.4.2 — why the bar did not appear on the last release:
+//   1. The registration was wired on 'load', by which time the new
+//      worker could already be INSTALLING. 'updatefound' had fired
+//      before the listener existed, and only reg.waiting was
+//      checked, so a worker caught mid-install was never noticed.
+//   2. Every remaining signal depends on the service worker
+//      actually reaching 'installed'. On an installed PWA on
+//      Android that can be deferred for a long time, so the user
+//      sees nothing at all.
+//   The version poll fixes both: it is independent of the service
+//   worker, and because sw.js is network-first, a plain reload is
+//   already enough to land on the new build.
 // ============================================================
 
 import { APP_VERSION, APP_RELEASED, CACHE_VERSION } from './version.js';
@@ -34,11 +48,21 @@ const BANNER_ID   = 'updateBanner';
 const RELOAD_KEY  = 'dacum_update_reload';   // sessionStorage
 const RELOAD_GUARD_MS = 20000;               // 20s anti-loop window
 
+// ── Version poll ─────────────────────────────────────────────
+// A FIXED query string, never Date.now(): sw.js is network-first,
+// so the response is always fresh anyway, and a changing URL would
+// add a new cache entry on every single poll.
+const VERSION_URL   = './version.js?vcheck=1';
+const POLL_FIRST_MS = 8000;              // first check, after settle
+const POLL_EVERY_MS = 5 * 60 * 1000;     // then every 5 minutes
+
 // ── Module state ─────────────────────────────────────────────
 let _registration   = null;   // ServiceWorkerRegistration | null
 let _updateReady    = false;  // an update is available right now
 let _userTriggered  = false;  // user pressed "Update now"
 let _hadController  = false;  // page was controlled at load time
+let _remoteVersion  = null;   // newest APP_VERSION seen on the server
+let _pollTimer      = null;   // setInterval handle
 
 // ══════════════════════════════════════════════════════════════
 //  Reload guard — prevents an endless update loop
@@ -126,33 +150,6 @@ function paintVersionText() {
 // ══════════════════════════════════════════════════════════════
 //  The update bar
 // ══════════════════════════════════════════════════════════════
-// ══════════════════════════════════════════════════════════════
-//  Copyright line — Help tab only
-//
-//  The line used to sit at the foot of .container, which put it
-//  under EVERY tab and cost a strip of vertical space on screens
-//  that need it for the chart. It belongs in one place: the Help
-//  tab, next to the version footer it repeats.
-//
-//  Moving the node instead of duplicating it keeps a single source
-//  of truth — data-i18n still resolves on language switch, and
-//  paintVersionText() still finds #copyrightMain. Because .tab-content
-//  is hidden unless .active, visibility then follows the tab for
-//  free, with no extra CSS and no listener.
-//
-//  Idempotent: safe to call on every language change or re-init.
-// ══════════════════════════════════════════════════════════════
-function relocateCopyright() {
-    const help = document.getElementById('help-tab');
-    if (!help) return;
-
-    const block = document.querySelector('.copyright');
-    if (!block || help.contains(block)) return;
-
-    block.classList.add('copyright--in-help');
-    help.appendChild(block);
-}
-
 function prefersReducedMotion() {
     return window.matchMedia &&
            window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -169,7 +166,10 @@ function bannerTexts(el) {
     const now  = el.querySelector('[data-ub="now"]');
     const late = el.querySelector('[data-ub="later"]');
 
-    if (msg)  msg.textContent  = t('update.available');
+    // The version number is appended outside t(): it needs no
+    // translation, and it turns a vague notice into a concrete one.
+    if (msg)  msg.textContent  = t('update.available') +
+                                 (_remoteVersion ? ` · v${_remoteVersion}` : '');
     if (now)  now.textContent  = _userTriggered ? t('update.updating') : t('update.now');
     if (late) late.textContent = t('update.later');
     if (late) late.setAttribute('aria-label', t('update.later'));
@@ -283,6 +283,11 @@ function applyUpdate() {
         // Safety net: if controllerchange never fires, reload anyway.
         setTimeout(safeReload, 2500);
     } else {
+        // No worker waiting — the poll found the new release first.
+        // sw.js is network-first, so a plain reload already lands on
+        // the new build; ask for a worker update on the way out so
+        // the next launch is offline-correct too.
+        if (_registration) _registration.update().catch(() => {});
         safeReload();
     }
 }
@@ -298,6 +303,7 @@ function onUpdateAvailable(reportedVersion) {
 
     if (_updateReady) { showBanner(); return; }   // no duplicates
     _updateReady = true;
+    stopPolling();               // the offer is on screen; stop asking
     paintVersionBadge();
     showBanner();
 }
@@ -306,25 +312,106 @@ function wireRegistration(reg) {
     if (!reg) return;
     _registration = reg;
 
-    // Signal 2 — a new worker is being installed right now.
+    // Signal 2a — a new worker finished installing before this
+    // module got a chance to listen. Very common: index.html
+    // registers on 'load' and we wire up on 'load' too.
     if (reg.waiting && _hadController) onUpdateAvailable(null);
 
+    // Signal 2b — a new worker is installing RIGHT NOW. This case
+    // was missing, and it is the one that silently swallowed the
+    // notification: 'updatefound' had already fired, so attaching
+    // the listener below caught nothing.
+    if (reg.installing && _hadController) _watchWorker(reg.installing);
+
     reg.addEventListener('updatefound', () => {
-        const incoming = reg.installing;
-        if (!incoming) return;
-        incoming.addEventListener('statechange', () => {
-            // 'installed' + an existing controller = update, not first install.
-            if (incoming.state === 'installed' && navigator.serviceWorker.controller) {
-                onUpdateAvailable(null);
-            }
-        });
+        _watchWorker(reg.installing);
     });
+}
+
+/** Watch one incoming worker until it reaches 'installed'. */
+function _watchWorker(worker) {
+    if (!worker) return;
+    if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+        onUpdateAvailable(null);
+        return;
+    }
+    worker.addEventListener('statechange', () => {
+        // 'installed' + an existing controller = update, not first install.
+        if (worker.state === 'installed' && navigator.serviceWorker.controller) {
+            onUpdateAvailable(null);
+        }
+    });
+}
+
+// ══════════════════════════════════════════════════════════════
+//  Signal 4 — the version poll
+//
+//  Independent of the service worker on purpose. version.js is
+//  fetched and its APP_VERSION read with a regex — no import(),
+//  because a module URL is resolved once per session and would
+//  hand back the build already in memory.
+// ══════════════════════════════════════════════════════════════
+function _isNewer(remote, local) {
+    const a = String(remote).split('.').map(Number);
+    const b = String(local).split('.').map(Number);
+    for (let i = 0; i < 3; i++) {
+        const x = a[i] || 0, y = b[i] || 0;
+        if (x !== y) return x > y;
+    }
+    return false;
+}
+
+async function checkRemoteVersion() {
+    if (_updateReady) return;                 // already offered
+    if (document.hidden) return;              // do not poll a hidden tab
+    if (navigator.onLine === false) return;   // offline: nothing to find
+
+    try {
+        const res = await fetch(VERSION_URL, { cache: 'no-store' });
+        if (!res.ok) return;
+
+        const text  = await res.text();
+        const match = text.match(/APP_VERSION\s*=\s*['"]([0-9]+(?:\.[0-9]+)*)['"]/);
+        if (!match) return;
+
+        const remote = match[1];
+        if (_isNewer(remote, APP_VERSION)) {
+            _remoteVersion = remote;
+            console.log('[Update] Newer version on server:', remote, '(running', APP_VERSION + ')');
+
+            // Nudge the service worker as well, so that by the time
+            // the user presses "Update now" the new shell is usually
+            // already cached and the switch is instant.
+            if (_registration) _registration.update().catch(() => {});
+
+            onUpdateAvailable(remote);
+        }
+    } catch (e) {
+        /* Network hiccup — the next poll tries again. Never noisy. */
+    }
+}
+
+function startPolling() {
+    if (_pollTimer) return;
+    setTimeout(checkRemoteVersion, POLL_FIRST_MS);
+    _pollTimer = setInterval(checkRemoteVersion, POLL_EVERY_MS);
+
+    // A PWA is usually resumed rather than reopened, so these two
+    // events are the realistic moment a user meets a new release.
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) checkRemoteVersion();
+    });
+    window.addEventListener('focus',  checkRemoteVersion);
+    window.addEventListener('online', checkRemoteVersion);
+}
+
+function stopPolling() {
+    if (_pollTimer) { clearInterval(_pollTimer); _pollTimer = null; }
 }
 
 export function initUpdateNotifier() {
     // Version surfaces first — they must work even without a worker
     // (preview mode, unsupported browser, file:// …).
-    relocateCopyright();
     paintVersionBadge();
     paintVersionText();
 
@@ -336,12 +423,16 @@ export function initUpdateNotifier() {
     // Re-render on language switch: the bar lives outside the reach of
     // applyTranslations(), and dir must follow the interface language.
     document.addEventListener('dacum:langchange', () => {
-        relocateCopyright();
         paintVersionBadge();
         paintVersionText();
         const el = document.getElementById(BANNER_ID);
         if (el) bannerTexts(el);
     });
+
+    // The poll runs even with no service worker at all (a browser
+    // tab, an unsupported browser, a refused registration), because
+    // it is the one signal that does not depend on one.
+    startPolling();
 
     if (!('serviceWorker' in navigator)) return;
 

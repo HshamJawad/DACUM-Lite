@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.4.1';        // Semantic Versioning
+export const APP_VERSION  = '4.4.2';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-16';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,17 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.4.2',
+            date: '2026-08-16',
+            changes: [
+                'The update bar is reliable again — it now appears whenever a newer version is on the server, not only when the browser happens to announce one',
+                'Added a version poll: version.js is read straight from the server every few minutes and on every return to the app, independently of the service worker',
+                'Fixed the case that hid the bar on the last release — a worker already installing when the page finished loading was never watched',
+                'The bar now names the incoming version, e.g. "a new version is available · v4.4.2"',
+                'Nothing reloads on its own: the bar still waits for "Update now", and "Later" moves the offer to the toolbar badge',
+            ]
+        },
         {
             version: '4.4.1',
             date: '2026-08-16',
