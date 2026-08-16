@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.4.2';        // Semantic Versioning
+export const APP_VERSION  = '4.4.3';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-16';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,17 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.4.3',
+            date: '2026-08-16',
+            changes: [
+                'Card view in Arabic: the duty title now types right-to-left like the task cards did — one hardcoded text-align: left was overriding the interface direction',
+                'It is now text-align: start, a logical value that follows the language instead of fighting it, so no separate RTL rule is needed',
+                'Card view in Arabic: the sticky duty column now pins to the right edge, where the duty card actually sits — it was pinned left and drifted out of view when scrolling a row with many tasks',
+                'Card view in Arabic: the duty card\u2019s rounded corners and drop shadow mirror with it, so the column no longer faces the wrong way',
+                'Removed a dead APP_VERSION constant from app.js that was never read and had drifted three major versions behind this file',
+            ]
+        },
         {
             version: '4.4.2',
             date: '2026-08-16',

@@ -1,4 +1,8 @@
-const APP_VERSION = "3.0.0";
+// NOTE: the former `const APP_VERSION = "3.0.0"` that sat here has been
+// removed. It was never read anywhere in this file, and it had drifted
+// three major versions behind the real number. version.js is the single
+// source of truth (update-notifier.js and sw.js both read it); a second,
+// silent copy of a version string is a bug waiting to be believed.
 // ============================================================
 // app.js — Application Bootstrap
 // Connects all modules, initialises project manager, renders
