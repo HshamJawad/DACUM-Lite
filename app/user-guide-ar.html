@@ -4,8 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>DACUM Lite — الوثائق الرسمية</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<!-- No external font CDN. Both faces are served from app/fonts/ in this
+     repository. Cairo is the very same file the DACUM Lite interface
+     loads, so it is usually already cached by the time a reader opens
+     this guide from the Help button inside the app. Google's CDN falls
+     back silently to a system font whenever it errors, which had left
+     the Arabic documentation rendering in whatever the OS happened to
+     pick. Cairo is preloaded because it is the body font; JetBrains
+     Mono is not, since it only styles <code> further down the page. -->
+<link rel="preload" href="fonts/Cairo.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{
+  font-family:'JetBrains Mono';
+  src:url('fonts/JetBrainsMono-VF.woff2') format('woff2-variations'),
+      url('fonts/JetBrainsMono-VF.woff2') format('woff2');
+  font-weight:100 800;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'Cairo';
+  src:url('fonts/Cairo.woff2') format('woff2-variations'),
+      url('fonts/Cairo.woff2') format('woff2');
+  font-weight:400 700;
+  font-style:normal;
+  font-display:swap;
+}
+</style>
 <style>
 /* ── Reset & Variables ─────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -29,7 +54,7 @@
 html { scroll-behavior: smooth; }
 
 body {
-  font-family: 'Tajawal', 'Segoe UI', Tahoma, sans-serif;
+  font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
   background: var(--bg);
   color: var(--slate);
   font-size: 16px;
@@ -282,7 +307,7 @@ body {
 
 /* Code */
 code {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace;
   font-size: .85em;
   background: #f1f5f9;
   border: 1px solid #e2e8f0;
@@ -300,7 +325,7 @@ kbd {
   background: var(--slate);
   color: #fff;
   border-radius: 5px;
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'JetBrains Mono', ui-monospace, Consolas, monospace;
   font-size: .8em;
   box-shadow: 0 2px 0 rgba(0,0,0,.3);
   direction: ltr;
