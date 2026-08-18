@@ -27,8 +27,8 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.4.3';        // Semantic Versioning
-export const APP_RELEASED = '2026-08-16';   // ISO 8601 (YYYY-MM-DD)
+export const APP_VERSION  = '4.5.0';        // Semantic Versioning
+export const APP_RELEASED = '2026-08-18';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
 // index.html registers  ./sw.js?v=<APP_VERSION>  and sw.js rebuilds
@@ -55,6 +55,19 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.5.0',
+            date: '2026-08-18',
+            changes: [
+                'Additional Information: each section now has bullet-list and numbered-list buttons that format the whole box in one tap',
+                'Both list buttons toggle \u2014 tap again to strip the markers, or tap the other one to switch between bullets and numbering',
+                'Blank lines are left alone and never numbered, so the spacing between groups of items survives formatting',
+                'Additional Information: the Clear and Rename buttons swapped places, matching the layout used in DACUM Live Pro',
+                'The new list buttons are icon-only and stay square on narrow screens instead of stretching like the text buttons',
+                'List button tooltips are translated in Arabic, English and French',
+                'Copyright line moved inside the Help tab \u2014 it no longer repeats at the bottom of every other tab',
+            ]
+        },
         {
             version: '4.4.3',
             date: '2026-08-16',

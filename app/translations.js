@@ -1,11 +1,6 @@
 // ============================================================
-// translations.js — Multilingual Dictionary (EN / FR / AR)
-// DACUM Lite v4.2.0  |  i18n
-//
-// NOTE: 'copyright.main' carries a {{version}} token that is filled
-// by update-notifier.js from version.js. The element that shows it
-// (#copyrightMain) intentionally has NO data-i18n attribute, because
-// applyTranslations() calls t() without variables.
+// translations.js — Bilingual Dictionary (EN / AR)
+// DACUM Lite v3.1  |  i18n Phase 1
 //
 // Usage:  import { translations } from './translations.js';
 // Engine: see i18n.js  →  t(key, { token: value })
@@ -125,6 +120,8 @@ export const translations = {
         'additionalInfo.intro':   '📝 Enter information for each section. Click the rename button to customize section headings.',
         'additionalInfo.rename':  '✏️ Rename',
         'additionalInfo.clear':   '🗑️ Clear',
+        'additionalInfo.bullets': 'Bulleted list',
+        'additionalInfo.numbers': 'Numbered list',
         'additionalInfo.addSection': '➕ Add Section',
         'section.removeBtn':         '❌ Remove',
 
@@ -189,6 +186,9 @@ export const translations = {
         'status.allCleared':         'All data cleared! ✓',
         'status.headingUpdated':     'Heading updated! ✓',
         'status.sectionCleared':     'Section cleared! ✓',
+        'status.bulletsApplied':     'Bullets applied ✓',
+        'status.numbersApplied':     'Numbering applied ✓',
+        'status.listCleared':        'List formatting removed ✓',
         'status.customSectionAdded': 'Custom section added! ✓',
         'status.sectionRemoved':     'Section removed! ✓',
 
@@ -313,7 +313,7 @@ export const translations = {
 
         // ── Copyright ─────────────────────────────────────────
         'copyright.main':
-            '© 2026 DACUM Lite | by Husham Jawad Kadhim | Version {{version}} | All Rights Reserved',
+            '© 2026 DACUM Lite | by Husham Jawad Kadhim | Version 3.1.0 | All Rights Reserved',
         'copyright.disclaimer':
             'This tool is provided "as is" without warranty of any kind. The developer assumes no ' +
             'responsibility for any inaccuracies, errors, omissions, or inconsistencies in the ' +
@@ -321,15 +321,6 @@ export const translations = {
             'content before use.',
 
         // ── Help Center ───────────────────────────────────────
-        // ── Update notification bar (update-notifier.js) ──────
-        'update.available':   'A new version is available',
-        'update.now':         'Update now',
-        'update.later':       'Later',
-        'update.updating':    'Updating…',
-        'update.badgeAction': '⟳ Update',
-        'update.badgeTitle':  'Version {{v}} · Released {{d}} · Cache {{c}}',
-        'help.versionFooter': 'DACUM Lite — version {{v}} · released {{d}}',
-
         'help.heroTitle':       'Help Center',
         'help.heroSub':         'Everything you need to use DACUM Lite effectively',
         'help.quickStartTitle': 'Quick Start: How to Use DACUM Lite',
@@ -483,6 +474,8 @@ export const translations = {
         'additionalInfo.intro':   '📝 Renseignez les informations de chaque section. Cliquez sur le bouton renommer pour personnaliser les titres de section.',
         'additionalInfo.rename':  '✏️ Renommer',
         'additionalInfo.clear':   '🗑️ Effacer',
+        'additionalInfo.bullets': 'Liste à puces',
+        'additionalInfo.numbers': 'Liste numérotée',
         'additionalInfo.addSection': '➕ Ajouter une section',
         'section.removeBtn':         '❌ Supprimer',
 
@@ -547,6 +540,9 @@ export const translations = {
         'status.allCleared':         'Toutes les données ont été effacées ! ✓',
         'status.headingUpdated':     'Titre mis à jour ! ✓',
         'status.sectionCleared':     'Section effacée ! ✓',
+        'status.bulletsApplied':     'Puces appliquées ✓',
+        'status.numbersApplied':     'Numérotation appliquée ✓',
+        'status.listCleared':        'Mise en forme de liste supprimée ✓',
         'status.customSectionAdded': 'Section personnalisée ajoutée ! ✓',
         'status.sectionRemoved':     'Section supprimée ! ✓',
 
@@ -666,7 +662,7 @@ export const translations = {
 
         // ── Copyright ─────────────────────────────────────────
         'copyright.main':
-            '© 2026 DACUM Lite | par Husham Jawad Kadhim | Version {{version}} | Tous droits réservés',
+            '© 2026 DACUM Lite | par Husham Jawad Kadhim | Version 3.1.0 | Tous droits réservés',
         'copyright.disclaimer':
             'Cet outil est fourni "tel quel" sans garantie d\u2019aucune sorte. Le développeur décline ' +
             'toute responsabilité concernant les inexactitudes, erreurs, omissions ou incohérences dans les ' +
@@ -674,15 +670,6 @@ export const translations = {
             'de tout contenu avant utilisation.',
 
         // ── Help Center ───────────────────────────────────────
-        // ── Update notification bar (update-notifier.js) ──────
-        'update.available':   'Une nouvelle version est disponible',
-        'update.now':         'Mettre à jour',
-        'update.later':       'Plus tard',
-        'update.updating':    'Mise à jour…',
-        'update.badgeAction': '⟳ Mettre à jour',
-        'update.badgeTitle':  'Version {{v}} · Publiée le {{d}} · Cache {{c}}',
-        'help.versionFooter': 'DACUM Lite — version {{v}} · publiée le {{d}}',
-
         'help.heroTitle':       "Centre d'aide",
         'help.heroSub':         'Tout ce dont vous avez besoin pour utiliser DACUM Lite efficacement',
         'help.quickStartTitle': 'Démarrage rapide : comment utiliser DACUM Lite',
@@ -832,6 +819,8 @@ export const translations = {
         'additionalInfo.intro':      '📝 أدخل المعلومات لكل قسم. انقر على زر إعادة التسمية لتخصيص عناوين الأقسام.',
         'additionalInfo.rename':     '✏️ إعادة تسمية',
         'additionalInfo.clear':      '🗑️ مسح',
+        'additionalInfo.bullets':    'تنقيط',
+        'additionalInfo.numbers':    'ترقيم',
         'additionalInfo.addSection': '➕ إضافة قسم',
         'section.removeBtn':         '❌ حذف',
 
@@ -894,6 +883,9 @@ export const translations = {
         'status.allCleared':         'تم مسح جميع البيانات! ✓',
         'status.headingUpdated':     'تم تحديث العنوان! ✓',
         'status.sectionCleared':     'تم مسح القسم! ✓',
+        'status.bulletsApplied':     'تم تطبيق التنقيط ✓',
+        'status.numbersApplied':     'تم تطبيق الترقيم ✓',
+        'status.listCleared':        'تمت إزالة تنسيق القائمة ✓',
         'status.customSectionAdded': 'تم إضافة القسم المخصص! ✓',
         'status.sectionRemoved':     'تم حذف القسم! ✓',
 
@@ -1017,22 +1009,13 @@ export const translations = {
 
         // ── Copyright ─────────────────────────────────────────
         'copyright.main':
-            '© 2026 DACUM Lite | بقلم هشام جواد كاظم | الإصدار {{version}} | جميع الحقوق محفوظة',
+            '© 2026 DACUM Lite | بقلم هشام جواد كاظم | الإصدار 3.1.0 | جميع الحقوق محفوظة',
         'copyright.disclaimer':
             'تُقدَّم هذه الأداة "كما هي" دون أي ضمان من أي نوع. لا يتحمل المطوّر أي مسؤولية ' +
             'عن أي معلومات غير دقيقة أو أخطاء أو حذف أو تناقضات في الوثائق المُنشأة. ' +
             'يتحمل المستخدمون المسؤولية الكاملة عن التحقق من جميع المحتويات قبل استخدامها.',
 
         // ── Help Center ───────────────────────────────────────
-        // ── Update notification bar (update-notifier.js) ──────
-        'update.available':   'يتوفر إصدار جديد',
-        'update.now':         'حدّث الآن',
-        'update.later':       'لاحقاً',
-        'update.updating':    'جارٍ التحديث…',
-        'update.badgeAction': '⟳ تحديث',
-        'update.badgeTitle':  'الإصدار {{v}} · تاريخ الإصدار {{d}} · الكاش {{c}}',
-        'help.versionFooter': 'DACUM Lite — الإصدار {{v}} · صدر في {{d}}',
-
         'help.heroTitle':       'مركز المساعدة',
         'help.heroSub':         'كل ما تحتاجه لاستخدام DACUM Lite بفاعلية',
         'help.quickStartTitle': 'البداية السريعة: كيفية استخدام DACUM Lite',

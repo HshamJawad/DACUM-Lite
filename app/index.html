@@ -901,8 +901,10 @@
             <div class="section-header-editable">
                 <h3 id="knowledgeHeading" contenteditable="false" data-i18n-section="section.knowledge">Knowledge Requirements</h3>
                 <div class="section-header-actions">
-                    <button class="btn-rename" onclick="toggleEditHeading('knowledgeHeading')" data-i18n="additionalInfo.rename">✏️ Rename</button>
                     <button class="btn-clear-section" onclick="clearSection('knowledgeInput','knowledgeHeading','Knowledge Requirements')" data-i18n="additionalInfo.clear">🗑️ Clear</button>
+                    <button class="btn-rename" onclick="toggleEditHeading('knowledgeHeading')" data-i18n="additionalInfo.rename">✏️ Rename</button>
+                    <button class="btn-list-format" onclick="toggleListFormat('knowledgeInput','bullet')" title="Bulleted list" aria-label="Bulleted list" data-i18n-title="additionalInfo.bullets" data-i18n-aria="additionalInfo.bullets"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4.5" cy="6" r="1.6" fill="currentColor" stroke="none"/><circle cx="4.5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="4.5" cy="18" r="1.6" fill="currentColor" stroke="none"/></svg></button>
+                    <button class="btn-list-format" onclick="toggleListFormat('knowledgeInput','number')" title="Numbered list" aria-label="Numbered list" data-i18n-title="additionalInfo.numbers" data-i18n-aria="additionalInfo.numbers"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M3.5 5.2 5 4.4V10"/><path d="M3.6 10h2.8"/><path d="M3.2 15.4a1.4 1.4 0 1 1 2.4 1c-.5.6-2.2 1.7-2.4 2.6h2.8"/></svg></button>
                 </div>
             </div>
             <textarea id="knowledgeInput"
@@ -915,8 +917,10 @@
             <div class="section-header-editable">
                 <h3 id="skillsHeading" contenteditable="false" data-i18n-section="section.skills">Skills Requirements</h3>
                 <div class="section-header-actions">
-                    <button class="btn-rename" onclick="toggleEditHeading('skillsHeading')" data-i18n="additionalInfo.rename">✏️ Rename</button>
                     <button class="btn-clear-section" onclick="clearSection('skillsInput','skillsHeading','Skills Requirements')" data-i18n="additionalInfo.clear">🗑️ Clear</button>
+                    <button class="btn-rename" onclick="toggleEditHeading('skillsHeading')" data-i18n="additionalInfo.rename">✏️ Rename</button>
+                    <button class="btn-list-format" onclick="toggleListFormat('skillsInput','bullet')" title="Bulleted list" aria-label="Bulleted list" data-i18n-title="additionalInfo.bullets" data-i18n-aria="additionalInfo.bullets"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4.5" cy="6" r="1.6" fill="currentColor" stroke="none"/><circle cx="4.5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="4.5" cy="18" r="1.6" fill="currentColor" stroke="none"/></svg></button>
+                    <button class="btn-list-format" onclick="toggleListFormat('skillsInput','number')" title="Numbered list" aria-label="Numbered list" data-i18n-title="additionalInfo.numbers" data-i18n-aria="additionalInfo.numbers"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M3.5 5.2 5 4.4V10"/><path d="M3.6 10h2.8"/><path d="M3.2 15.4a1.4 1.4 0 1 1 2.4 1c-.5.6-2.2 1.7-2.4 2.6h2.8"/></svg></button>
                 </div>
             </div>
             <textarea id="skillsInput"
@@ -929,8 +933,10 @@
             <div class="section-header-editable">
                 <h3 id="behaviorsHeading" contenteditable="false" data-i18n-section="section.behaviors">Worker Behaviors/Traits</h3>
                 <div class="section-header-actions">
-                    <button class="btn-rename" onclick="toggleEditHeading('behaviorsHeading')" data-i18n="additionalInfo.rename">✏️ Rename</button>
                     <button class="btn-clear-section" onclick="clearSection('behaviorsInput','behaviorsHeading','Worker Behaviors/Traits')" data-i18n="additionalInfo.clear">🗑️ Clear</button>
+                    <button class="btn-rename" onclick="toggleEditHeading('behaviorsHeading')" data-i18n="additionalInfo.rename">✏️ Rename</button>
+                    <button class="btn-list-format" onclick="toggleListFormat('behaviorsInput','bullet')" title="Bulleted list" aria-label="Bulleted list" data-i18n-title="additionalInfo.bullets" data-i18n-aria="additionalInfo.bullets"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4.5" cy="6" r="1.6" fill="currentColor" stroke="none"/><circle cx="4.5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="4.5" cy="18" r="1.6" fill="currentColor" stroke="none"/></svg></button>
+                    <button class="btn-list-format" onclick="toggleListFormat('behaviorsInput','number')" title="Numbered list" aria-label="Numbered list" data-i18n-title="additionalInfo.numbers" data-i18n-aria="additionalInfo.numbers"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M3.5 5.2 5 4.4V10"/><path d="M3.6 10h2.8"/><path d="M3.2 15.4a1.4 1.4 0 1 1 2.4 1c-.5.6-2.2 1.7-2.4 2.6h2.8"/></svg></button>
                 </div>
             </div>
             <textarea id="behaviorsInput"
@@ -943,8 +949,10 @@
             <div class="section-header-editable">
                 <h3 id="toolsHeading" contenteditable="false" data-i18n-section="section.tools">Tools, Equipment, Supplies and Materials</h3>
                 <div class="section-header-actions">
-                    <button class="btn-rename" onclick="toggleEditHeading('toolsHeading')" data-i18n="additionalInfo.rename">✏️ Rename</button>
                     <button class="btn-clear-section" onclick="clearSection('toolsInput','toolsHeading','Tools, Equipment, Supplies and Materials')" data-i18n="additionalInfo.clear">🗑️ Clear</button>
+                    <button class="btn-rename" onclick="toggleEditHeading('toolsHeading')" data-i18n="additionalInfo.rename">✏️ Rename</button>
+                    <button class="btn-list-format" onclick="toggleListFormat('toolsInput','bullet')" title="Bulleted list" aria-label="Bulleted list" data-i18n-title="additionalInfo.bullets" data-i18n-aria="additionalInfo.bullets"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4.5" cy="6" r="1.6" fill="currentColor" stroke="none"/><circle cx="4.5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="4.5" cy="18" r="1.6" fill="currentColor" stroke="none"/></svg></button>
+                    <button class="btn-list-format" onclick="toggleListFormat('toolsInput','number')" title="Numbered list" aria-label="Numbered list" data-i18n-title="additionalInfo.numbers" data-i18n-aria="additionalInfo.numbers"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M3.5 5.2 5 4.4V10"/><path d="M3.6 10h2.8"/><path d="M3.2 15.4a1.4 1.4 0 1 1 2.4 1c-.5.6-2.2 1.7-2.4 2.6h2.8"/></svg></button>
                 </div>
             </div>
             <textarea id="toolsInput"
@@ -957,8 +965,10 @@
             <div class="section-header-editable">
                 <h3 id="trendsHeading" contenteditable="false" data-i18n-section="section.trends">Future Trends and Concerns</h3>
                 <div class="section-header-actions">
-                    <button class="btn-rename" onclick="toggleEditHeading('trendsHeading')" data-i18n="additionalInfo.rename">✏️ Rename</button>
                     <button class="btn-clear-section" onclick="clearSection('trendsInput','trendsHeading','Future Trends and Concerns')" data-i18n="additionalInfo.clear">🗑️ Clear</button>
+                    <button class="btn-rename" onclick="toggleEditHeading('trendsHeading')" data-i18n="additionalInfo.rename">✏️ Rename</button>
+                    <button class="btn-list-format" onclick="toggleListFormat('trendsInput','bullet')" title="Bulleted list" aria-label="Bulleted list" data-i18n-title="additionalInfo.bullets" data-i18n-aria="additionalInfo.bullets"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4.5" cy="6" r="1.6" fill="currentColor" stroke="none"/><circle cx="4.5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="4.5" cy="18" r="1.6" fill="currentColor" stroke="none"/></svg></button>
+                    <button class="btn-list-format" onclick="toggleListFormat('trendsInput','number')" title="Numbered list" aria-label="Numbered list" data-i18n-title="additionalInfo.numbers" data-i18n-aria="additionalInfo.numbers"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M3.5 5.2 5 4.4V10"/><path d="M3.6 10h2.8"/><path d="M3.2 15.4a1.4 1.4 0 1 1 2.4 1c-.5.6-2.2 1.7-2.4 2.6h2.8"/></svg></button>
                 </div>
             </div>
             <textarea id="trendsInput"
@@ -971,8 +981,10 @@
             <div class="section-header-editable">
                 <h3 id="acronymsHeading" contenteditable="false" data-i18n-section="section.acronyms">Acronyms</h3>
                 <div class="section-header-actions">
-                    <button class="btn-rename" onclick="toggleEditHeading('acronymsHeading')" data-i18n="additionalInfo.rename">✏️ Rename</button>
                     <button class="btn-clear-section" onclick="clearSection('acronymsInput','acronymsHeading','Acronyms')" data-i18n="additionalInfo.clear">🗑️ Clear</button>
+                    <button class="btn-rename" onclick="toggleEditHeading('acronymsHeading')" data-i18n="additionalInfo.rename">✏️ Rename</button>
+                    <button class="btn-list-format" onclick="toggleListFormat('acronymsInput','bullet')" title="Bulleted list" aria-label="Bulleted list" data-i18n-title="additionalInfo.bullets" data-i18n-aria="additionalInfo.bullets"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4.5" cy="6" r="1.6" fill="currentColor" stroke="none"/><circle cx="4.5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="4.5" cy="18" r="1.6" fill="currentColor" stroke="none"/></svg></button>
+                    <button class="btn-list-format" onclick="toggleListFormat('acronymsInput','number')" title="Numbered list" aria-label="Numbered list" data-i18n-title="additionalInfo.numbers" data-i18n-aria="additionalInfo.numbers"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M3.5 5.2 5 4.4V10"/><path d="M3.6 10h2.8"/><path d="M3.2 15.4a1.4 1.4 0 1 1 2.4 1c-.5.6-2.2 1.7-2.4 2.6h2.8"/></svg></button>
                 </div>
             </div>
             <textarea id="acronymsInput"
@@ -985,8 +997,10 @@
             <div class="section-header-editable">
                 <h3 id="careerPathHeading" contenteditable="false" data-i18n-section="section.careerPath">Career Path</h3>
                 <div class="section-header-actions">
-                    <button class="btn-rename" onclick="toggleEditHeading('careerPathHeading')" data-i18n="additionalInfo.rename">✏️ Rename</button>
                     <button class="btn-clear-section" onclick="clearSection('careerPathInput','careerPathHeading','Career Path')" data-i18n="additionalInfo.clear">🗑️ Clear</button>
+                    <button class="btn-rename" onclick="toggleEditHeading('careerPathHeading')" data-i18n="additionalInfo.rename">✏️ Rename</button>
+                    <button class="btn-list-format" onclick="toggleListFormat('careerPathInput','bullet')" title="Bulleted list" aria-label="Bulleted list" data-i18n-title="additionalInfo.bullets" data-i18n-aria="additionalInfo.bullets"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="9" y1="6" x2="20" y2="6"/><line x1="9" y1="12" x2="20" y2="12"/><line x1="9" y1="18" x2="20" y2="18"/><circle cx="4.5" cy="6" r="1.6" fill="currentColor" stroke="none"/><circle cx="4.5" cy="12" r="1.6" fill="currentColor" stroke="none"/><circle cx="4.5" cy="18" r="1.6" fill="currentColor" stroke="none"/></svg></button>
+                    <button class="btn-list-format" onclick="toggleListFormat('careerPathInput','number')" title="Numbered list" aria-label="Numbered list" data-i18n-title="additionalInfo.numbers" data-i18n-aria="additionalInfo.numbers"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" y1="6" x2="21" y2="6"/><line x1="10" y1="12" x2="21" y2="12"/><line x1="10" y1="18" x2="21" y2="18"/><path d="M3.5 5.2 5 4.4V10"/><path d="M3.6 10h2.8"/><path d="M3.2 15.4a1.4 1.4 0 1 1 2.4 1c-.5.6-2.2 1.7-2.4 2.6h2.8"/></svg></button>
                 </div>
             </div>
             <textarea id="careerPathInput"

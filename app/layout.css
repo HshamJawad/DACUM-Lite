@@ -183,6 +183,13 @@
     white-space: nowrap;
   }
 
+  /* Icon-only buttons must not stretch like the text buttons */
+  .section-header-actions .btn-list-format {
+    flex: 0 0 auto;
+    min-width: 44px;
+    padding: 7px 9px;
+  }
+
   /* ── Section container padding reduced ──────────────────── */
   .section-container {
     padding: 16px 14px;
@@ -389,16 +396,6 @@ body.sb-sidebar-closed #appWrapper {
   border-top: 2px solid var(--surface-border);
   color: #7f8c8d;
   font-size: 1.05em;
-}
-
-/* Inside the Help tab the line no longer has to separate itself from
-   the whole page, so it sits closer and lighter than it did as a page
-   footer. update-notifier.js adds this class when it moves the node. */
-.copyright--in-help {
-  margin-top: 24px;
-  padding-top: 14px;
-  border-top-width: 1px;
-  font-size: 0.95em;
 }
 
 .copyright-main {
