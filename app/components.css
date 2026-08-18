@@ -1396,3 +1396,121 @@ html[dir="rtl"] .sb-card-actions { padding: 0 3px 0 7px; }
     height: 34px;
   }
 }
+
+/* ════════════════════════════════════════════════════════════
+   UPDATE NOTIFICATION BAR — RESPONSIVE LAYOUT   (v4.5.4)
+   DO NOT DELETE — restores single-line buttons on phones/PWA
+   ------------------------------------------------------------
+   The bar (#updateBanner) is built inside update-notifier.js with
+   INLINE styles, and inline styles beat a stylesheet. Every rule
+   below that must win therefore carries !important. Nothing in
+   update-notifier.js needs to change.
+
+   BUG: on a narrow viewport (PWA on a phone) the label of the
+   primary button — "Update now" / "تحديث الآن" — broke onto two
+   lines, because the button had flex-shrink:0 but no
+   white-space:nowrap. The bar also inherited a smaller root
+   font-size inside the PWA shell than in a browser tab, which is
+   why the same bar looked correct on the desktop.
+
+   BEHAVIOUR
+     ≥ 561px : one single row, identical to the desktop version.
+     ≤ 560px : icon + message on line 1, the two buttons on line 2.
+               The buttons themselves never wrap.
+     ≤ 360px : "Update now" takes the full width of line 2.
+   ════════════════════════════════════════════════════════════ */
+
+/* ── 1. The bar itself ─────────────────────────────────────── */
+#updateBanner {
+  box-sizing: border-box !important;
+
+  /* Breathing room on small screens + iOS home-indicator safe area */
+  max-width: calc(100vw - 16px) !important;
+  width: auto !important;
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px)) !important;
+
+  /* Absolute size instead of the inline .92em: the installed PWA
+     can inherit a smaller root font-size than the browser tab. */
+  font-size: 14px !important;
+  line-height: 1.35 !important;
+
+  flex-wrap: nowrap;          /* single row by default */
+  align-items: center !important;
+}
+
+/* ── 2. Buttons must never break a word ────────────────────── */
+#updateBanner [data-ub="now"],
+#updateBanner [data-ub="later"],
+#updateBanner button {
+  white-space: nowrap !important;      /* ← the actual fix */
+  word-break: keep-all !important;
+  overflow-wrap: normal !important;
+  hyphens: none !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
+  line-height: 1.2 !important;
+  min-height: 36px;                    /* comfortable touch target */
+}
+
+/* Only the message is allowed to wrap. */
+#updateBanner [data-ub="msg"] {
+  min-width: 0 !important;
+  overflow-wrap: anywhere;
+}
+
+#updateBanner [data-ub="icon"] { flex-shrink: 0 !important; }
+
+/* ── 3. Phones / PWA portrait — two clean lines ────────────── */
+@media (max-width: 560px) {
+  #updateBanner {
+    flex-wrap: wrap !important;
+    gap: 8px 10px !important;
+    padding: 10px 12px !important;
+    left: 8px !important;
+    right: 8px !important;
+    transform: none !important;        /* replaces translateX(-50%) */
+    max-width: none !important;
+    width: auto !important;
+    border-radius: 12px !important;
+  }
+
+  /* Line 1 — icon + message */
+  #updateBanner [data-ub="msg"] {
+    flex: 1 1 calc(100% - 32px) !important;
+  }
+
+  /* Line 2 — buttons, pushed to the end of the reading direction
+     (right in LTR, left in RTL — the bar carries dir="rtl"). */
+  #updateBanner [data-ub="now"] {
+    flex: 0 1 auto !important;
+    margin-inline-start: auto !important;
+    padding: 9px 18px !important;
+    font-size: 14px !important;
+  }
+
+  #updateBanner [data-ub="later"] {
+    flex: 0 0 auto !important;
+    padding: 9px 10px !important;
+    font-size: 13px !important;
+  }
+}
+
+/* ── 4. Very narrow phones (≤ 360px) — full-width primary ──── */
+@media (max-width: 360px) {
+  #updateBanner [data-ub="now"] {
+    flex: 1 1 auto !important;
+    margin-inline-start: 0 !important;
+    text-align: center !important;
+  }
+}
+
+/* ── 5. Landscape phones — keep one compact row ────────────── */
+@media (max-height: 430px) and (orientation: landscape) {
+  #updateBanner {
+    flex-wrap: nowrap !important;
+    bottom: calc(10px + env(safe-area-inset-bottom, 0px)) !important;
+    padding: 8px 14px !important;
+  }
+  #updateBanner [data-ub="msg"] { flex: 1 1 auto !important; }
+  #updateBanner [data-ub="now"] { margin-inline-start: 0 !important; }
+}

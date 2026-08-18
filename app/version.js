@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.5.3';        // Semantic Versioning
+export const APP_VERSION  = '4.5.4';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-18';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,18 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.5.4',
+            date: '2026-08-18',
+            changes: [
+                'Update bar on a phone: the label of the "Update now" button no longer breaks onto two lines — the button had flex-shrink but never white-space: nowrap',
+                'The bar now uses an absolute font size instead of a relative one, because the installed PWA can inherit a smaller root size than a browser tab, which is why the same bar looked correct on the desktop',
+                'On screens up to 560px the bar lays out as two lines: icon and message first, the two buttons underneath — no more squeezing four items into one narrow row',
+                'On screens up to 360px "Update now" takes the full width of its line, and on landscape phones the bar stays a single compact row',
+                'The bar keeps clear of the iOS home-indicator strip via env(safe-area-inset-bottom)',
+                'All of this lives in components.css and overrides the inline styles of update-notifier.js — that file is untouched',
+            ]
+        },
         {
             version: '4.5.3',
             date: '2026-08-18',
