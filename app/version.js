@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.5.0';        // Semantic Versioning
+export const APP_VERSION  = '4.5.1';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-18';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,15 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.5.1',
+            date: '2026-08-18',
+            changes: [
+                'Restored the mobile task-row layout that was lost during the 4.5.0 edits — on a portrait phone the task field had collapsed to a few characters again',
+                'The text field is once more the widest element in the row: the grip is a narrow column, the label sizes to its own text, and the delete button is a square icon',
+                'The block is now marked DO-NOT-DELETE in components.css so a future edit does not drop it a second time',
+            ]
+        },
         {
             version: '4.5.0',
             date: '2026-08-18',
