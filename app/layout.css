@@ -184,7 +184,9 @@
   }
 
   /* Icon-only buttons must not stretch like the text buttons */
-  .section-header-actions .btn-list-format {
+  .section-header-actions .btn-list-format,
+  .section-header-actions .btn-rename,
+  .section-header-actions .btn-clear-section {
     flex: 0 0 auto;
     min-width: 44px;
     padding: 7px 9px;

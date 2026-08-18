@@ -66,21 +66,52 @@
 }
 .btn-snapshot:hover { box-shadow: 0 5px 15px rgba(14,165,233,0.4); }
 
+/* ── Section header tools (Additional Information) ───────────
+   Rename / Clear / Bullets / Numbering are icon-only buttons that
+   share one size and shape. Rename and the two list buttons sit on
+   a quiet neutral surface; Clear is soft red — recognisable as the
+   destructive action without shouting from every section header. */
 .btn-rename {
-  background: linear-gradient(135deg, var(--color-warning) 0%, var(--color-warning-dark) 100%);
-  color: white;
-  padding: 8px 16px;
-  font-size: 0.95em;
+  background: #eef2f8;
+  color: #475569;
+  border: 1.5px solid #dbe3ee;
+  padding: 8px 10px;
+  min-width: 42px;
+  min-height: 38px;
+  border-radius: 12px;
+  justify-content: center;
+  gap: 0;
 }
-.btn-rename:hover { box-shadow: 0 5px 15px rgba(245,158,11,0.4); }
+.btn-rename svg { display: block; width: 18px; height: 18px; }
+.btn-rename:hover {
+  background: #e2e8f2;
+  box-shadow: 0 5px 15px rgba(71,85,105,0.22);
+}
+.btn-rename:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
 
 .btn-clear-section {
-  background: linear-gradient(135deg, var(--color-danger-light) 0%, var(--color-danger) 100%);
-  color: white;
-  padding: 8px 16px;
-  font-size: 0.95em;
+  background: #fdeeee;
+  color: #dc2626;
+  border: 1.5px solid #f9d2d2;
+  padding: 8px 10px;
+  min-width: 42px;
+  min-height: 38px;
+  border-radius: 12px;
+  justify-content: center;
+  gap: 0;
 }
-.btn-clear-section:hover { box-shadow: 0 5px 15px rgba(239,68,68,0.4); }
+.btn-clear-section svg { display: block; width: 18px; height: 18px; }
+.btn-clear-section:hover {
+  background: #fbdede;
+  box-shadow: 0 5px 15px rgba(220,38,38,0.20);
+}
+.btn-clear-section:focus-visible {
+  outline: 2px solid var(--color-danger);
+  outline-offset: 2px;
+}
 
 /* ── List-format icon buttons (bullets / numbering) ──────────
    Icon-only, neutral surface so they read as text tools rather

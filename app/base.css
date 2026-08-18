@@ -134,21 +134,20 @@ html[data-theme="palette2"] .btn-add-image:hover {
   box-shadow: 0 5px 15px color-mix(in srgb, var(--brand-secondary) 40%, transparent);
 }
 
+/* NOTE: .btn-clear-section is deliberately NOT themed here. In the
+   Additional Information tab it is a soft-red icon-only button
+   (see components.css) and must stay visually quiet in every theme. */
 html[data-theme="palette1"] #btnClearAll,
 html[data-theme="palette1"] .btn-clear-all,
-html[data-theme="palette1"] .btn-clear-section,
 html[data-theme="palette2"] #btnClearAll,
-html[data-theme="palette2"] .btn-clear-all,
-html[data-theme="palette2"] .btn-clear-section {
+html[data-theme="palette2"] .btn-clear-all {
   background: linear-gradient(135deg, var(--brand-accent) 0%, var(--brand-accent-dark) 100%);
   box-shadow: 0 2px 8px color-mix(in srgb, var(--brand-accent-dark) 25%, transparent);
 }
 html[data-theme="palette1"] #btnClearAll:hover,
 html[data-theme="palette1"] .btn-clear-all:hover,
-html[data-theme="palette1"] .btn-clear-section:hover,
 html[data-theme="palette2"] #btnClearAll:hover,
-html[data-theme="palette2"] .btn-clear-all:hover,
-html[data-theme="palette2"] .btn-clear-section:hover {
+html[data-theme="palette2"] .btn-clear-all:hover {
   box-shadow: 0 5px 15px color-mix(in srgb, var(--brand-accent-dark) 40%, transparent);
 }
 
