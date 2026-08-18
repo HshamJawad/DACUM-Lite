@@ -130,6 +130,14 @@ function paintVersionBadge() {
     }
 }
 
+// Any x.y.z sequence — used to correct a LEGACY translation string
+// that still carries a hardcoded version number instead of the
+// {{version}} token (this is what pinned the footer at 3.1.0).
+const VERSION_RE = /\b\d+\.\d+(?:\.\d+)?\b/;
+
+let _crObserver = null;   // guards the copyright line, see below
+let _crPainting = false;  // re-entrancy guard for that observer
+
 function paintVersionText() {
     const footer = document.getElementById('helpVersionFooter');
     if (footer) {
@@ -140,11 +148,61 @@ function paintVersionText() {
         });
     }
 
-    // The copyright line carries {{version}}; applyTranslations() calls
-    // t() without variables, so this element deliberately has NO
-    // data-i18n attribute and is rendered here instead.
-    const cr = document.getElementById('copyrightMain');
-    if (cr) cr.textContent = t('copyright.main', { version: APP_VERSION });
+    paintCopyright();
+}
+
+// ══════════════════════════════════════════════════════════════
+//  The copyright line — made version-proof
+//
+//  Three separate things could leave a stale number on screen, and
+//  all three are handled here rather than assumed away:
+//
+//   1. The element may be found by id (#copyrightMain) OR, in an
+//      older build, only by class (.copyright-main).
+//   2. The translation may still be the LEGACY string with the
+//      version baked in ("… Version 3.1.0 …") instead of the
+//      {{version}} token. The regex above rewrites whatever number
+//      it finds to APP_VERSION, so the line is correct either way.
+//   3. applyTranslations() may overwrite this element afterwards if
+//      it still carries data-i18n="copyright.main" — that call has
+//      no variables, so it would restore the stale text. The
+//      attribute is removed, and a MutationObserver repaints the
+//      line if anything else ever changes it.
+// ══════════════════════════════════════════════════════════════
+function paintCopyright() {
+    const cr = document.getElementById('copyrightMain') ||
+               document.querySelector('.copyright-main');
+    if (!cr) return;
+
+    // Stop applyTranslations() from re-writing this element.
+    if (cr.hasAttribute('data-i18n')) cr.removeAttribute('data-i18n');
+
+    let text = t('copyright.main', { version: APP_VERSION });
+
+    // Token left unresolved (t() called without vars somewhere).
+    text = text.replace(/\{\{\s*version\s*\}\}/g, APP_VERSION);
+
+    // Legacy string with the number baked in.
+    if (!text.includes(APP_VERSION)) text = text.replace(VERSION_RE, APP_VERSION);
+
+    _crPainting = true;
+    if (cr.textContent !== text) cr.textContent = text;
+    _crPainting = false;
+
+    watchCopyright(cr);
+}
+
+function watchCopyright(cr) {
+    if (_crObserver || !('MutationObserver' in window)) return;
+    _crObserver = new MutationObserver(() => {
+        if (_crPainting) return;
+        paintCopyright();
+    });
+    _crObserver.observe(cr, {
+        childList: true,
+        characterData: true,
+        subtree: true
+    });
 }
 
 // ══════════════════════════════════════════════════════════════

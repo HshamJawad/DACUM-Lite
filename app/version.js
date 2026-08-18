@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.5.1';        // Semantic Versioning
+export const APP_VERSION  = '4.5.2';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-18';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,15 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.5.2',
+            date: '2026-08-18',
+            changes: [
+                'The copyright line in the Help tab now always shows the version actually running — it was stuck at 3.1.0',
+                'Three causes were fixed at once: the line is found by id or by class, a translation that still has the number baked in is rewritten, and an unresolved {{version}} token is filled',
+                'The line is also protected from being overwritten afterwards — its data-i18n attribute is removed and a small observer repaints it if anything else touches it',
+            ]
+        },
         {
             version: '4.5.1',
             date: '2026-08-18',
