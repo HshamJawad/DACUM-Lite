@@ -66,6 +66,7 @@ const SHELL_ASSETS  = [
     './base.css',
     './layout.css',
     './components.css',
+    './arabic-ui.css',
     './design-system.js',
     './events.js',
     './fileEngine.js',

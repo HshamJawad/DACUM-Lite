@@ -27,8 +27,8 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.5.4';        // Semantic Versioning
-export const APP_RELEASED = '2026-08-18';   // ISO 8601 (YYYY-MM-DD)
+export const APP_VERSION  = '4.5.5';        // Semantic Versioning
+export const APP_RELEASED = '2026-08-19';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
 // index.html registers  ./sw.js?v=<APP_VERSION>  and sw.js rebuilds
@@ -55,6 +55,18 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.5.5',
+            date: '2026-08-19',
+            changes: [
+                'Arabic UI font restored — Cairo was cached by the service worker since 3.2.1 but no @font-face rule ever referenced it, so it was downloaded and never shown',
+                'Arabic text direction fixed in duty and task cards — the contenteditable elements set neither direction nor text-align, so wrapped lines fell back to the left',
+                'Latin terms and acronyms inside Arabic tasks now keep their own direction (unicode-bidi:plaintext), which matters for technical DACUM charts',
+                'Card identifiers (A, B1, C3) are isolated LTR so they can never render reversed',
+                'Arabic PDF export restored — the shaping layer had been lost when events.js regressed to a pre-4.3.0 copy',
+                'All Arabic font and direction rules now live in one file, arabic-ui.css, so a partial loss during a manual merge becomes immediately visible instead of silent',
+            ]
+        },
         {
             version: '4.5.4',
             date: '2026-08-18',
