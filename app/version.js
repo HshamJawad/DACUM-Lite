@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.5.2';        // Semantic Versioning
+export const APP_VERSION  = '4.5.3';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-18';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,18 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.5.3',
+            date: '2026-08-18',
+            changes: [
+                'The update bar works again — index.html had lost the line that loads update-notifier.js, so the whole module never ran',
+                'Root cause of the stale footer: with that module absent, nothing ever replaced the version number written into the page, which is why it read 3.1.0 no matter how often the version was bumped',
+                'The service worker is registered as sw.js?v=<version> again — the old plain URL never changed, so the browser had no reason to look for a new release',
+                'Added the version badge back to the toolbar; it turns into an "Update" button when a release is waiting, so pressing "Later" does not lose the offer',
+                'The notifier now carries its own English, French and Arabic texts as a fallback, so the bar reads correctly even against an older translations.js',
+                'The copyright line no longer carries data-i18n, which was overwriting the rendered version on every language change',
+            ]
+        },
         {
             version: '4.5.2',
             date: '2026-08-18',

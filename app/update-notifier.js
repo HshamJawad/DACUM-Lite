@@ -41,7 +41,64 @@
 // ============================================================
 
 import { APP_VERSION, APP_RELEASED, CACHE_VERSION } from './version.js';
-import { t, getLang } from './i18n.js';
+import { t as _t, getLang } from './i18n.js';
+
+// ══════════════════════════════════════════════════════════════
+//  Translation with a built-in safety net
+//
+//  An older translations.js may not carry the 'update.*' keys at
+//  all. i18n's t() returns the key itself when it cannot find one,
+//  so without this the bar would read "update.available" in every
+//  language. tt() falls back to the texts below, and also fills the
+//  {{v}} / {{d}} / {{c}} tokens itself in that case.
+// ══════════════════════════════════════════════════════════════
+const FALLBACK = {
+    en: {
+        'update.available':   'A new version is available',
+        'update.now':         'Update now',
+        'update.later':       'Later',
+        'update.updating':    'Updating…',
+        'update.badgeAction': '⟳ Update',
+        'update.badgeTitle':  'Version {{v}} · Released {{d}} · Cache {{c}}',
+        'copyright.main':     '© 2026 DACUM Lite | by Husham Jawad Kadhim | Version {{version}} | All Rights Reserved'
+    },
+    fr: {
+        'update.available':   'Une nouvelle version est disponible',
+        'update.now':         'Mettre à jour',
+        'update.later':       'Plus tard',
+        'update.updating':    'Mise à jour…',
+        'update.badgeAction': '⟳ Mettre à jour',
+        'update.badgeTitle':  'Version {{v}} · Publiée le {{d}} · Cache {{c}}',
+        'copyright.main':     '© 2026 DACUM Lite | par Husham Jawad Kadhim | Version {{version}} | Tous droits réservés'
+    },
+    ar: {
+        'update.available':   'يتوفر إصدار جديد',
+        'update.now':         'حدّث الآن',
+        'update.later':       'لاحقاً',
+        'update.updating':    'جارٍ التحديث…',
+        'update.badgeAction': '⟳ تحديث',
+        'update.badgeTitle':  'الإصدار {{v}} · تاريخ الإصدار {{d}} · الكاش {{c}}',
+        'copyright.main':     '© 2026 DACUM Lite | بقلم هشام جواد كاظم | الإصدار {{version}} | جميع الحقوق محفوظة'
+    }
+};
+
+function t(key, vars) {
+    let out = _t(key, vars);
+
+    // Key returned unchanged = missing translation.
+    if (out === key || out === undefined || out === null) {
+        const dict = FALLBACK[getLang()] || FALLBACK.en;
+        out = dict[key] || key;
+    }
+
+    // Fill any token still standing, whichever source the text came from.
+    if (vars && typeof out === 'string' && out.includes('{{')) {
+        Object.keys(vars).forEach(k => {
+            out = out.replace(new RegExp('\\{\\{\\s*' + k + '\\s*\\}\\}', 'g'), vars[k]);
+        });
+    }
+    return out;
+}
 
 // ── Constants ────────────────────────────────────────────────
 const BANNER_ID   = 'updateBanner';

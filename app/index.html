@@ -463,6 +463,34 @@
         html[dir="rtl"] button {
             font-family:'Segoe UI',Tahoma,'Arial',sans-serif;
         }
+
+        /* ═══ UPDATE NOTIFIER ═════════════════════════════════
+           The bar itself is built in update-notifier.js and is
+           inline-styled there; only the entry animation and the
+           toolbar badge need to live in a stylesheet. */
+        @keyframes dacumUpdateIn {
+            from { opacity:0; transform:translate(-50%, 14px); }
+            to   { opacity:1; transform:translate(-50%, 0); }
+        }
+
+        /* Resting state: a quiet, non-clickable version label. */
+        #versionBadge {
+            font-variant-numeric: tabular-nums;
+            opacity: .75;
+            cursor: default;
+        }
+        #versionBadge:disabled { opacity:.55; }
+        #versionBadge:disabled:hover { transform:none; }
+
+        /* Update pending: the badge becomes the way back to the bar
+           after the user has pressed "Later". */
+        #versionBadge.tb-version--update {
+            background: linear-gradient(135deg,#6366f1,#8b5cf6);
+            color:#fff;
+            opacity:1;
+            cursor:pointer;
+            font-weight:700;
+        }
     </style>
 
     <!-- ── Theme Bootstrap (classic script — runs before first paint) ─ -->
@@ -484,11 +512,34 @@
         document.addEventListener('DOMContentLoaded', initI18n);
     </script>
 
+    <!-- ── Update Notifier (version badge + update bar) ─────────
+         THIS WAS MISSING. Without this import the module never ran,
+         which is why the copyright line stayed at its hardcoded
+         3.1.0 and the update bar never appeared, no matter how many
+         times APP_VERSION was bumped. -->
+    <script type="module">
+        import { initUpdateNotifier } from './update-notifier.js';
+        // Runs after initI18n (registered above) so t() is ready.
+        document.addEventListener('DOMContentLoaded', initUpdateNotifier);
+    </script>
+
     <!-- ── App Bootstrap (ES Module) ────────────────────────── -->
     <script type="module" src="./app.js"></script>
 
-    <!-- ── PWA: Service Worker Registration ─────────────────── -->
-    <script>
+    <!-- ── PWA: Service Worker Registration ───────────────────
+         Rewritten as a module so it can read APP_VERSION:
+           • './sw.js?v=<APP_VERSION>' — sw.js rebuilds CACHE_NAME from
+             this query string, so version.js stays the single source
+             of truth, and the changed URL alone forces an update
+             check. The old plain './sw.js' never changed, so the
+             browser had no reason to look for a new worker.
+           • updateViaCache:'none'    — never let the HTTP cache hand
+             the browser a stale copy of sw.js.
+           • window.__dacumSWRegistration — read by update-notifier.js.
+    -->
+    <script type="module">
+        import { APP_VERSION } from './version.js';
+
         // Only register SW when running as a real installed app (not in preview)
         const _swAllowed = location.hostname !== 'www.claudeusercontent.com'
                         && location.hostname !== 'claudeusercontent.com'
@@ -496,11 +547,29 @@
 
         if (_swAllowed && 'serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('[PWA] SW registered:', reg.scope))
-                    .catch(err => console.warn('[PWA] SW registration failed:', err));
+                window.__dacumSWRegistration =
+                    navigator.serviceWorker.register(`./sw.js?v=${APP_VERSION}`, {
+                        updateViaCache: 'none'
+                    })
+                    .then(reg => {
+                        console.log('[PWA] SW registered:', reg.scope, 'v' + APP_VERSION);
+                        // Look for a newer worker now, and again whenever
+                        // the app is brought back to the front.
+                        reg.update().catch(() => {});
+                        document.addEventListener('visibilitychange', () => {
+                            if (!document.hidden) reg.update().catch(() => {});
+                        });
+                        return reg;
+                    })
+                    .catch(err => {
+                        console.warn('[PWA] SW registration failed:', err);
+                        return null;
+                    });
             });
         }
+    </script>
+
+    <script>
 
         // ── PWA Install Prompt ────────────────────────────────
         let _deferredInstallPrompt = null;
@@ -743,6 +812,14 @@
                     title="View saved snapshots">
                 🔍
             </button>
+
+            <!-- Version badge — rendered by update-notifier.js.
+                 Disabled while up to date; it turns into an
+                 "⟳ Update" button when a new release is waiting. -->
+            <button id="versionBadge"
+                    class="tb-btn tb-btn--neutral"
+                    type="button"
+                    disabled>v0.0.0</button>
         </div>
 
     </div>
@@ -1097,7 +1174,12 @@
 
     <!-- Copyright — shown only in Help tab ─────────────── -->
     <div class="copyright">
-        <p class="copyright-main" id="copyrightMain" data-i18n="copyright.main">© 2026 DACUM Lite | by Husham Jawad Kadhim | Version 3.1.0 | All Rights Reserved</p>
+        <!-- NOTE: no data-i18n here on purpose — this line carries the
+             version number, and applyTranslations() would overwrite it
+             with the untouched translation string. update-notifier.js
+             renders it instead, and re-renders it on every language
+             change. -->
+        <p class="copyright-main" id="copyrightMain">© 2026 DACUM Lite | by Husham Jawad Kadhim | Version 3.1.0 | All Rights Reserved</p>
     </div>
 
     </div><!-- /#help-tab -->
