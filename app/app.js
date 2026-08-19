@@ -24,7 +24,7 @@ import {
     addDuty, removeDuty, addTask, removeTask,
     clearDuty, cvAddDuty, clearAll, toggleCardView,
     handleImageUpload, removeImage,
-    toggleInfoBox, toggleEditHeading, clearSection,
+    toggleEditHeading, clearSection,
     addCustomSection, removeCustomSection,
     saveToJSON, loadFromJSON,
     exportToWord, exportToPDF,
@@ -39,6 +39,8 @@ import {
     getChartInfoData, applyChartInfoData,
     getAdditionalInfoData, applyAdditionalInfoData,
 } from './events.js';
+import { isDrawerMode, onViewportModeChange,
+         initViewportMode }                     from './viewport-mode.js';
 import {
     createProject, deleteProject, renameProject,
     setActiveProject, getActiveProject, getAllProjects,
@@ -299,30 +301,63 @@ function _switchToProject(id) {
     if (currentId !== id) showStatus(t('status.projectSwitched', { name: escapeHtml(proj.name) }), 'success');
 }
 
-// ── Sidebar open/close ─────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+//  SIDEBAR STATE
+//  ------------------------------------------------------------
+//  Single source of truth for the sidebar. The governing rule is
+//  that the two modes are MUTUALLY EXCLUSIVE: the drawer class and
+//  the desktop mini-rail class must never coexist on the page.
+//
+//  That is precisely what used to break. Rotating a phone to
+//  landscape crossed the old 768px line into desktop mode, which
+//  added `sb-sidebar-closed`. Rotating back to portrait never
+//  removed it, and in RTL the leftover class translated the panel
+//  -260px from `right:0` — INTO the screen instead of out of it.
+//  With no `sb-mobile-open` there was no backdrop either, so it
+//  could not be dismissed by tapping. Hence the stranded panel.
+//
+//  isDrawerMode() reads --sb-mode straight out of CSS rather than
+//  recomputing a threshold here, so the two can no longer drift.
+// ══════════════════════════════════════════════════════════════
+const isMobileView = isDrawerMode;   // نفس الاسم القديم للتوافق
+
 function _setSidebarState(open) {
     _sidebarOpen = open;
-    const sidebar  = document.getElementById('sidebar');
-    const overlay  = document.getElementById('sidebarOverlay');
-    const body     = document.body;
-    const isMobile = window.innerWidth <= 768;
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebarOverlay');
+    const body    = document.body;
+    const drawer  = isDrawerMode();
 
-    if (isMobile) {
-        // Mobile: slide in over content + show overlay
-        if (open) {
-            sidebar?.classList.add('sb-mobile-open');
-            overlay?.classList.add('sb-overlay-visible');
-        } else {
-            sidebar?.classList.remove('sb-mobile-open');
-            overlay?.classList.remove('sb-overlay-visible');
-        }
+    if (drawer) {
+        // إزالة فئة سطح المكتب هي الإصلاح الجوهري — بدونها يبقى
+        // الشريط عالقاً في منتصف الشاشة بعد أي دورة تدوير.
+        body.classList.remove('sb-sidebar-closed');
+        sidebar?.classList.toggle('sb-mobile-open',     open);
+        overlay?.classList.toggle('sb-overlay-visible', open);
     } else {
-        // Desktop: toggle mini (60px icons) vs full (260px)
-        if (open) {
-            body.classList.remove('sb-sidebar-closed');
-        } else {
-            body.classList.add('sb-sidebar-closed');
-        }
+        sidebar?.classList.remove('sb-mobile-open');
+        overlay?.classList.remove('sb-overlay-visible');
+        body.classList.toggle('sb-sidebar-closed', !open);
+    }
+
+    body.classList.toggle('sb-mobile-locked', drawer && open);
+    sidebar?.setAttribute('aria-hidden', String(drawer && !open));
+}
+
+/**
+ * إعادة مزامنة الشريط مع المقاس والاتجاه الحاليين.
+ * تُستدعى عند كل حدث قد يغيّر السياق: تبدّل وضع العرض، تبديل
+ * اللغة (يقلب dir فيقفز الشريط من يمين لِيسار)، أو العودة من
+ * الخلفية. آمنة للاستدعاء المتكرر.
+ */
+function _syncSidebar() {
+    if (isDrawerMode()) {
+        // الافتراضي على الدرج: مغلق — إلا إن كان المستخدم فتحه للتوّ
+        const stillOpen = !!document.getElementById('sidebar')
+                              ?.classList.contains('sb-mobile-open');
+        _setSidebarState(stillOpen);
+    } else {
+        _setSidebarState(_sidebarOpen);
     }
 }
 
@@ -519,49 +554,51 @@ window.addEventListener('DOMContentLoaded', () => {
         Renderer.renderAll(StateManager.state);
     });
 
-    // ── 5. Sidebar initial state (mobile starts closed) ────────
-    if (window.innerWidth <= 768) {
-        _setSidebarState(false);
-    } else {
-        _setSidebarState(true);
-    }
+    // ── 5. Sidebar initial state (الدرج يبدأ مغلقاً) ───────────
+    initViewportMode();
+    _setSidebarState(!isDrawerMode());
 
-    // ── 6. Handle resize: switch between mobile/desktop mode ───
-    window.addEventListener('resize', () => {
-        const isMobile = window.innerWidth <= 768;
-        const sidebar  = document.getElementById('sidebar');
-        const overlay  = document.getElementById('sidebarOverlay');
-        if (!isMobile) {
-            // Transitioning to desktop: clean up mobile classes
-            sidebar?.classList.remove('sb-mobile-open');
-            overlay?.classList.remove('sb-overlay-visible');
-            // Re-apply desktop open state
-            _setSidebarState(_sidebarOpen);
-        }
-    });
+    // ── 6. مزامنة الشريط مع كل تبدّل في وضع العرض ──────────────
+    //   الكود القديم كان يستمع لـ resize وينظّف عند الانتقال إلى
+    //   سطح المكتب فقط — لا فرع للاتجاه المعاكس، وهو ما ترك فئة
+    //   sb-sidebar-closed عالقة على الموبايل.
+    //
+    //   onViewportModeChange يصفّي الضجيج أيضاً: لا يُطلق عند ظهور
+    //   لوحة مفاتيح أندرويد ولا عند إخفاء شريط عنوان المتصفح —
+    //   وكلاهما يغيّر innerHeight ويُطلق resize بلا داعٍ.
+    onViewportModeChange(() => _syncSidebar());
+
+    // تبديل اللغة يقلب dir، فينتقل الشريط من حافة إلى أخرى
+    document.addEventListener('dacum:langchange', _syncSidebar);
 
     // ── 7. Swipe gesture (mobile) ─────────────────────────────
     (function initSwipe() {
         let touchStartX = 0;
         let touchStartY = 0;
         let isSwiping   = false;
-        const EDGE_ZONE  = 28;   // px from left edge to trigger open
+        const EDGE_ZONE  = 28;   // px from the opening edge
         const THRESHOLD  = 60;   // min horizontal swipe distance
         const ANGLE_LIMIT = 30;  // max vertical angle (degrees)
 
         document.addEventListener('touchstart', e => {
-            if (window.innerWidth > 768) return;
+            if (!isDrawerMode()) return;
             const touch = e.touches[0];
             touchStartX = touch.clientX;
             touchStartY = touch.clientY;
-            // Only start tracking if near left edge (open) or sidebar is open (close)
+            // في RTL يخرج الدرج من الحافة اليمنى، فالمنطقة الحسّاسة
+            // تنقلب معه. الكود القديم كان يفترض اليسار دائماً، فكان
+            // فتح الدرج بالسحب متعذّراً في الواجهة العربية.
             const sidebar = document.getElementById('sidebar');
-            const isOpen  = sidebar?.classList.contains('sb-mobile-open');
-            isSwiping = (touchStartX <= EDGE_ZONE && !isOpen) || isOpen;
+            const isOpen  = !!sidebar?.classList.contains('sb-mobile-open');
+            const rtl     = document.documentElement.getAttribute('dir') === 'rtl';
+            const atEdge  = rtl
+                ? touchStartX >= (window.innerWidth - EDGE_ZONE)
+                : touchStartX <= EDGE_ZONE;
+            isSwiping = (atEdge && !isOpen) || isOpen;
         }, { passive: true });
 
         document.addEventListener('touchend', e => {
-            if (!isSwiping || window.innerWidth > 768) return;
+            if (!isSwiping || !isDrawerMode()) return;
             isSwiping = false;
             const touch  = e.changedTouches[0];
             const dx     = touch.clientX - touchStartX;
@@ -571,17 +608,13 @@ window.addEventListener('DOMContentLoaded', () => {
             if (angle > ANGLE_LIMIT && angle < (180 - ANGLE_LIMIT)) return;
 
             const sidebar = document.getElementById('sidebar');
-            const isOpen  = sidebar?.classList.contains('sb-mobile-open');
+            const isOpen  = !!sidebar?.classList.contains('sb-mobile-open');
+            const rtl     = document.documentElement.getAttribute('dir') === 'rtl';
+            // «نحو الداخل» يعتمد على الاتجاه: يميناً في LTR، يساراً في RTL
+            const openDx  = rtl ? -dx : dx;
 
-            if (!isOpen && dx > THRESHOLD) {
-                // Swipe right → open
-                _setSidebarState(true);
-                _sidebarOpen = true;
-            } else if (isOpen && dx < -THRESHOLD) {
-                // Swipe left → close
-                _setSidebarState(false);
-                _sidebarOpen = false;
-            }
+            if (!isOpen && openDx > THRESHOLD)      _setSidebarState(true);
+            else if (isOpen && openDx < -THRESHOLD) _setSidebarState(false);
         }, { passive: true });
     })();
 
@@ -615,7 +648,6 @@ window.addEventListener('DOMContentLoaded', () => {
         handleImageUpload, removeImage,
 
         // ── Info box ─────────────────────────────────────────────
-        toggleInfoBox,
 
         // ── Additional Info ──────────────────────────────────────
         toggleEditHeading, clearSection,
@@ -677,15 +709,19 @@ window.addEventListener('DOMContentLoaded', () => {
         },
 
         pmToggleSidebar: () => {
-            const isMobile = window.innerWidth <= 768;
-            const sidebar  = document.getElementById('sidebar');
-            if (isMobile) {
-                const isOpen = sidebar?.classList.contains('sb-mobile-open');
-                _setSidebarState(!isOpen);
-                _sidebarOpen = !isOpen;
-            } else {
-                _setSidebarState(!_sidebarOpen);
-            }
+            const sidebar = document.getElementById('sidebar');
+            const isOpen  = isDrawerMode()
+                ? !!sidebar?.classList.contains('sb-mobile-open')
+                : _sidebarOpen;
+            _setSidebarState(!isOpen);
+        },
+        // مخرج طوارئ: إن عاد الشريط للتعلّق لأي سبب مستقبلي،
+        // نادِ pmResetSidebar() من الطرفية.
+        pmResetSidebar: () => {
+            document.body.classList.remove('sb-sidebar-closed', 'sb-mobile-locked');
+            document.getElementById('sidebar')?.classList.remove('sb-mobile-open');
+            document.getElementById('sidebarOverlay')?.classList.remove('sb-overlay-visible');
+            _syncSidebar();
         },
         pmFilterProjects: (text) => renderSidebar(text),
 

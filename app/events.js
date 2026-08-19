@@ -569,21 +569,6 @@ export function removeImage(imageType) {
     showStatus(t('status.imageRemoved'), 'success');
 }
 
-// ══════════════════════════════════════════════════════════════
-//  INFO BOX
-// ══════════════════════════════════════════════════════════════
-
-export function toggleInfoBox() {
-    const content = document.getElementById('infoBoxContent');
-    const btn     = document.querySelector('.btn-toggle-info');
-    if (content.style.display === 'none') {
-        content.style.display = 'block';
-        btn.textContent = t('infobox.hide');
-    } else {
-        content.style.display = 'none';
-        btn.textContent = t('infobox.show');
-    }
-}
 
 // ══════════════════════════════════════════════════════════════
 //  SECTION MANAGEMENT (Additional Info)

@@ -113,27 +113,74 @@
         .tb-mobile-menu { display:none !important; }
 
         /* ══ MOBILE ≤ 768px ═══════════════════════════════════ */
-        @media (max-width:768px) {
+        /* ═══ نقطة الفصل: الشريط الثابت ⇄ الدرج المنزلق ═══════════
+           سببان مستقلّان تماماً للانتقال إلى الدرج:
+             ١. العرض لا يتّسع لشريط 260px إضافةً إلى المحتوى
+             ٢. الارتفاع قصير والإدخال بالإصبع (هاتف أفقي)
+
+           دمجهما سابقاً في max-width وحده هو ما جعل الهاتف يعبر
+           بين الوضعين عند كل تدوير — لأن عرضه الأفقي (~740px)
+           يوحي بأن المساحة تكفي بينما ارتفاعه 360px لا يحتمل
+           شريطاً كامل الارتفاع.
+
+           الحرس max-width:1024px يستثني شاشات اللمس الكبيرة
+           والأكشاك. المتصفحات القديمة تُسقط الشرط الثاني وحده
+           وتبقى على الأول — تدهور آمن لا انهيار.
+
+           --sb-mode هو المصدر الوحيد للحقيقة. app.js يقرأ قيمته
+           بدل أن يعيد حساب العتبة بـ innerWidth، فيستحيل الانحراف
+           بين CSS وJS بنيوياً لا انضباطاً. لا تكرّر هذا الاستعلام
+           في أي ملف آخر. */
+        :root { --sb-mode: desktop; }
+
+        @media (max-width: 768px),
+               (pointer: coarse) and (max-height: 520px) and (max-width: 1024px) {
+            :root { --sb-mode: drawer; }
+        }
+
+        @media (max-width: 768px),
+               (pointer: coarse) and (max-height: 520px) and (max-width: 1024px) {
 
             /* Show hamburger in toolbar */
             .tb-mobile-menu { display:inline-flex !important; }
 
-            /* Sidebar overlays on mobile (full-width slide-in) */
+            /* ── Sidebar: الدرج المنزلق ──────────────────────────
+               اتجاه الإخفاء يُدار بمتغيّر واحد (--sb-hidden) بدل
+               قاعدتين تتنافسان على transform.
+
+               العلّة الأصلية: قاعدة LTR كانت تحمل !important
+               وقاعدة RTL لا تحملها، فكانت الأولى تفوز وتُزيح
+               الشريط -260px من right:0 — أي إلى داخل الشاشة بدل
+               خارجها. هنا القاعدة الوحيدة المسموح لها بـ
+               !important هي حالة الفتح، فلا يمكن لأي فئة أخرى
+               أن تُقحم الشريط في منتصف الشاشة. */
             #sidebar {
+                --sb-hidden:-100%;
                 width:260px !important;
-                transform:translateX(-100%);
+                transform:translateX(var(--sb-hidden));
                 transition:transform .28s cubic-bezier(.4,0,.2,1),
                            box-shadow .28s;
                 box-shadow:none;
             }
+            html[dir="rtl"] #sidebar { --sb-hidden:100%; }
+
             #sidebar.sb-mobile-open {
                 transform:translateX(0) !important;
                 box-shadow:8px 0 40px rgba(0,0,0,.6);
             }
+            html[dir="rtl"] #sidebar.sb-mobile-open {
+                box-shadow:-8px 0 40px rgba(0,0,0,.6);
+            }
+
+            /* حزام أمان: فئة سطح المكتب يجب ألّا يكون لها أثر هنا
+               حتى لو تسرّبت من دورة تدوير سابقة. */
             body.sb-sidebar-closed #sidebar {
                 width:260px !important;
-                transform:translateX(-100%) !important;
+                transform:translateX(var(--sb-hidden));
             }
+
+            /* منع تمرير المحتوى خلف الدرج المفتوح */
+            body.sb-mobile-locked { overflow:hidden; }
 
             /* Content fills full width on mobile */
             #appWrapper {
@@ -411,7 +458,8 @@
             padding-right:12px;padding-left:26px;
             background-position:left 10px center;
         }
-        @media (max-width:768px) {
+        @media (max-width: 768px),
+               (pointer: coarse) and (max-height: 520px) and (max-width: 1024px) {
             .tb-lang-select { width:66px;min-width:66px;padding:4px 22px 5px 6px; }
             html[dir="rtl"] .tb-lang-select { padding:4px 6px 5px 22px; }
         }
@@ -446,14 +494,10 @@
         }
 
         /* ── Mobile RTL ───────────────────────────────────── */
-        @media (max-width:768px) {
-            html[dir="rtl"] #sidebar {
-                right:0;left:auto;
-                transform:translateX(100%);
-            }
-            html[dir="rtl"] #sidebar.sb-mobile-open {
-                transform:translateX(0) !important;
-            }
+        @media (max-width: 768px),
+               (pointer: coarse) and (max-height: 520px) and (max-width: 1024px) {
+            /* الموضع فقط — الإزاحة تتولّاها --sb-hidden أعلاه. */
+            html[dir="rtl"] #sidebar { right:0;left:auto; }
             html[dir="rtl"] #appWrapper { margin-right:0 !important; }
             html[dir="rtl"] .top-toolbar { right:0 !important;left:0 !important; }
         }
@@ -505,6 +549,15 @@
                 }
             } catch (e) { /* localStorage unavailable — fall back to default theme */ }
         })();
+    </script>
+
+    <!-- ── Error Reporter — يجب أن يُحمَّل قبل كل شيء آخر ────────
+         الأخطاء التي تقع أثناء الإقلاع هي الأصعب تشخيصاً، وعلى
+         الموبايل لا توجد وحدة تحكم تُفتح. هذه الوحدة تحوّل كل خطأ
+         صامت إلى بطاقة تحمل رمزاً قصيراً يمكن تصويرها وإرسالها. -->
+    <script type="module">
+        import { initErrorReporter } from './error-reporter.js';
+        initErrorReporter();   // فوراً — لا ننتظر DOMContentLoaded
     </script>
 
     <!-- ── i18n Bootstrap (must load before app.js renders) ─────── -->
@@ -1182,6 +1235,10 @@
              renders it instead, and re-renders it on every language
              change. -->
         <p class="copyright-main" id="copyrightMain">© 2026 DACUM Lite | by Husham Jawad Kadhim | Version 3.1.0 | All Rights Reserved</p>
+        <!-- سطر الإصدار — update-notifier.js يبحث عنه بهذا المعرّف
+             ويملؤه من APP_VERSION و APP_RELEASED. كان مفقوداً، فكان
+             paintVersionText() يخرج صامتاً عبر الحارس if (footer). -->
+        <p class="copyright-disclaimer" id="helpVersionFooter"></p>
     </div>
 
     </div><!-- /#help-tab -->

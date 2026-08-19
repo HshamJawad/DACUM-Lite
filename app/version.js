@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.5.7';        // Semantic Versioning
+export const APP_VERSION  = '4.5.8';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-19';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,22 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.5.8',
+            date: '2026-08-19',
+            changes: [
+                'The stranded sidebar on Android is fixed — rotating to landscape crossed the old 768px line into desktop mode, which added sb-sidebar-closed, and rotating back never removed it; in RTL that leftover class translated the panel -260px from right:0, into the screen instead of out of it',
+                'The breakpoint is now device-aware: a phone stays in drawer mode in BOTH orientations, so the crossing that caused the bug no longer happens at all',
+                'CSS declares the mode in --sb-mode and app.js reads it, so the old drift between @media (max-width:768px) and window.innerWidth <= 768 is structurally impossible',
+                'Edge-swipe now works in Arabic — the gesture assumed the left edge unconditionally, so opening the drawer by swiping was impossible in RTL',
+                'Sidebar no longer reacts to the Android keyboard or to the browser address bar hiding, both of which fired spurious resize events',
+                'Added window.pmResetSidebar() as a manual escape hatch',
+                'Error reporter installed: every silent failure now surfaces as a card with a short code, device state and the last six taps, so a screenshot is enough to diagnose it',
+                'Help tab version footer restored — the element and its translation key were both missing, so it failed silently',
+                'Removed toggleInfoBox and its six translation keys: the feature was removed from the UI long ago but the function stayed exposed on window and threw on any call',
+                'manifest.json: icons no longer declare any and maskable on the same asset, which was cropping the logo on Android; lang is now ar and an id is declared',
+            ]
+        },
         {
             version: '4.5.7',
             date: '2026-08-19',
