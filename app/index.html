@@ -25,6 +25,12 @@
     <script src="https://cdn.jsdelivr.net/npm/docx@7.8.2/build/index.js"></script>
 
     <!-- ── Design System CSS ────────────────────────────────── -->
+    <!-- ── جسر الإقلاع — يجب أن يسبق كل شيء، وبلا type="module" ──
+         الوحدات مؤجَّلة بطبيعتها، فالأزرار تُرسم وتُضغط قبل أن
+         تُعرَّف دوالّها. هذا الملف يلتقط الضغطة المبكّرة ويشغّلها
+         عند الجاهزية بدل أن ترمي ReferenceError. -->
+    <script src="./boot-bridge.js"></script>
+
     <link rel="stylesheet" href="./base.css">
     <link rel="stylesheet" href="./layout.css">
     <link rel="stylesheet" href="./components.css">

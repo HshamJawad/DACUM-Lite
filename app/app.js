@@ -728,4 +728,9 @@ window.addEventListener('DOMContentLoaded', () => {
         // ── Color Theme Toggle ────────────────────────────────────
         cycleTheme,
     });
+
+    // كل الدوالّ صارت على window الآن. أعلِم boot-bridge.js ليشغّل
+    // أي ضغطة وقعت قبل هذه اللحظة — وسوم <script type="module">
+    // مؤجَّلة، فالأزرار تظهر وتُضغط قبل تنفيذ الكتلة أعلاه.
+    window.__dacumReady?.();
 });

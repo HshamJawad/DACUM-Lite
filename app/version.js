@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.7.3';        // Semantic Versioning
+export const APP_VERSION  = '4.7.4';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-19';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,17 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.7.4',
+            date: '2026-08-19',
+            changes: [
+                'Buttons pressed during boot no longer throw ReferenceError — <script type="module"> is deferred by nature, so all 64 inline onclick buttons are drawn and clickable before app.js defines their functions',
+                'boot-bridge.js queues any such early click and replays it in order once app.js signals readiness, so the press is delayed by a fraction of a second instead of being lost',
+                'The window is normally tiny but widens on a cold boot, a slow connection, or right after a cache purge and reload — which is exactly when it was hit',
+                'The deferred list is explicit rather than a catch-all proxy: swallowing every undefined name would turn real typos and deleted functions into silence',
+                'A function still missing after boot is reported as a genuine error, and a 12-second timeout flags an app.js that never finished initialising',
+            ]
+        },
         {
             version: '4.7.3',
             date: '2026-08-19',

@@ -62,6 +62,7 @@ const SHELL_ASSETS  = [
     './',
     './index.html',
     './app.js',
+    './boot-bridge.js',
     './arabic-font.js',
     './base.css',
     './layout.css',
