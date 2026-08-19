@@ -583,6 +583,16 @@
     <!-- ── App Bootstrap (ES Module) ────────────────────────── -->
     <script type="module" src="./app.js"></script>
 
+    <!-- ── فحص الإقلاع الذاتي ────────────────────────────────
+         يفحص الوصلات بين الملفات — لا المنطق. صامت حين يكون كل
+         شيء سليماً؛ يرفع بطاقة خطأ عبر error-reporter.js فور
+         انقطاع أي وصلة. يعمل بعد load ليجد الخطوط والعناصر جاهزة.
+         للتقرير الكامل: افتح index.html?selfcheck -->
+    <script type="module">
+        import { runSelfCheck } from './self-check.js';
+        window.addEventListener('load', () => setTimeout(runSelfCheck, 800));
+    </script>
+
     <!-- ── PWA: Service Worker Registration ───────────────────
          Rewritten as a module so it can read APP_VERSION:
            • './sw.js?v=<APP_VERSION>' — sw.js rebuilds CACHE_NAME from

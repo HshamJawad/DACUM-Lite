@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.5.9';        // Semantic Versioning
+export const APP_VERSION  = '4.6.0';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-19';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,17 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.6.0',
+            date: '2026-08-19',
+            changes: [
+                'Added self-check.js — a boot-time check of the links BETWEEN files, which is where every bug in this project actually lived: a shaping engine with no caller, a cached font with no @font-face, a translation key with no element, a CSS rule silently outweighing another',
+                'None of those threw an exception, which is why they survived several releases unnoticed and needed a manual review to find',
+                'Each check documents a failure that really happened; it is silent when everything is wired and raises an error card the moment a link breaks',
+                'Warnings stay in the console and never raise a card, so the user does not learn to ignore them',
+                'Open index.html?selfcheck for the full table, or call DacumSelfCheck.report() for a copyable summary',
+            ]
+        },
         {
             version: '4.5.9',
             date: '2026-08-19',

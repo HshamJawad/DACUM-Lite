@@ -69,6 +69,7 @@ const SHELL_ASSETS  = [
     './arabic-ui.css',
     './viewport-mode.js',
     './error-reporter.js',
+    './self-check.js',
     './design-system.js',
     './events.js',
     './fileEngine.js',
