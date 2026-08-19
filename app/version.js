@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.5.6';        // Semantic Versioning
+export const APP_VERSION  = '4.5.7';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-19';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,18 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.5.7',
+            date: '2026-08-19',
+            changes: [
+                'Logos are downscaled to 400px on the longest edge and re-encoded before storage — a scanned 1600x1100 logo drops from 204 KB to 7 KB, and this is the root cause behind the storage-full failures fixed in 4.5.6',
+                'The logo is drawn at 30x20 mm in the PDF, which is 354x236 px at 300 DPI, so nothing above 400px was ever reaching any output',
+                'Transparency is flattened onto white because exportToPDF passes the format to jsPDF as a hard-coded JPEG — a PNG data URL under that label would break the export',
+                'Compression is skipped whenever it would produce a larger file, which happens with small flat-colour logos that PNG already compresses well',
+                'Any failure falls back to the original image: an oversized logo is better than a logo that cannot be uploaded',
+                'Uploading a logo now triggers a save — the upload path bypasses the command system, so the logo previously lived in memory only until the next unrelated save',
+            ]
+        },
         {
             version: '4.5.6',
             date: '2026-08-19',

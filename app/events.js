@@ -436,6 +436,93 @@ function _clearImagePreview(type) {
 //  IMAGE UPLOAD
 // ══════════════════════════════════════════════════════════════
 
+/* ──────────────────────────────────────────────────────────────
+   LOGO COMPRESSION
+   ──────────────────────────────────────────────────────────────
+   Logos used to be stored exactly as the user picked them: a
+   1200x800 PNG became a ~1.2 MB base64 string inside the project
+   record. Two projects with two logos each filled half of the
+   5 MB localStorage budget, and persistProjects() then failed —
+   which is the quota problem this pairs with.
+
+   The logo is drawn at 30x20 mm in the PDF. At 300 DPI that is
+   354x236 px, so MAX_DIM 400 is already above what any print
+   path can resolve. Anything larger is bytes that no output
+   format will ever use.
+
+   WHY JPEG ALWAYS, EVEN FOR A TRANSPARENT PNG:
+   exportToPDF() calls pdf.addImage(logo, 'JPEG', ...) with the
+   format hard-coded. Emitting a PNG data URL here would hand
+   jsPDF a PNG under a JPEG label and break the export. So alpha
+   is flattened onto white first — correct for this app, where
+   the logo only ever lands on a white PDF page, a white Word
+   page, or the white info panel.
+
+   Compression is best-effort: any failure returns the original
+   data URL untouched. A slightly-too-large logo is a far better
+   outcome than a logo the user cannot upload at all.
+   ────────────────────────────────────────────────────────────── */
+const LOGO_MAX_DIM = 400;   // px, longest edge
+const LOGO_QUALITY = 0.82;  // JPEG quality — visually lossless at this size
+
+/**
+ * Downscale a data URL and re-encode it as JPEG on a white background.
+ * @param   {string} dataUrl  source image as a data URL
+ * @returns {Promise<string>} compressed data URL, or the original on failure
+ */
+function _compressLogo(dataUrl) {
+    return new Promise(resolve => {
+        try {
+            const img = new Image();
+
+            img.onerror = () => resolve(dataUrl);   // unreadable — keep original
+
+            img.onload = () => {
+                try {
+                    const { width: w, height: h } = img;
+                    if (!w || !h) return resolve(dataUrl);
+
+                    // Never upscale: a small logo stays at its own size.
+                    const scale = Math.min(1, LOGO_MAX_DIM / Math.max(w, h));
+                    const outW  = Math.max(1, Math.round(w * scale));
+                    const outH  = Math.max(1, Math.round(h * scale));
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width  = outW;
+                    canvas.height = outH;
+                    const ctx = canvas.getContext('2d');
+                    if (!ctx) return resolve(dataUrl);
+
+                    // Flatten transparency onto white BEFORE drawing, or
+                    // every transparent pixel becomes black in the JPEG.
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, outW, outH);
+
+                    // Smoothing matters here: without it a downscaled logo
+                    // shows aliased edges on text and thin rules.
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = 'high';
+                    ctx.drawImage(img, 0, 0, outW, outH);
+
+                    const out = canvas.toDataURL('image/jpeg', LOGO_QUALITY);
+
+                    // Guard against the pathological case: a tiny source
+                    // image can come out LARGER as JPEG than it went in.
+                    resolve(out && out.length < dataUrl.length ? out : dataUrl);
+                } catch (err) {
+                    console.warn('[Logo] Compression failed, keeping original:', err);
+                    resolve(dataUrl);
+                }
+            };
+
+            img.src = dataUrl;
+        } catch (err) {
+            console.warn('[Logo] Compression setup failed:', err);
+            resolve(dataUrl);
+        }
+    });
+}
+
 export function handleImageUpload(event, imageType) {
     const file = event.target.files[0];
     if (!file) return;
@@ -445,8 +532,18 @@ export function handleImageUpload(event, imageType) {
         return;
     }
     const reader = new FileReader();
-    reader.onload = e => {
-        const imageData = e.target.result;
+    reader.onload = async e => {
+        const original  = e.target.result;
+        const imageData = await _compressLogo(original);
+
+        // Report the saving in the console so a support screenshot of
+        // the log shows whether compression actually ran.
+        if (imageData !== original) {
+            const before = Math.round(original.length  / 1024);
+            const after  = Math.round(imageData.length / 1024);
+            console.info(`[Logo] ${before} KB → ${after} KB (${Math.round(before / after)}x smaller)`);
+        }
+
         if (imageType === 'producedFor') producedForImage = imageData;
         else if (imageType === 'producedBy') producedByImage = imageData;
         const cap = imageType.charAt(0).toUpperCase() + imageType.slice(1);
@@ -455,6 +552,11 @@ export function handleImageUpload(event, imageType) {
         const removeBtn = document.getElementById('remove' + cap + 'Image');
         if (removeBtn) removeBtn.style.display = 'inline-block';
         showStatus(t('status.imageUploaded'), 'success');
+
+        // The upload path does not go through a command, so the save
+        // hook is not triggered by it. Without this the compressed
+        // logo would sit in memory only and vanish on reload.
+        saveToLocalStorage();
     };
     reader.readAsDataURL(file);
 }
