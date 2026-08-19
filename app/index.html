@@ -502,13 +502,15 @@
             html[dir="rtl"] .top-toolbar { right:0 !important;left:0 !important; }
         }
 
-        /* Arabic text: ensure Tahoma (Arabic-capable) is prioritised */
-        html[dir="rtl"] body,
-        html[dir="rtl"] input,
-        html[dir="rtl"] textarea,
-        html[dir="rtl"] button {
-            font-family:'Segoe UI',Tahoma,'Arial',sans-serif;
-        }
+        /* ملاحظة: قاعدة الخط العربي التي كانت هنا (Segoe UI/Tahoma)
+           نُقلت إلى arabic-ui.css وحُذفت من هنا عمداً.
+
+           كانت تتعادل في الوزن الانتقائي مع قاعدة Cairo — كلتاهما
+           (0,1,1) — وتفوز لأنها متأخّرة: <style> في الرأس يأتي بعد
+           <link>. فكان Cairo يظهر في العناوين والتسميات ويغيب عن
+           مربّعات النص وحقول الإدخال.
+
+           لا تُعِد قاعدة خطّ عربي هنا. مكانها arabic-ui.css. */
 
         /* ═══ UPDATE NOTIFIER ═════════════════════════════════
            The bar itself is built in update-notifier.js and is

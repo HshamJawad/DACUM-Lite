@@ -16,57 +16,13 @@
   background: linear-gradient(135deg, var(--color-danger-light) 0%, var(--color-danger) 100%);
   color: white;
 }
-.btn-remove:hover { box-shadow: 0 5px 15px rgba(239,68,68,0.4); }
-
-.btn-export {
-  background: linear-gradient(135deg, #3b82f6 0%, var(--color-primary) 100%);
-  color: white;
-  padding: 14px 28px;
-  font-size: 1.15em;
-}
-.btn-export:hover { box-shadow: 0 5px 15px rgba(59,130,246,0.4); }
-
-.btn-export-word {
-  background: linear-gradient(135deg, var(--color-purple) 0%, var(--color-purple-dark) 100%);
-  color: white;
-  padding: 14px 28px;
-  font-size: 1.15em;
-}
-.btn-export-word:hover { box-shadow: 0 5px 15px rgba(139,92,246,0.4); }
-
-.btn-save-data {
-  background: linear-gradient(135deg, var(--color-success) 0%, var(--color-success-dark) 100%);
-  color: white;
-  padding: 14px 28px;
-  font-size: 1.15em;
-}
-.btn-save-data:hover { box-shadow: 0 5px 15px rgba(16,185,129,0.4); }
-
-.btn-load-data {
-  background: linear-gradient(135deg, var(--color-warning) 0%, var(--color-warning-dark) 100%);
-  color: white;
-  padding: 14px 28px;
-  font-size: 1.15em;
-}
-.btn-load-data:hover { box-shadow: 0 5px 15px rgba(245,158,11,0.4); }
-
-.btn-clear-all {
+.btn-remove:hover { box-shadow: 0 5px 15px rgba(239,68,68,0.4); }.btn-clear-all {
   background: linear-gradient(135deg, var(--color-danger-light) 0%, var(--color-danger) 100%);
   color: white;
   padding: 14px 28px;
   font-size: 1.15em;
 }
-.btn-clear-all:hover { box-shadow: 0 5px 15px rgba(239,68,68,0.4); }
-
-.btn-snapshot {
-  background: linear-gradient(135deg, var(--color-sky) 0%, var(--color-sky-dark) 100%);
-  color: white;
-  padding: 14px 22px;
-  font-size: 1.05em;
-}
-.btn-snapshot:hover { box-shadow: 0 5px 15px rgba(14,165,233,0.4); }
-
-/* ── Section header tools (Additional Information) ───────────
+.btn-clear-all:hover { box-shadow: 0 5px 15px rgba(239,68,68,0.4); }/* ── Section header tools (Additional Information) ───────────
    Rename / Clear / Bullets / Numbering are icon-only buttons that
    share one size and shape. Rename and the two list buttons sit on
    a quiet neutral surface; Clear is soft red — recognisable as the
@@ -151,47 +107,7 @@
   padding: 6px 12px;
   font-size: 0.85em;
 }
-.btn-remove-image:hover { box-shadow: 0 5px 15px rgba(239,68,68,0.4); }
-
-.btn-toggle-info {
-  background: linear-gradient(135deg, var(--color-warning) 0%, var(--color-warning-dark) 100%);
-  color: white;
-  padding: 6px 14px;
-  font-size: 0.85em;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: var(--transition-base);
-}
-.btn-toggle-info:hover {
-  box-shadow: 0 3px 10px rgba(245,158,11,0.4);
-  transform: translateY(-1px);
-}
-
-/* Undo / Redo */
-.btn-undo, .btn-redo {
-  background: linear-gradient(135deg, var(--color-slate-light) 0%, var(--color-slate) 100%);
-  color: white;
-  padding: 14px 22px;
-  font-size: 1.05em;
-}
-.btn-undo:hover, .btn-redo:hover { box-shadow: 0 5px 15px rgba(71,85,105,0.4); }
-.btn-undo:disabled, .btn-redo:disabled {
-  opacity: 0.38;
-  cursor: not-allowed;
-  transform: none !important;
-  box-shadow: none !important;
-}
-
-/* View toggle — visual styles are now owned by .btn-primary / .btn-secondary.
-   This ID rule only provides a font-size override so the buttons match the
-   surrounding header scale. Removing background/color prevents the ID
-   specificity (1,0,0) from defeating the class-level (0,2,0) utility rules. */
-#toggleViewBtn, #toggleViewBtnCard {
-  font-size: 0.95em;
-}
-
-/* Remove section button (custom sections) */
+.btn-remove-image:hover { box-shadow: 0 5px 15px rgba(239,68,68,0.4); }/* Remove section button (custom sections) */
 .btn-remove-section {
   background: linear-gradient(135deg, var(--color-danger-light) 0%, var(--color-danger) 100%);
   color: white;
@@ -223,43 +139,7 @@
   background: #fee2e2;
   color: #991b1b;
   border: 2px solid var(--color-danger-light);
-}
-
-/* ══════════════════════════════════════════════════════════════
-   INFO BOX
-   ══════════════════════════════════════════════════════════════ */
-.info-box {
-  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-  border-left: 6px solid var(--color-warning);
-  padding: 20px;
-  margin-bottom: 30px;
-  border-radius: var(--radius-md);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  position: relative;
-}
-.info-box h3 {
-  color: var(--color-warning-dark);
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.info-box p {
-  font-size: 1em;
-  line-height: 1.3;
-  color: #78716c;
-  margin-bottom: 6px;
-}
-.info-box .example-section {
-  margin-top: 12px;
-  font-style: italic;
-  background: rgba(255,255,255,0.7);
-  padding: 12px;
-  border-radius: var(--radius-sm);
-}
-.info-box .example-section p { margin-bottom: 2px; }
-
-/* ══════════════════════════════════════════════════════════════
+}/* ══════════════════════════════════════════════════════════════
    IMAGE UPLOAD
    ══════════════════════════════════════════════════════════════ */
 .image-upload-container {
@@ -356,24 +236,7 @@
 .section-header-actions {
   display: flex;
   gap: 10px;
-}
-
-/* ── Floating control panel — REMOVED
-   Undo / Redo / Debug have moved into the fixed top toolbar.
-   These rules are kept as a tombstone so any cached CSS reference
-   does not throw a parse error.
-   ─────────────────────────────────────────────────────────────── */
-
-/* Legacy fp-divider — kept for snapshot panel internal use */
-.fp-divider {
-  width: 1px;
-  height: 22px;
-  background: var(--color-slate);
-  border-radius: 1px;
-  margin: 0 2px;
-}
-
-/* ══════════════════════════════════════════════════════════════
+}/* ══════════════════════════════════════════════════════════════
    SNAPSHOT PANEL
    ══════════════════════════════════════════════════════════════ */
 #snapshotPanel {
@@ -427,39 +290,7 @@
   font-style: italic;
   text-align: center;
   padding: 10px;
-}
-
-/* ── History bar (inline Undo/Redo row) ────────────────────── */
-.history-bar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 10px;
-  padding: 6px 12px;
-  margin-bottom: 16px;
-}
-.history-bar span {
-  font-size: 0.8em;
-  color: #94a3b8;
-  margin-left: 6px;
-}
-.hbar-btn {
-  background: #e2e8f0;
-  color: var(--color-slate);
-  border: none;
-  border-radius: 7px;
-  padding: 5px 14px;
-  font-size: 0.88em;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.hbar-btn:hover:not(:disabled) { background: #cbd5e1; color: var(--surface-dark); }
-.hbar-btn:disabled { opacity: 0.35; cursor: not-allowed; }
-
-/* ══════════════════════════════════════════════════════════════
+}/* ══════════════════════════════════════════════════════════════
    CARD VIEW
    ══════════════════════════════════════════════════════════════ */
 .cv-duties-grid {
@@ -842,30 +673,7 @@ body.sb-sidebar-closed #appWrapper {
 }
 
 /* ── Old toggle tab — superseded by in-sidebar collapse btn ──── */
-#sidebarToggleBtn { display: none !important; }
-
-/* ── Sidebar header ──────────────────────────────────────────── */
-.sb-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 15px 12px 12px;
-  border-bottom: 1px solid #1a2438;
-  flex-shrink: 0;
-}
-
-.sb-header-title {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  color: #94a3b8;
-  font-size: 0.78em;
-  font-weight: 800;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.sb-new-btn {
+#sidebarToggleBtn { display: none !important; }.sb-new-btn {
   background: linear-gradient(135deg, #10b981, #059669);
   color: #fff;
   border: none;
@@ -1141,48 +949,7 @@ html[dir="rtl"] .sb-card-actions { padding: 0 3px 0 7px; }
   color: #1e2a40;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-}
-
-/* ── File Engine buttons ────────────────────────────────────────
-   Export Project: teal — signals "outbound project data"
-   Import Project: indigo — signals "inbound project data"
-   Both follow the exact same shape/rhythm as existing buttons. */
-
-.btn-export-project {
-  background: linear-gradient(135deg, #0d9488 0%, #0f766e 100%);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm, 8px);
-  padding: 10px 16px;
-  font-size: 0.95em;
-  font-weight: 600;
-  cursor: pointer;
-  transition: box-shadow 0.2s, transform 0.15s;
-  box-shadow: 0 2px 8px rgba(13,148,136,0.25);
-}
-.btn-export-project:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(13,148,136,0.4);
-}
-
-.btn-import-project {
-  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-btn) 100%);
-  color: #fff;
-  border: none;
-  border-radius: var(--radius-sm, 8px);
-  padding: 10px 16px;
-  font-size: 0.95em;
-  font-weight: 600;
-  cursor: pointer;
-  transition: box-shadow 0.2s, transform 0.15s;
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--brand-primary) 25%, transparent);
-}
-.btn-import-project:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 15px color-mix(in srgb, var(--brand-primary) 40%, transparent);
-}
-
-/* ================================================================
+}/* ================================================================
    DESIGN SYSTEM UTILITY BUTTONS (v2)
    Composable classes: <button class="btn btn-primary">…</button>
    These coexist with the existing named-button classes above.

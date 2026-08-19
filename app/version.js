@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.5.8';        // Semantic Versioning
+export const APP_VERSION  = '4.5.9';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-19';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,17 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.5.9',
+            date: '2026-08-19',
+            changes: [
+                'Cairo now applies inside text boxes and input fields — a leftover Segoe UI/Tahoma rule in the index.html <style> block tied on specificity with the Cairo rule and won by source order, since <style> comes after <link>',
+                'That rule is deleted at source rather than out-weighed, and the input rules in arabic-ui.css are now explicit instead of wrapped in :where(), which contributed zero specificity',
+                'Removed 6 KB of dead CSS: the old knowledge/skills and behaviour list styles, the retired button variants, the history bar, the info box and the collapsed-sidebar leftovers',
+                'Dynamically-built classes (cv-*, btn-add, btn-remove, btn-clear-section) were verified as live and kept — a static scan reports them as unused because design-system.js builds their names by concatenation',
+                'i18n-patch.js deleted: an orphan file, imported nowhere, whose six chartInfo keys were already merged into translations.js in all three languages',
+            ]
+        },
         {
             version: '4.5.8',
             date: '2026-08-19',

@@ -69,8 +69,22 @@
    القاعدة تستخدم :where() لإبقاء وزن الانتقائية عند الصفر، فلا
    تتغلّب على أي قاعدة خطّ أكثر تحديداً قد تُضاف لاحقاً. */
 
-html[dir="rtl"] :where(body, input, textarea, button, select,
+html[dir="rtl"] :where(body, button, select,
                        h1, h2, h3, h4, label, .container) {
+    font-family: 'Cairo', 'Segoe UI', Tahoma, 'Arial', sans-serif;
+}
+
+/* حقول الإدخال ومناطق النص تحتاج ذكراً صريحاً بلا :where().
+   السبب: base.css يحدّد الخط عبر `input[type="text"], textarea`
+   بوزن (0,1,1) للأول. و:where() وزنه صفر، فكانت القاعدة أعلاه
+   تتعادل معه أو تخسر — وهو ما جعل Cairo يظهر في العناوين ويغيب
+   عن مربّعات النص. الانتقائية هنا مقصودة، لا سهو. */
+html[dir="rtl"] input[type="text"],
+html[dir="rtl"] input[type="date"],
+html[dir="rtl"] input:not([type]),
+html[dir="rtl"] textarea,
+html[dir="rtl"] [contenteditable="true"],
+html[dir="rtl"] [contenteditable="plaintext-only"] {
     font-family: 'Cairo', 'Segoe UI', Tahoma, 'Arial', sans-serif;
 }
 
