@@ -621,14 +621,59 @@
                         && location.hostname !== 'claudeusercontent.com'
                         && location.protocol !== 'about:';
 
+        // ── كسر حلقة الكاش عند نقطة التسجيل ────────────────────
+        //  التسجيل بـ ?v=${APP_VERSION} يقرأ الإصدار من version.js
+        //  المحمَّل من الكاش، فتسجّل الصفحة القديمة العامل القديم
+        //  الذي يبني الكاش القديم — حلقة لا تنكسر إلا بـ
+        //  Ctrl+Shift+R.
+        //
+        //  الحل: اجلب version.js من الشبكة مباشرةً قبل التسجيل.
+        //  طلب واحد صغير (~4 ك.ب) عند الإقلاع، ويضمن أن رقم
+        //  الإصدار يأتي من الخادم لا من الكاش. إن فشل الطلب —
+        //  أي دون اتصال — نرتدّ إلى النسخة المحمَّلة، وهو الصحيح
+        //  لأن التحديث متعذّر أصلاً بلا شبكة.
+        async function _liveVersion() {
+            try {
+                const res = await fetch('./version.js?t=' + Date.now(), { cache: 'no-store' });
+                if (!res.ok) return APP_VERSION;
+                const text = await res.text();
+                const m = text.match(/APP_VERSION\s*=\s*['"]([^'"]+)['"]/);
+                return (m && m[1]) || APP_VERSION;
+            } catch {
+                return APP_VERSION;   // دون اتصال — النسخة المحمَّلة تكفي
+            }
+        }
+
         if (_swAllowed && 'serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
+            window.addEventListener('load', async () => {
+                const liveV = await _liveVersion();
+
+                // الإصدار على الخادم أحدث من الصفحة المحمَّلة: الكاش
+                // قديم بالتأكيد. أفرغه وأعد التحميل مرّة واحدة —
+                // بحارس جلسة يمنع أي حلقة.
+                if (liveV !== APP_VERSION) {
+                    const KEY = 'dacum_hard_refresh';
+                    if (!sessionStorage.getItem(KEY)) {
+                        sessionStorage.setItem(KEY, liveV);
+                        console.warn(`[PWA] الصفحة v${APP_VERSION} والخادم v${liveV} — تفريغ الكاش`);
+                        try {
+                            const keys = await caches.keys();
+                            await Promise.all(keys.filter(k => k.startsWith('dacum-lite-v'))
+                                                  .map(k => caches.delete(k)));
+                        } catch (e) { /* المتابعة على أي حال */ }
+                        location.reload();
+                        return;
+                    }
+                } else {
+                    sessionStorage.removeItem('dacum_hard_refresh');
+                }
+
                 window.__dacumSWRegistration =
-                    navigator.serviceWorker.register(`./sw.js?v=${APP_VERSION}`, {
+                    navigator.serviceWorker.register(`./sw.js?v=${liveV}`, {
                         updateViaCache: 'none'
                     })
                     .then(reg => {
-                        console.log('[PWA] SW registered:', reg.scope, 'v' + APP_VERSION);
+                        console.log('[PWA] SW registered:', reg.scope, 'v' + liveV);
                         // Look for a newer worker now, and again whenever
                         // the app is brought back to the front.
                         reg.update().catch(() => {});

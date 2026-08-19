@@ -189,6 +189,45 @@ self.addEventListener('fetch', event => {
         return;
     }
 
+    // ── ملفات تحديد الإصدار: شبكة صِرفة، بتجاوز كاش المتصفح ──
+    //
+    //  العطل الذي يعالجه هذا:
+    //  index.html كان يسجّل  ./sw.js?v=${APP_VERSION}  و APP_VERSION
+    //  يأتي من version.js المحمَّل من الكاش. فالنتيجة حلقة مغلقة:
+    //  الصفحة القديمة تسجّل العامل القديم، الذي يبني اسم الكاش
+    //  القديم، فيواصل تقديم الملفات القديمة إلى ما لا نهاية.
+    //  الاستطلاع يرى الإصدار الجديد على الخادم فيعرض الشريط، لكن
+    //  التحديث لا يمكن أن ينجح — لأن الملف الذي يحدّد الإصدار محكوم
+    //  بالكاش الذي يفترض به تحديثه. Ctrl+Shift+R وحده كان ينجح لأنه
+    //  يتجاوز الـ Service Worker كلّياً.
+    //
+    //  الحل: هذان الملفان يأتيان من الشبكة دائماً حين يتوفّر اتصال،
+    //  مع cache:'reload' لتجاوز كاش HTTP للمتصفح أيضاً. الكاش يبقى
+    //  احتياطاً للعمل دون اتصال فقط.
+    const isVersionCritical = url.pathname.endsWith('/version.js') ||
+                              url.pathname.endsWith('/index.html') ||
+                              url.pathname === new URL('./', self.location).pathname;
+
+    if (isVersionCritical) {
+        event.respondWith(
+            fetch(new Request(event.request.url, {
+                cache:       'reload',      // تجاوز كاش HTTP
+                credentials: 'same-origin'
+            })).then(response => {
+                if (response && response.status === 200) {
+                    const clone = response.clone();
+                    caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+                }
+                return response;
+            }).catch(() =>
+                caches.match(event.request).then(cached =>
+                    cached || caches.match('./index.html') ||
+                    new Response('Offline', { status: 503 }))
+            )
+        );
+        return;
+    }
+
     // App shell: try the network first so every online visit gets the
     // latest deployed files; only fall back to whatever is cached if
     // the network request fails (offline, or a flaky connection).

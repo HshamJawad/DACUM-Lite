@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.7.2';        // Semantic Versioning
+export const APP_VERSION  = '4.7.3';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-19';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,18 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.7.3',
+            date: '2026-08-19',
+            changes: [
+                'Fixed the update loop at its root: index.html registered ./sw.js?v=${APP_VERSION} where APP_VERSION came from a CACHED version.js, so the old page registered the old worker, which rebuilt the old cache name and kept serving old files — an update could never succeed, and only Ctrl+Shift+R broke out because it bypasses the service worker entirely',
+                'version.js is now fetched from the network before registration, so the version number comes from the server rather than from the cache it is supposed to refresh',
+                'When the server version differs from the loaded page, DACUM caches are purged and the page reloads once, guarded by sessionStorage so it can never loop',
+                'sw.js now serves index.html and version.js network-first with cache:reload, keeping the cached copies as an offline fallback only',
+                'updateViaCache:none only ever protected sw.js itself, never index.html or version.js — which is why the loop survived it',
+                'self-check.js gained a version.fresh check comparing the loaded page against what the server actually serves',
+            ]
+        },
         {
             version: '4.7.2',
             date: '2026-08-19',

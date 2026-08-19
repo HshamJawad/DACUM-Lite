@@ -353,6 +353,34 @@ function checkUpdateGuard() {
 
 
 /* ══════════════════════════════════════════════════════════════
+   ١٠ — الصفحة المحمَّلة مقابل الخادم
+   ══════════════════════════════════════════════════════════════
+   العطل الأصلي: index.html كان يسجّل sw.js?v=${APP_VERSION} حيث
+   APP_VERSION يأتي من version.js المخبّأ. فالصفحة القديمة تسجّل
+   العامل القديم الذي يبني الكاش القديم — حلقة لا تنكسر إلا
+   بـ Ctrl+Shift+R، وشريط التحديث يظهر ويفشل إلى ما لا نهاية.
+
+   نقارن إصدار الصفحة بما يقدّمه الخادم فعلاً. */
+async function checkVersionFreshness() {
+    try {
+        const res = await fetch('./version.js?t=' + Date.now(), { cache: 'no-store' });
+        if (!res.ok) return ok('version.fresh', 'تعذّر الوصول للخادم — تخطّي');
+
+        const m = (await res.text()).match(/APP_VERSION\s*=\s*['"]([^'"]+)['"]/);
+        const serverV = m && m[1];
+        if (!serverV) return ok('version.fresh', 'تعذّرت قراءة إصدار الخادم — تخطّي');
+
+        return serverV === APP_VERSION
+            ? ok('version.fresh', `الصفحة متطابقة مع الخادم (v${serverV})`)
+            : bad('version.fresh',
+                  `الصفحة v${APP_VERSION} والخادم v${serverV} — الكاش قديم. اضغط Ctrl+Shift+R`, WARN);
+    } catch {
+        return ok('version.fresh', 'دون اتصال — تخطّي');
+    }
+}
+
+
+/* ══════════════════════════════════════════════════════════════
    المُشغّل
    ══════════════════════════════════════════════════════════════ */
 
@@ -367,7 +395,8 @@ export async function runSelfCheck({ verbose = false } = {}) {
         checkTranslations(),
         Promise.resolve(checkStorageWritable()),
         Promise.resolve(checkUpdateGuard()),
-        checkServiceWorkerVersion()
+        checkServiceWorkerVersion(),
+        checkVersionFreshness()
     ]);
 
     _results = checks;
