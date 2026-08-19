@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.7.1';        // Semantic Versioning
+export const APP_VERSION  = '4.7.2';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-19';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,17 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.7.2',
+            date: '2026-08-19',
+            changes: [
+                'Error cards now show the context passed with the report — it was being stored and never rendered, so a SelfCheck card said "1 broken link" without naming which link, which is exactly what the screenshot needs to be useful',
+                'The toast now leads with the first failure instead of the bare count',
+                'SelfCheck no longer raises a card for transient states during an incomplete update: a stale cached translations.js makes new keys look missing, and that is a reload away, not a broken link',
+                'The Cairo check now waits for document.fonts.ready instead of judging at 800ms, which was producing a false card on slow boots',
+                'update.guard downgraded to a warning — it reports an update problem, not a broken link in the code',
+            ]
+        },
         {
             version: '4.7.1',
             date: '2026-08-19',

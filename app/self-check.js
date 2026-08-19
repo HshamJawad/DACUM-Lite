@@ -110,10 +110,16 @@ function checkCairoFont() {
     if (document.documentElement.getAttribute('dir') !== 'rtl') {
         return ok('font.cairo', 'الواجهة غير عربية — تخطّي');
     }
-    return document.fonts.check('16px Cairo')
-        ? ok('font.cairo', 'خط Cairo محمَّل')
-        : bad('font.cairo',
-              'Cairo غير محمَّل — تحقّق من وجود ./fonts/Cairo.woff2 ومن @font-face في arabic-ui.css');
+    if (document.fonts.check('16px Cairo')) return ok('font.cairo', 'خط Cairo محمَّل');
+
+    // الخط قد يكون قيد التحميل وقت الفحص. الحكم بالفشل هنا يُنتج
+    // بطاقة كاذبة عند كل إقلاع بطيء، وهو ما يُفقد البطاقات قيمتها.
+    return document.fonts.ready
+        .then(() => document.fonts.check('16px Cairo')
+            ? ok('font.cairo', 'خط Cairo محمَّل')
+            : bad('font.cairo',
+                  'Cairo غير محمَّل — تحقّق من ./fonts/Cairo.woff2 ومن @font-face في arabic-ui.css'))
+        .catch(() => ok('font.cairo', 'تعذّر التحقّق — تخطّي'));
 }
 
 
@@ -133,6 +139,10 @@ function checkInputFont() {
     if (!el) return ok('font.inputs', 'لا حقول في الصفحة — تخطّي');
 
     const family = safe(() => getComputedStyle(el).fontFamily, '');
+    // إن لم يجهز Cairo بعد فالحقول تعرض الاحتياطي مؤقّتاً — ليس عطلاً
+    if (!safe(() => document.fonts?.check('16px Cairo'), true)) {
+        return ok('font.inputs', 'Cairo قيد التحميل — تخطّي');
+    }
     return /cairo/i.test(family)
         ? ok('font.inputs', 'حقول الإدخال تستخدم Cairo')
         : bad('font.inputs',
@@ -227,8 +237,15 @@ async function checkTranslations() {
                 if (!(key in dict)) missing.push(`${lang}:${key}`);
             }
         }
+        // أثناء تحديث لم يكتمل يكون translations.js في الكاش أقدم من
+        // بقية الملفات، فتبدو المفاتيح الجديدة مفقودة. هذه حالة
+        // عابرة تُحلّ بإعادة التحميل، لا وصلة مقطوعة.
+        const stale = safe(() => !!sessionStorage.getItem('dacum_update_reload'), false);
         return missing.length
-            ? bad('i18n.keys', 'مفاتيح مفقودة: ' + missing.join('، '))
+            ? bad('i18n.keys',
+                  'مفاتيح مفقودة: ' + missing.join('، ') +
+                  (stale ? ' — تحديث لم يكتمل، أعد التحميل' : ''),
+                  stale ? WARN : FAIL)
             : ok('i18n.keys', `${CRITICAL_KEYS.length} مفاتيح حرجة × 3 لغات`);
     } catch (e) {
         return bad('i18n.keys', 'تعذّر تحميل translations.js: ' + e.message);
@@ -328,7 +345,8 @@ function checkUpdateGuard() {
     const age = Math.round((Date.now() - (rec.ts || 0)) / 1000);
     if (rec.version === APP_VERSION && (rec.count || 1) >= 3) {
         return bad('update.guard',
-            `تحديث لم يكتمل (${rec.count} محاولات قبل ${age}ث). نفّذ: sessionStorage.removeItem('dacum_update_reload')`);
+            `تحديث لم يكتمل (${rec.count} محاولات قبل ${age}ث). نفّذ: sessionStorage.removeItem('dacum_update_reload')`,
+            WARN);   // مشكلة تحديث عابرة، لا وصلة مقطوعة في الكود
     }
     return ok('update.guard', `بصمة تحديث حديثة (${rec.count || 1} محاولة، ${age}ث)`);
 }

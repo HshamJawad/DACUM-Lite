@@ -211,12 +211,37 @@ let _toastTimer = null;
 function showToast(entry) {
     const el = document.getElementById('dacumErrToast');
     if (!el) return;
+    // إن حمل السياق قائمة أعطال، اعرض أوّلها: "1 وصلة مقطوعة"
+    // وحدها لا تكفي لتشخيص شيء من لقطة شاشة.
+    const first = safe(() => {
+        const list = entry.context?.failures;
+        return Array.isArray(list) && list.length ? String(list[0]) : '';
+    }, '');
+
     el.innerHTML =
-        `<b>${entry.code}</b> — ${escapeHtml(entry.msg.slice(0, 110))}` +
+        `<b>${entry.code}</b> — ${escapeHtml((first || entry.msg).slice(0, 130))}` +
         `<small>${isRTL() ? 'اضغط لعرض التفاصيل وتصويرها' : 'Tap for details'} · ${escapeHtml(entry.where)}</small>`;
     el.style.display = 'block';
     clearTimeout(_toastTimer);
     _toastTimer = setTimeout(() => { el.style.display = 'none'; }, 9000);
+}
+
+/* السياق المُمرَّر مع الإبلاغ اليدوي كان يُخزَّن ولا يُعرض — فبطاقة
+   SelfCheck كانت تقول "وصلة مقطوعة" دون تسمية الوصلة، وهو بالضبط
+   ما تحتاجه اللقطة. المصفوفات تُعرض سطراً لكل عنصر لأنها عادةً
+   قائمة أعطال. */
+function _ctxLines(ctx) {
+    try {
+        if (Array.isArray(ctx)) return ctx.map(v => '• ' + String(v)).join('\n');
+        if (ctx && typeof ctx === 'object') {
+            return Object.entries(ctx).map(([k, v]) =>
+                Array.isArray(v)
+                    ? `${k}:\n` + v.map(x => '  • ' + String(x)).join('\n')
+                    : `${k}: ${typeof v === 'object' ? JSON.stringify(v) : String(v)}`
+            ).join('\n');
+        }
+        return String(ctx);
+    } catch { return '[context unreadable]'; }
 }
 
 function escapeHtml(s) {
@@ -240,7 +265,7 @@ function renderPanel() {
 <span class="k">app</span>  v${escapeHtml(c.version || '?')} · ${escapeHtml(c.mode || '?')} · ${escapeHtml(c.orient || '?')} · ${escapeHtml(c.screen || '?')}
 <span class="k">i18n</span> dir=${escapeHtml(c.dir || '?')} lang=${escapeHtml(c.lang || '?')} sidebar=${escapeHtml(c.sb || '?')}
 <span class="k">env</span>  pwa=${escapeHtml(c.pwa || '?')} online=${escapeHtml(c.online || '?')}
-${e.crumbs && e.crumbs.length ? `<span class="k">steps</span> ${escapeHtml(e.crumbs.join(' → '))}\n` : ''}${e.stack ? `<span class="k">stack</span>\n${escapeHtml(e.stack)}` : ''}</div>`;
+${e.context ? `<span class="k">info</span>\n${escapeHtml(_ctxLines(e.context))}\n` : ''}${e.crumbs && e.crumbs.length ? `<span class="k">steps</span> ${escapeHtml(e.crumbs.join(' → '))}\n` : ''}${e.stack ? `<span class="k">stack</span>\n${escapeHtml(e.stack)}` : ''}</div>`;
         }).join('')
         : `<div class="dep-empty">${rtl ? 'لا توجد أخطاء مسجّلة ✅' : 'No errors logged ✅'}</div>`;
 
@@ -273,6 +298,7 @@ function asText() {
             `at ${e.where}  ${e.time}`,
             `v${c.version} ${c.mode}/${c.orient} ${c.screen} dir=${c.dir} lang=${c.lang} sidebar=${c.sb} pwa=${c.pwa}`,
             c.ua ? `UA ${c.ua}` : '',
+            e.context ? _ctxLines(e.context) : '',
             e.crumbs?.length ? `steps ${e.crumbs.join(' → ')}` : '',
             e.stack || ''
         ].filter(Boolean).join('\n');
