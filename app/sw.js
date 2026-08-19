@@ -70,6 +70,7 @@ const SHELL_ASSETS  = [
     './viewport-mode.js',
     './error-reporter.js',
     './self-check.js',
+    './storage-meter.js',
     './design-system.js',
     './events.js',
     './fileEngine.js',

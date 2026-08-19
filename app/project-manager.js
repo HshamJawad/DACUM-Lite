@@ -141,19 +141,81 @@ export function configurePersistence({ onError } = {}) {
     _onPersistError = typeof onError === 'function' ? onError : null;
 }
 
+// النسبة وحدها ("33% مستهلك") لا تخبر المستخدم بشيء قابل للتنفيذ.
+// التفصيل يخبره: إن كانت اللقطات تشغل ضعف ما تشغله الشعارات،
+// فحذف لقطات مشروع منتهٍ يحرّر أكثر — وهو آمن، لأن اللقطات تاريخ
+// تراجع لا بيانات مخطط.
+const QUOTA_BYTES = 5 * 1024 * 1024;   // سقف localStorage التقريبي
+
 /**
- * Approximate byte size of the store as it would be written.
- * Useful for a storage-usage indicator or a pre-flight check.
- * @returns {{bytes:number, kb:number, projects:number}}
+ * حجم المتجر مفصّلاً حسب ما يستهلك المساحة فعلاً.
+ * @returns {{bytes:number, kb:number, pct:number, projects:number,
+ *            breakdown:{charts:number, snapshots:number, logos:number, meta:number},
+ *            heaviest:{id:string, name:string, bytes:number, snapshots:number}|null}}
  */
 export function getStorageStats() {
-    let bytes = 0;
-    try { bytes = JSON.stringify(_store).length; } catch { /* circular — shouldn't happen */ }
+    const size = o => { try { return JSON.stringify(o ?? null).length; } catch { return 0; } };
+
+    let charts = 0, snapshots = 0, logos = 0;
+    let heaviest = null;
+
+    for (const [id, p] of Object.entries(_store.projects || {})) {
+        const snapBytes = size(p.snapshots);
+
+        // الشعارات base64 داخل state.chartImages — تُحسب منفصلة
+        // لأنها العنصر الأسهل تحريراً بلا فقدان بيانات.
+        const logoBytes = size(p.state?.chartImages);
+
+        // ما تبقّى من المشروع: الواجبات والمهام والمعلومات
+        const chartBytes = size(p) - snapBytes - logoBytes;
+
+        charts    += Math.max(0, chartBytes);
+        snapshots += snapBytes;
+        logos     += logoBytes;
+
+        const total = size(p);
+        if (!heaviest || total > heaviest.bytes) {
+            heaviest = {
+                id,
+                name:      p.name || '—',
+                bytes:     total,
+                snapshots: Array.isArray(p.snapshots) ? p.snapshots.length : 0
+            };
+        }
+    }
+
+    const bytes = size(_store);
     return {
         bytes,
-        kb:       Math.round(bytes / 1024),
-        projects: Object.keys(_store.projects || {}).length
+        kb:        Math.round(bytes / 1024),
+        pct:       Math.min(100, Math.round(bytes / QUOTA_BYTES * 100)),
+        quota:     QUOTA_BYTES,
+        projects:  Object.keys(_store.projects || {}).length,
+        breakdown: {
+            charts,
+            snapshots,
+            logos,
+            meta: Math.max(0, bytes - charts - snapshots - logos)
+        },
+        heaviest
     };
+}
+
+/**
+ * حذف لقطات التراجع لكل المشاريع عدا النشط.
+ * أكبر مساحة يمكن تحريرها بلا فقدان أي بيانات مخطط.
+ * @returns {{freed:number, projects:number}} البايتات المحرّرة
+ */
+export function pruneInactiveSnapshots() {
+    let freed = 0, touched = 0;
+    for (const [id, p] of Object.entries(_store.projects || {})) {
+        if (id === _store.activeProjectId) continue;
+        if (!Array.isArray(p.snapshots) || !p.snapshots.length) continue;
+        try { freed += JSON.stringify(p.snapshots).length; } catch { /* ignore */ }
+        p.snapshots = [];
+        touched++;
+    }
+    return { freed, projects: touched };
 }
 
 /**

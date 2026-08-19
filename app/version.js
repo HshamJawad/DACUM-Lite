@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.6.1';        // Semantic Versioning
+export const APP_VERSION  = '4.7.0';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-19';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,17 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.7.0',
+            date: '2026-08-19',
+            changes: [
+                'Added a storage meter with two event-driven thresholds at 75% and 90% — nothing is shown below 75%, and each threshold notifies once per session so the warning never becomes furniture',
+                'The threshold is 75% rather than 95% because a localStorage write is atomic: it does not fill gradually, so the jump from 94% to failure happens in a single operation and a 95% warning arrives one step too late',
+                'The notice shows a breakdown rather than a bare percentage — measured on three realistic projects, undo snapshots took 94% of the space and logos 6%, so knowing the split is what makes the warning actionable',
+                'Two concrete actions offered: export the project to a file, or clear the undo history of inactive projects, which frees the most and never touches chart data',
+                'getStorageStats() now returns a per-category breakdown and identifies the heaviest project',
+            ]
+        },
         {
             version: '4.6.1',
             date: '2026-08-19',
