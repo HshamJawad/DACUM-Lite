@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.5.5';        // Semantic Versioning
+export const APP_VERSION  = '4.5.6';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-19';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,17 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.5.6',
+            date: '2026-08-19',
+            changes: [
+                'Silent data loss fixed — persistProjects() swallowed QuotaExceededError with a console.warn, so a full localStorage meant the user kept working against a store that was no longer being written, and lost the session on the next reload',
+                'persistProjects() now returns true/false, and reports the failure through an injected handler so project-manager.js stays a pure data layer',
+                'The alert fires once per broken streak, not once per save — the save hook runs after every state change, so an unlatched alert would have frozen the app behind a modal on every keystroke',
+                'The latch resets after a successful write, so a later failure can report again',
+                'New getStorageStats() exposes current usage for a future storage indicator',
+            ]
+        },
         {
             version: '4.5.5',
             date: '2026-08-19',

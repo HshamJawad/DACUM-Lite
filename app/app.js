@@ -43,7 +43,8 @@ import {
     createProject, deleteProject, renameProject,
     setActiveProject, getActiveProject, getAllProjects,
     persistProjects, loadProjects,
-    updateActiveProjectData, injectProject
+    updateActiveProjectData, injectProject,
+    configurePersistence, getStorageStats
 } from './project-manager.js';
 
 // ══════════════════════════════════════════════════════════════
@@ -103,6 +104,38 @@ setRendererActions({ addDuty, removeDuty, addTask, removeTask, clearDuty });
 StateManager.configure({
     save:   saveToLocalStorage,
     render: state => Renderer.renderAll(state)
+});
+
+// ── Wire persistence failure reporting ─────────────────────────
+// project-manager.js is a pure data layer and cannot show anything
+// itself, so it hands the failure back here.
+//
+// A silent write failure is the worst outcome this app can produce:
+// the user keeps typing, every card looks saved, and the whole
+// session is gone on the next reload. So this path is deliberately
+// loud — a blocking alert, not a toast that can scroll past.
+//
+// It fires at most once per broken streak (the latch lives in
+// project-manager.js), so a full disk cannot turn every keystroke
+// into a modal.
+configurePersistence({
+    onError: ({ quota, bytes, projects }) => {
+        const kb  = Math.round(bytes / 1024);
+        const msg = quota
+            ? t('status.storageFull', { kb, projects })
+            : t('status.storageError');
+
+        showStatus(msg, 'error');
+
+        // The toast alone is not enough here: the user must not be
+        // able to keep working in the belief that the work is safe.
+        setTimeout(() => alert(msg), 50);
+
+        if (window.DacumErrors) {
+            window.DacumErrors.report(new Error('persistProjects failed'),
+                { quota, bytes, projects });
+        }
+    }
 });
 
 // ── Wire save hook ─────────────────────────────────────────────

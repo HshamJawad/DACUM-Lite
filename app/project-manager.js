@@ -111,14 +111,95 @@ export function getAllProjects() {
     return Object.values(_store.projects);
 }
 
+// ══════════════════════════════════════════════════════════════
+//  PERSISTENCE FAILURE REPORTING
+//  ------------------------------------------------------------
+//  This module stays PURE DATA (see header): it must not import
+//  i18n, touch the DOM, or raise an alert itself. The consumer
+//  injects a handler instead, exactly like StateManager.configure
+//  and initFileEngine do elsewhere in this app.
+//
+//  Why this matters more than it looks:
+//  persistProjects() runs after EVERY state change via the save
+//  hook in app.js. A naive alert() inside it would fire on almost
+//  every keystroke once storage is full, freezing the app behind
+//  a modal — worse than the silent loss it was meant to fix.
+//
+//  Hence _persistBroken: the handler is called ONCE on the first
+//  failure and stays silent until a save succeeds again, at which
+//  point the latch resets and a future failure can report anew.
+// ══════════════════════════════════════════════════════════════
+
+let _onPersistError = null;   // injected by app.js
+let _persistBroken  = false;  // latch — prevents alert storms
+
+/**
+ * Wire a failure handler. Call once at startup, before any save.
+ * @param {{onError?: (info:{quota:boolean, bytes:number, projects:number, error:Error}) => void}} hooks
+ */
+export function configurePersistence({ onError } = {}) {
+    _onPersistError = typeof onError === 'function' ? onError : null;
+}
+
+/**
+ * Approximate byte size of the store as it would be written.
+ * Useful for a storage-usage indicator or a pre-flight check.
+ * @returns {{bytes:number, kb:number, projects:number}}
+ */
+export function getStorageStats() {
+    let bytes = 0;
+    try { bytes = JSON.stringify(_store).length; } catch { /* circular — shouldn't happen */ }
+    return {
+        bytes,
+        kb:       Math.round(bytes / 1024),
+        projects: Object.keys(_store.projects || {}).length
+    };
+}
+
 /**
  * Persist the full in-memory store to localStorage.
+ *
+ * Returns TRUE on success and FALSE on failure. Previously this
+ * swallowed every error with a console.warn, so a full quota meant
+ * the user kept working against a store that was no longer being
+ * written — and lost everything on the next reload, with nothing
+ * on screen having hinted at it.
+ *
+ * @returns {boolean} whether the write actually landed
  */
 export function persistProjects() {
     try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(_store));
+        _persistBroken = false;      // a good save clears the latch
+        return true;
     } catch (e) {
-        console.warn('[PM] Persist failed:', e);
+        // Quota is reported under three different names/codes across
+        // browsers; Safari in private mode throws code 22 with a
+        // generic name, so test all three.
+        const quota = !!e && (
+            e.name === 'QuotaExceededError' ||
+            e.name === 'NS_ERROR_DOM_QUOTA_REACHED' ||
+            e.code === 22
+        );
+
+        console.error('[PM] Persist FAILED — data is NOT saved:', e);
+
+        if (!_persistBroken && _onPersistError) {
+            _persistBroken = true;
+            const stats = getStorageStats();
+            try {
+                _onPersistError({
+                    quota,
+                    bytes:    stats.bytes,
+                    projects: stats.projects,
+                    error:    e
+                });
+            } catch (hookErr) {
+                // A broken handler must never mask the original failure
+                console.error('[PM] onError handler threw:', hookErr);
+            }
+        }
+        return false;
     }
 }
 

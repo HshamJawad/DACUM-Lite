@@ -63,6 +63,8 @@ export const translations = {
 
         // ── Status — project operations ───────────────────────
         'status.projectImported': 'Project "{{name}}" imported ✓',
+        'status.storageFull': 'STORAGE FULL — your work was NOT saved.\n\nUsing {{kb}} KB across {{projects}} project(s).\n\nExport this project to a file NOW, then delete old projects or logo images to free space. Nothing will be saved until you do.',
+        'status.storageError': 'SAVE FAILED — your work was NOT saved to this browser.\n\nExport this project to a file now so you do not lose it.',
         'status.projectCreated':  'Created "{{name}}" ✓',
         'status.projectSwitched': 'Switched to "{{name}}" ✓',
         'status.projectDeleted':  'Project deleted. Switched to "{{name}}"',
@@ -419,6 +421,8 @@ export const translations = {
 
         // ── Status — project operations ───────────────────────
         'status.projectImported': 'Projet « {{name}} » importé ✓',
+        'status.storageFull': "STOCKAGE PLEIN — votre travail n'a PAS été enregistré.\n\n{{kb}} Ko utilisés sur {{projects}} projet(s).\n\nExportez ce projet dans un fichier MAINTENANT, puis supprimez d'anciens projets ou logos pour libérer de l'espace. Rien ne sera enregistré tant que ce ne sera pas fait.",
+        'status.storageError': "ÉCHEC DE L'ENREGISTREMENT — votre travail n'a PAS été enregistré dans ce navigateur.\n\nExportez ce projet dans un fichier dès maintenant.",
         'status.projectCreated':  '« {{name}} » créé ✓',
         'status.projectSwitched': 'Basculé vers « {{name}} » ✓',
         'status.projectDeleted':  'Projet supprimé. Basculé vers « {{name}} »',
@@ -766,6 +770,8 @@ export const translations = {
 
         // ── Status — project operations ───────────────────────
         'status.projectImported': 'تم استيراد المشروع "{{name}}" ✓',
+        'status.storageFull': 'مساحة التخزين ممتلئة — لم يُحفَظ عملك.\n\nالمستخدَم {{kb}} كيلوبايت في {{projects}} مشروع.\n\nصدّر هذا المشروع كملف الآن، ثم احذف مشاريع قديمة أو صور شعارات لتحرير مساحة. لن يُحفَظ أي شيء قبل ذلك.',
+        'status.storageError': 'فشل الحفظ — لم يُحفَظ عملك في هذا المتصفح.\n\nصدّر هذا المشروع كملف الآن حتى لا تفقده.',
         'status.projectCreated':  'تم إنشاء "{{name}}" ✓',
         'status.projectSwitched': 'تم التبديل إلى "{{name}}" ✓',
         'status.projectDeleted':  'تم حذف المشروع. تم التبديل إلى "{{name}}"',
