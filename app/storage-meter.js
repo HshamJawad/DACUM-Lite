@@ -42,9 +42,13 @@ const PANEL_ID   = 'dacumStorageMeter';
 const safe = (fn, fb) => { try { return fn(); } catch { return fb; } };
 const isRTL = () => safe(() => document.documentElement.getAttribute('dir') === 'rtl', true);
 
+// الوحدات تمرّ عبر نظام الترجمة كبقية النصوص. تثبيتها بالعربية
+// هنا كان يُظهر "ك.ب" داخل الواجهتين الإنجليزية والفرنسية.
 const fmt = bytes => {
     const kb = bytes / 1024;
-    return kb >= 1024 ? `${(kb / 1024).toFixed(1)} م.ب` : `${Math.round(kb)} ك.ب`;
+    return kb >= 1024
+        ? `${(kb / 1024).toFixed(1)} ${t('storage.unitMB')}`
+        : `${Math.round(kb)} ${t('storage.unitKB')}`;
 };
 
 /* ── تتبّع ما عُرض في هذه الجلسة ─────────────────────────────
@@ -160,19 +164,24 @@ function buildPanel(stats, urgent) {
 
     wrap.innerHTML = `
 <div class="sm-box" role="dialog" aria-modal="true">
-  <p class="sm-title">${urgent ? '🔴' : '⚠️'} ${t(urgent ? 'storage.titleUrgent' : 'storage.titleWarn')}</p>
-  <p class="sm-sub">${t('storage.subtitle', { pct: stats.pct, used: fmt(stats.bytes) })}</p>
+  <p class="sm-title">${stats.pct < WARN_PCT ? 'ℹ️' : urgent ? '🔴' : '⚠️'} ${
+      t(stats.pct < WARN_PCT ? 'storage.titleOk'
+        : urgent ? 'storage.titleUrgent' : 'storage.titleWarn')}</p>
+  <p class="sm-sub">${t(stats.pct < WARN_PCT ? 'storage.subtitleOk' : 'storage.subtitle',
+      { pct: stats.pct, used: fmt(stats.bytes) })}</p>
 
   <div class="sm-bar"><div class="sm-fill" style="width:${stats.pct}%;background:${barColor(stats.pct)}"></div></div>
   <div class="sm-pct"><span>${fmt(stats.bytes)}</span><span>${stats.pct}%</span></div>
 
   <div class="sm-rows">
-    ${rows.map(([k, label, val]) => `
+    ${rows.length
+      ? rows.map(([k, label, val]) => `
       <div class="sm-row">
         <span class="sm-dot" style="background:${COLORS[k]}"></span>
         <span class="sm-lbl">${label}</span>
         <span class="sm-val">${fmt(val)}</span>
-      </div>`).join('')}
+      </div>`).join('')
+      : `<div class="sm-row" style="color:#94a3b8;justify-content:center">${t('storage.breakdownEmpty')}</div>`}
   </div>
 
   ${b.snapshots > b.charts
@@ -181,9 +190,11 @@ function buildPanel(stats, urgent) {
       ? `<div class="sm-hint">${t('storage.hintLogos')}</div>` : ''}
 
   <div class="sm-acts">
+    ${stats.pct >= WARN_PCT ? `
     <button class="sm-primary"   data-sm="export">${t('storage.actExport')}</button>
-    <button class="sm-secondary" data-sm="prune">${t('storage.actPrune')}</button>
-    <button class="sm-close"     data-sm="close">${t('storage.actLater')}</button>
+    <button class="sm-secondary" data-sm="prune">${t('storage.actPrune')}</button>` : ''}
+    <button class="sm-close"     data-sm="close">${
+        t(stats.pct >= WARN_PCT ? 'storage.actLater' : 'storage.actClose')}</button>
   </div>
 </div>`;
 
@@ -194,13 +205,13 @@ function buildPanel(stats, urgent) {
     wrap.addEventListener('click', e => { if (e.target === wrap) close(); });
 
     // التصدير: يفتح مسار التصدير القائم بدل تكرار منطقه هنا
-    wrap.querySelector('[data-sm="export"]').addEventListener('click', () => {
+    wrap.querySelector('[data-sm="export"]')?.addEventListener('click', () => {
         close();
         safe(() => window.pmExportProject?.() ?? window.exportProject?.());
     });
 
     // الحذف: أكبر مساحة تُحرَّر بلا فقدان بيانات مخطط
-    wrap.querySelector('[data-sm="prune"]').addEventListener('click', () => {
+    wrap.querySelector('[data-sm="prune"]')?.addEventListener('click', () => {
         const others = getAllProjects().length - 1;
         if (others < 1) { alert(t('storage.pruneNone')); return; }
         if (!confirm(t('storage.pruneConfirm', { n: others }))) return;

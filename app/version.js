@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.7.0';        // Semantic Versioning
+export const APP_VERSION  = '4.7.1';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-19';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,15 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.7.1',
+            date: '2026-08-19',
+            changes: [
+                'Storage sizes now use the right units per language — KB/MB in English, Ko/Mo in French, ك.ب/م.ب in Arabic; they had been hard-coded in Arabic inside the formatter instead of going through the translation system like every other string',
+                'The forced panel (DacumStorage.check) no longer claims storage is filling up when it is at 0% — it shows a neutral usage title, and the export and prune buttons only appear once the 75% threshold is actually crossed',
+                'An empty breakdown box now says so instead of rendering as a blank rounded rectangle',
+            ]
+        },
         {
             version: '4.7.0',
             date: '2026-08-19',
