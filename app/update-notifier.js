@@ -58,6 +58,7 @@ const FALLBACK = {
         'update.now':         'Update now',
         'update.later':       'Later',
         'update.updating':    'Updating…',
+        'update.stuck':       'Update did not complete — reload the page manually',
         'update.badgeAction': '⟳ Update',
         'update.badgeTitle':  'Version {{v}} · Released {{d}} · Cache {{c}}',
         'copyright.main':     '© 2026 DACUM Lite | by Husham Jawad Kadhim | Version {{version}} | All Rights Reserved'
@@ -67,6 +68,7 @@ const FALLBACK = {
         'update.now':         'Mettre à jour',
         'update.later':       'Plus tard',
         'update.updating':    'Mise à jour…',
+        'update.stuck':       "La mise à jour n'a pas abouti — rechargez la page",
         'update.badgeAction': '⟳ Mettre à jour',
         'update.badgeTitle':  'Version {{v}} · Publiée le {{d}} · Cache {{c}}',
         'copyright.main':     '© 2026 DACUM Lite | par Husham Jawad Kadhim | Version {{version}} | Tous droits réservés'
@@ -76,6 +78,7 @@ const FALLBACK = {
         'update.now':         'حدّث الآن',
         'update.later':       'لاحقاً',
         'update.updating':    'جارٍ التحديث…',
+        'update.stuck':       'لم يكتمل التحديث — أعد تحميل الصفحة يدوياً',
         'update.badgeAction': '⟳ تحديث',
         'update.badgeTitle':  'الإصدار {{v}} · تاريخ الإصدار {{d}} · الكاش {{c}}',
         'copyright.main':     '© 2026 DACUM Lite | بقلم هشام جواد كاظم | الإصدار {{version}} | جميع الحقوق محفوظة'
@@ -120,6 +123,8 @@ let _userTriggered  = false;  // user pressed "Update now"
 let _hadController  = false;  // page was controlled at load time
 let _remoteVersion  = null;   // newest APP_VERSION seen on the server
 let _pollTimer      = null;   // setInterval handle
+let _applyTimer     = null;   // شبكة أمان التحديث
+let _stuckTimer     = null;   // مهلة استعادة الشريط
 
 // ══════════════════════════════════════════════════════════════
 //  Reload guard — prevents an endless update loop
@@ -128,34 +133,93 @@ let _pollTimer      = null;   // setInterval handle
 //  re-notified by the fresh worker and reload again, forever.
 //  One reload per version per 20 seconds, maximum.
 // ══════════════════════════════════════════════════════════════
-function canReload() {
+//  ── لماذا أُعيدت كتابة هذا الحارس ───────────────────────────
+//  النسخة السابقة كانت تقارن  rec.version === APP_VERSION.
+//  لكن APP_VERSION هو إصدار الصفحة المحمَّلة حالياً، وهو يتغيّر
+//  بعد كل تحديث ناجح. فكان أثر الحارس معكوساً تماماً:
+//
+//    • المسار الطبيعي (4.5.9 → 4.6.0): البصمة تحمل 4.5.9 والصفحة
+//      الجديدة تحمل 4.6.0، فتفشل المقارنة ويُسمح بتحديث آخر —
+//      أي أن الحارس لا يمنع الحلقة التي وُضع لأجلها.
+//
+//    • المسار الفاشل (تبديل لم يكتمل): البصمة والصفحة يحملان
+//      الإصدار نفسه، فينجح القمع ويُمنع التحديث. الزر يبقى
+//      معطّلاً على "جارٍ التحديث…" بلا مسار خروج، وشبكة الأمان
+//      setTimeout تمرّ عبر الحارس نفسه فتُقمَع هي الأخرى.
+//
+//  الإصلاح: الحارس يقيس عدد المحاولات في نافذة زمنية، لا تطابق
+//  الإصدار. ومسار المستخدم الصريح يتجاوزه دائماً — الضغط على
+//  "تحديث الآن" نيّة واضحة لا يجوز قمعها بصمت.
+function _readGuard() {
     try {
         const raw = sessionStorage.getItem(RELOAD_KEY);
-        if (raw) {
-            const rec = JSON.parse(raw);
-            if (rec && rec.version === APP_VERSION &&
-                (Date.now() - rec.ts) < RELOAD_GUARD_MS) {
-                console.warn('[Update] Reload suppressed — guard window active.');
-                return false;
-            }
-        }
-    } catch (e) { /* sessionStorage unavailable — allow the reload */ }
+        const rec = raw ? JSON.parse(raw) : null;
+        if (rec && (Date.now() - rec.ts) < RELOAD_GUARD_MS) return rec;
+    } catch (e) { /* sessionStorage unavailable */ }
+    return null;
+}
+
+/**
+ * @param {boolean} userInitiated هل ضغط المستخدم "تحديث الآن"؟
+ */
+function canReload(userInitiated) {
+    const rec = _readGuard();
+    if (!rec) return true;
+
+    // نيّة المستخدم الصريحة تتجاوز الحارس، لكن بحدّ أقصى صارم
+    // يمنع الحلقة اللانهائية لو تعطّل التبديل فعلاً.
+    const limit = userInitiated ? 3 : 1;
+    if ((rec.count || 1) >= limit) {
+        console.warn(`[Update] Reload suppressed — ${rec.count} محاولة خلال نافذة الحارس.`);
+        return false;
+    }
     return true;
 }
 
 function markReloaded() {
     try {
+        const rec = _readGuard();
         sessionStorage.setItem(RELOAD_KEY, JSON.stringify({
             version: APP_VERSION,
-            ts: Date.now()
+            ts:      rec ? rec.ts : Date.now(),   // النافذة تبدأ من أول محاولة
+            count:   (rec?.count || 0) + 1
         }));
     } catch (e) { /* ignore */ }
 }
 
-function safeReload() {
-    if (!canReload()) return;
+function safeReload(userInitiated = false) {
+    if (!canReload(userInitiated)) {
+        // القمع لا يجوز أن يترك الواجهة عالقة: أعِد الشريط لحالته
+        // القابلة للاستخدام حتى يتمكّن المستخدم من المحاولة أو
+        // الإغلاق، بدل زر معطّل إلى الأبد.
+        _restoreBanner('update.stuck');
+        return;
+    }
     markReloaded();
     window.location.reload();
+}
+
+/**
+ * إعادة الشريط إلى حالة قابلة للتفاعل بعد فشل أو قمع.
+ * @param {string} [messageKey] مفتاح ترجمة لرسالة توضيحية
+ */
+function _restoreBanner(messageKey) {
+    _userTriggered = false;
+    const el = document.getElementById(BANNER_ID);
+    if (!el) return;
+
+    const btnNow = el.querySelector('[data-ub="now"]');
+    if (btnNow) {
+        btnNow.disabled     = false;
+        btnNow.style.opacity = '';
+        btnNow.style.cursor  = '';
+    }
+    bannerTexts(el);
+
+    if (messageKey) {
+        const msg = el.querySelector('[data-ub="msg"]');
+        if (msg) msg.textContent = t(messageKey);
+    }
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -395,15 +459,25 @@ function applyUpdate() {
         // Ask the waiting worker to take over. The controllerchange
         // handler below performs the (guarded) reload.
         worker.postMessage({ type: 'SKIP_WAITING' });
-        // Safety net: if controllerchange never fires, reload anyway.
-        setTimeout(safeReload, 2500);
+
+        // شبكة أمان: إن لم يُطلق controllerchange إطلاقاً.
+        // تُمرَّر userInitiated=true لأن هذا امتداد لضغطة المستخدم
+        // — النسخة السابقة كانت تمرّ عبر الحارس كأنها تحديث تلقائي،
+        // فتُقمَع ويبقى الزر معطّلاً إلى الأبد.
+        clearTimeout(_applyTimer);
+        _applyTimer = setTimeout(() => safeReload(true), 2500);
+
+        // مهلة قصوى: إن فشل كل شيء، أعِد الشريط لحالة قابلة
+        // للاستخدام بدل تركه عالقاً على "جارٍ التحديث…".
+        clearTimeout(_stuckTimer);
+        _stuckTimer = setTimeout(() => _restoreBanner('update.stuck'), 8000);
     } else {
         // No worker waiting — the poll found the new release first.
         // sw.js is network-first, so a plain reload already lands on
         // the new build; ask for a worker update on the way out so
         // the next launch is offline-correct too.
         if (_registration) _registration.update().catch(() => {});
-        safeReload();
+        safeReload(true);
     }
 }
 
@@ -562,7 +636,9 @@ export function initUpdateNotifier() {
     // Signal 3 — the controlling worker changed.
     navigator.serviceWorker.addEventListener('controllerchange', () => {
         if (_userTriggered) {
-            safeReload();     // guarded: one reload per version per 20s
+            clearTimeout(_applyTimer);
+            clearTimeout(_stuckTimer);
+            safeReload(true);          // نيّة صريحة — تتجاوز الحارس
         } else if (_hadController) {
             onUpdateAvailable(null);   // offer it, never force it
         }

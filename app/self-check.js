@@ -311,6 +311,30 @@ function checkServiceWorkerVersion() {
 
 
 /* ══════════════════════════════════════════════════════════════
+   ٩ — شريط التحديث عالق
+   ══════════════════════════════════════════════════════════════
+   العطل الأصلي: canReload() كان يقارن البصمة بـ APP_VERSION، وهو
+   إصدار الصفحة الحالية الذي يتغيّر بعد كل تحديث ناجح. فكان أثر
+   الحارس معكوساً — يسمح بالحلقة ويقمع المحاولة المشروعة، فيبقى
+   الزر معطّلاً على "جارٍ التحديث…" بلا مسار خروج.
+
+   نفحص العَرَض: بصمة حارس قديمة باقية في sessionStorage تحمل
+   الإصدار الحالي. وجودها بعد اكتمال الإقلاع يعني أن تحديثاً
+   سابقاً لم يكتمل. */
+function checkUpdateGuard() {
+    const rec = safe(() => JSON.parse(sessionStorage.getItem('dacum_update_reload') || 'null'), null);
+    if (!rec) return ok('update.guard', 'لا بصمة تحديث معلّقة');
+
+    const age = Math.round((Date.now() - (rec.ts || 0)) / 1000);
+    if (rec.version === APP_VERSION && (rec.count || 1) >= 3) {
+        return bad('update.guard',
+            `تحديث لم يكتمل (${rec.count} محاولات قبل ${age}ث). نفّذ: sessionStorage.removeItem('dacum_update_reload')`);
+    }
+    return ok('update.guard', `بصمة تحديث حديثة (${rec.count || 1} محاولة، ${age}ث)`);
+}
+
+
+/* ══════════════════════════════════════════════════════════════
    المُشغّل
    ══════════════════════════════════════════════════════════════ */
 
@@ -324,6 +348,7 @@ export async function runSelfCheck({ verbose = false } = {}) {
         Promise.resolve(checkRequiredElements()),
         checkTranslations(),
         Promise.resolve(checkStorageWritable()),
+        Promise.resolve(checkUpdateGuard()),
         checkServiceWorkerVersion()
     ]);
 

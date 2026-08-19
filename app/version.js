@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.6.0';        // Semantic Versioning
+export const APP_VERSION  = '4.6.1';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-19';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,18 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.6.1',
+            date: '2026-08-19',
+            changes: [
+                'The update banner no longer sticks on "Updating…" — canReload() compared the stored stamp against APP_VERSION, which is the CURRENTLY LOADED version and changes after every successful update, so the guard was inverted',
+                'It allowed the reload loop it was written to prevent (stamp 4.5.9 vs page 4.6.0 never matched) and suppressed the legitimate retry (same version on a failed handover), leaving the button disabled with no way out',
+                'The guard now counts attempts inside a time window instead of matching versions, and an explicit user tap bypasses it up to a hard limit of three',
+                'The safety-net timeout is marked as user-initiated — it previously went through the guard as if it were an automatic update and was suppressed',
+                'An 8-second timeout restores the banner to a usable state instead of leaving a dead button, with a new update.stuck message in all three languages',
+                'self-check.js gained an update.guard check that flags a stale stamp from an incomplete update',
+            ]
+        },
         {
             version: '4.6.0',
             date: '2026-08-19',
