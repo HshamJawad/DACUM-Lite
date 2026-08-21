@@ -336,20 +336,32 @@
                 padding:7px 0;
                 border-bottom:none;
             }
-            /* العنوان يتمدّد فيدفع التبويبات والأدوات إلى الطرفين */
+            /* التوزيع: العنوان والتبويبات في بداية الشريط —
+               أي فوق البطاقات مباشرةً — والأدوات في نهايته.
+
+               الخطأ السابق: margin-inline-start:auto على التبويبات
+               مع flex:1 على حاويتها. حين يُخفى العنوان في النطاق
+               الضيّق يصبح الحاوي فارغاً عدا التبويبات، فيلتهم
+               الهامش التلقائي عرض الحاوي كلّه ويدفع التبويبات
+               والأدوات معاً إلى طرف واحد — ويبقى النصف الآخر
+               من الشريط فارغاً فوق البطاقات.
+
+               الحل: الحاوي لا يتمدّد، والفصل يتم بهامش تلقائي
+               على مجموعة الأدوات وحدها. */
             .wv-topbar-row--nav {
-                flex:1;
                 min-width:0;
-                order:1;            /* العنوان والتبويبات أولاً */
+                order:1;
+                flex:0 1 auto;
+                gap:10px;
             }
             .wv-topbar-row--controls {
-                flex-wrap:nowrap;   /* صفّ واحد صارم */
+                flex-wrap:nowrap;        /* صفّ واحد صارم */
                 order:2;
                 flex-shrink:0;
+                margin-inline-start:auto; /* يدفع الأدوات إلى النهاية */
             }
-            /* العنوان لم يعد يحتاج flex:1 — الصفّ الحاوي يتكفّل */
-            .wv-topbar-row--nav .wv-title { flex:0 0 auto; }
-            .wv-topbar-row--nav .wv-view-tabs { margin-inline-start:auto; }
+            .wv-topbar-row--nav .wv-title      { flex:0 0 auto; }
+            .wv-topbar-row--nav .wv-view-tabs  { margin-inline-start:0; }
         }
 
         /* 1150–1399px: الصفّ مدموج لكن المساحة ضيّقة.

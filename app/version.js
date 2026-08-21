@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.8.2';        // Semantic Versioning
+export const APP_VERSION  = '4.8.3';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-19';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,16 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.8.3',
+            date: '2026-08-19',
+            changes: [
+                'Wall View toolbar now spreads across the full width instead of bunching at one end and leaving the other half empty above the cards',
+                'Cause: margin-inline-start:auto sat on the view tabs inside a container carrying flex:1, so when the title is hidden in the narrow range the container held only the tabs and the auto margin swallowed its entire width, pushing tabs and controls together to one side',
+                'The nav group no longer stretches, and the auto margin moved to the controls group, so tabs sit at the start of the bar above the cards and tools sit at the end',
+                'Verified in both directions and with the title shown and hidden',
+            ]
+        },
         {
             version: '4.8.2',
             date: '2026-08-19',
