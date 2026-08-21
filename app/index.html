@@ -232,6 +232,9 @@
             .container { padding:20px 12px; border-radius:12px; }
 
             /* ── Wall view: compact two-row topbar ──────────── */
+            /* الفاصل يفقد معناه عند الالتفاف: قد يهبط وحده إلى
+               بداية سطر جديد فيبدو خطاً عائماً بلا وظيفة. */
+            .wv-sep { display:none; }
             .wv-topbar-row { padding:5px 8px;gap:5px; }
             .wv-topbar-row--controls { flex-wrap:wrap; }
             .wv-btn { padding:5px 8px;font-size:.75em;gap:3px; }
@@ -380,9 +383,30 @@
         .wv-btn--exit:hover { background:#fee2e2; }
         .wv-btn--print { color:#1d4ed8; }
         .wv-btn--print:hover { background:#eff6ff; }
-        .wv-zoom-group { display:flex;align-items:center;border:1px solid #d1d5db;border-radius:8px;overflow:hidden;flex-shrink:0; }
+        /* مجموعة التكبير تبقى LTR دائماً: التسلسل − ← 100% ← +
+           تسلسل رياضي تصاعدي لا نصّ. عكسه في العربية يضع "+"
+           يساراً و"−" يميناً، وهو ما يخالف توقّع المستخدم في كل
+           تطبيق تكبير — الاصطلاح هنا عالمي لا لغوي. */
+        .wv-zoom-group {
+            display:flex;align-items:center;
+            border:1px solid #d1d5db;border-radius:8px;
+            overflow:hidden;flex-shrink:0;
+            direction:ltr;
+        }
+
+        /* فاصل بصري يعزل زر الخروج عن بقية الأدوات. يستخدم
+           margin-inline فينعكس تلقائياً مع الاتجاه. */
+        .wv-sep {
+            width:1px;align-self:stretch;
+            background:#e2e8f0;
+            margin-inline:2px;
+            flex-shrink:0;
+        }
         .wv-btn--zoom { border:none;border-radius:0;padding:6px 11px;background:#f8fafc;color:#374151; }
         .wv-btn--zoom:hover { background:#e2e8f0; }
+        /* border-left/right فيزيائيان عمداً — لا border-inline.
+           هذا العنصر داخل .wv-zoom-group المثبّتة على direction:ltr،
+           فالجانبان لا ينعكسان، والحدّان يفصلان − عن + دائماً. */
         .wv-zoom-label { padding:0 12px;font-size:.82em;font-weight:700;color:#1e293b;min-width:50px;text-align:center;background:#fff;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;line-height:30px; }
         .wv-scroll-area { flex:1;overflow:auto;padding:20px 24px;background:#eef2f7; }
         .wv-chart { display:inline-block;min-width:100%; }
@@ -1451,9 +1475,20 @@
      ═══════════════════════════════════════════════════════════ -->
 <div id="wallViewContainer" class="wv-container">
     <div class="wv-topbar">
-        <!-- Row 1: controls -->
+        <!-- Row 1: controls
+             الترتيب منطقي لا بصري: المتصفح يعكسه تلقائياً في RTL،
+             فالعنصر الأول هنا يظهر يميناً بالعربية ويساراً
+             بالإنجليزية. لا تُثبَّت المواضع بـ left/right.
+
+             التسلسل مرتّب حسب التكرار ثم الخطورة:
+               تكبير/تصغير → إعادة ضبط  (الأكثر استخداماً)
+               طباعة                     (عرضي)
+               ملء الشاشة                (تبديل حالة)
+               خروج                      (الأخير — مدمّر للسياق)
+
+             وضع الخروج آخراً يبعده عن أزرار التكبير المتكرّرة
+             فيقلّ الضغط الخاطئ الذي يُخرج المستخدم من العرض. -->
         <div class="wv-topbar-row wv-topbar-row--controls">
-            <button class="wv-btn wv-btn--exit" onclick="exitWallView()" data-i18n="wall.exit">✕ Exit</button>
             <div class="wv-zoom-group">
                 <button class="wv-btn wv-btn--zoom" onclick="wallViewZoom(-5)" title="Zoom out −5%">🔍−</button>
                 <span class="wv-zoom-label" id="wvZoomLevel">100%</span>
@@ -1462,6 +1497,8 @@
             <button class="wv-btn" onclick="resetWallZoom()" title="Reset zoom" data-i18n="wall.reset">↺ Reset</button>
             <button class="wv-btn wv-btn--print" onclick="printWallView()" data-i18n="wall.print">🖨️ Print</button>
             <button class="wv-btn" id="wvFullscreenBtn" onclick="toggleWallFullscreen()" data-i18n="wall.fullscreen">⛶ Fullscreen</button>
+            <span class="wv-sep" aria-hidden="true"></span>
+            <button class="wv-btn wv-btn--exit" onclick="exitWallView()" data-i18n="wall.exit">✕ Exit</button>
         </div>
         <!-- Row 2: title + view switcher -->
         <div class="wv-topbar-row wv-topbar-row--nav">

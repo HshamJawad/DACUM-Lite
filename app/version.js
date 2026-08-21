@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.8.1';        // Semantic Versioning
+export const APP_VERSION  = '4.8.2';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-19';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,18 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.8.2',
+            date: '2026-08-19',
+            changes: [
+                'Wall View toolbar now mirrors correctly in Arabic — there was not a single RTL rule for it, and the DOM order had been written left-to-right, so the sequence read backwards in Arabic',
+                'Controls reordered by frequency then severity: zoom, reset, print, fullscreen, then exit last, with a separator isolating it',
+                'Exit sits at the far end of the strip in both directions because the order is logical rather than positional — the browser mirrors it, so no left/right values are pinned',
+                'Moving exit away from the repeatedly-pressed zoom buttons reduces accidental presses that drop the user out of the view',
+                'The zoom group stays locked to LTR: minus, 100%, plus is a mathematical progression, not text, and flipping it would put + on the left in Arabic against the universal convention',
+                'The separator is hidden on narrow screens where it could wrap onto its own line as a floating stray rule',
+            ]
+        },
         {
             version: '4.8.1',
             date: '2026-08-19',
