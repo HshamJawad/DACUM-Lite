@@ -33,6 +33,28 @@ const STORE_KEY = 'dacum_error_log';
 const MAX_KEPT  = 30;     // آخر ٣٠ خطأ فقط
 const MAX_STACK = 1200;   // اقتطاع الـ stack حتى لا يتضخم التخزين
 
+/* ══════════════════════════════════════════════════════════════
+   وضعان: صامت للمستخدم، ظاهر للمطوّر
+   ──────────────────────────────────────────────────────────────
+   النسخة الأولى كانت تعرض فقاعة وجرساً لكل خطأ. هذا صحيح لمطوّر
+   يبحث عن الأعطال عمداً، وخاطئ تماماً لمدرّب في ورشة: يرى رمزاً
+   مثل ERR-A0BA لا يفهمه، فيظنّ أن عمله ضاع ويتوقّف — والأداة في
+   الغالب تعمل بشكل سليم تماماً.
+
+   السلوك الآن: كل خطأ يُسجَّل في الخلفية بلا أي أثر مرئي. لا
+   فقاعة، لا جرس، لا شيء. المستخدم لا يعلم بوجود النظام أصلاً.
+
+   يُفعَّل العرض في حالتين فقط:
+     • ?debug في الرابط
+     • DacumErrors.open() من الطرفية
+
+   والاستثناء الوحيد الذي يقاطع المستخدم هو فقدان البيانات —
+   وهو ليس من مسؤولية هذا الملف: app.js يعرض تنبيه امتلاء
+   التخزين مباشرةً، برسالة مفهومة لا برمز خطأ. */
+const DEV_MODE = (() => {
+    try { return /[?&]debug\b/.test(location.search); } catch { return false; }
+})();
+
 let _errors      = [];
 let _crumbs      = [];
 let _panelOpen   = false;
@@ -107,7 +129,7 @@ function record(kind, message, detail) {
     const fp = code + '|' + where;
     if (_seen.has(fp)) {
         const prev = _errors.find(e => e.code === code && e.where === where);
-        if (prev) { prev.count = (prev.count || 1) + 1; prev.time = nowStamp(); persist(); refreshBadge(); }
+        if (prev) { prev.count = (prev.count || 1) + 1; prev.time = nowStamp(); persist(); if (DEV_MODE) refreshBadge(); }
         return code;
     }
     _seen.add(fp);
@@ -124,8 +146,9 @@ function record(kind, message, detail) {
     _errors.push(entry);
     if (_errors.length > MAX_KEPT) _errors = _errors.slice(-MAX_KEPT);
     persist();
-    refreshBadge();
-    showToast(entry);
+
+    // صمت تامّ للمستخدم. التسجيل يجري، والعرض لا.
+    if (DEV_MODE) { refreshBadge(); showToast(entry); }
     return code;
 }
 
@@ -230,6 +253,31 @@ function showToast(entry) {
    SelfCheck كانت تقول "وصلة مقطوعة" دون تسمية الوصلة، وهو بالضبط
    ما تحتاجه اللقطة. المصفوفات تُعرض سطراً لكل عنصر لأنها عادةً
    قائمة أعطال. */
+/* navigator.clipboard غير متاح على HTTP ولا في بعض المتصفحات
+   القديمة. الارتداد إلى execCommand يضمن أن زر النسخ يعمل دائماً —
+   وهو القناة الوحيدة لإيصال التقرير، فلا يجوز أن يفشل بصمت. */
+async function _copyToClipboard(text) {
+    const viaApi = await safe(async () => {
+        if (!navigator.clipboard?.writeText) return false;
+        await navigator.clipboard.writeText(text);
+        return true;
+    }, false);
+    if (viaApi) return true;
+
+    return safe(() => {
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.setAttribute('readonly', '');
+        ta.style.cssText = 'position:fixed;top:-9999px;opacity:0';
+        document.body.appendChild(ta);
+        ta.select();
+        ta.setSelectionRange(0, text.length);   // iOS
+        const done = document.execCommand('copy');
+        ta.remove();
+        return done;
+    }, false);
+}
+
 function _ctxLines(ctx) {
     try {
         if (Array.isArray(ctx)) return ctx.map(v => '• ' + String(v)).join('\n');
@@ -283,7 +331,7 @@ ${e.context ? `<span class="k">info</span>\n${escapeHtml(_ctxLines(e.context))}\
     p.querySelector('#depClear')?.addEventListener('click', () => { clear(); renderPanel(); });
     p.querySelector('#depCopy')?.addEventListener('click', async e => {
         const txt = asText();
-        const ok = await safe(async () => { await navigator.clipboard.writeText(txt); return true; }, false);
+        const ok = await _copyToClipboard(txt);
         e.target.textContent = ok ? (rtl ? 'تم النسخ ✓' : 'Copied ✓') : (rtl ? 'تعذّر النسخ' : 'Failed');
         setTimeout(() => { e.target.textContent = rtl ? 'نسخ' : 'Copy'; }, 1800);
     });
@@ -305,7 +353,8 @@ function asText() {
     }).join('\n\n────────────────\n\n');
 }
 
-function open()  { _panelOpen = true;  renderPanel();
+function open()  { safe(() => { if (!document.getElementById('dacumErrPanel')) buildUI(); });
+                   _panelOpen = true;  renderPanel();
                    const p = document.getElementById('dacumErrPanel'); if (p) p.style.display = 'block';
                    const t = document.getElementById('dacumErrToast'); if (t) t.style.display = 'none'; }
 function close() { _panelOpen = false;
@@ -357,10 +406,14 @@ export function initErrorReporter() {
         record('promise', r?.message || String(r), { stack: r?.stack });
     });
 
-    // اعتراض console.error دون كسر سلوكه الأصلي
+    // اعتراض console.error — في وضع المطوّر فقط.
+    // مكتبة خارجية تسجّل تحذيراً، أو صورة لا تُحمَّل، أو طلب شبكة
+    // يفشل: كلّها تمرّ عبر console.error وكلّها كانت تُنتج سجلّاً.
+    // ضجيج بلا قيمة، ويُغرق الأعطال الحقيقية.
     const orig = console.error.bind(console);
     console.error = (...args) => {
         orig(...args);
+        if (!DEV_MODE) return;      // لا التقاط في وضع المستخدم
         if (_inConsole) return;
         _inConsole = true;
         safe(() => {
@@ -385,7 +438,9 @@ export function initErrorReporter() {
         });
     }, true);
 
-    const start = () => { safe(buildUI); };
+    // في وضع المستخدم لا تُبنى عناصر الواجهة إطلاقاً — لا جرس
+    // ولا فقاعة في شجرة DOM، فلا يمكن أن يظهر شيء بالخطأ.
+    const start = () => { if (DEV_MODE) safe(buildUI); };
     if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start);
     else start();
 

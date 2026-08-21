@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.7.4';        // Semantic Versioning
+export const APP_VERSION  = '4.8.0';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-19';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,18 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.8.0',
+            date: '2026-08-19',
+            changes: [
+                'The error reporter is now completely silent for users — errors are logged in the background with no toast, no badge, and no DOM elements created at all',
+                'Showing a code like ERR-A0BA to a trainer mid-workshop was the wrong call: they cannot act on it, and they assume their work is lost when in most cases the tool carries on working fine',
+                'console.error is only intercepted in developer mode; a third-party library warning or a failed image request was producing log noise that buried the real failures',
+                'Diagnostics surface only via ?debug in the URL or DacumErrors.open() from the console',
+                'Added a Copy diagnostic report button in the Help tab that bundles the self-check results and the error log into one block of text, with an execCommand fallback so it works outside secure contexts',
+                'The only interruption a user ever sees remains the storage-full warning, which is a real data-loss risk and is worded plainly rather than as an error code',
+            ]
+        },
         {
             version: '4.7.4',
             date: '2026-08-19',

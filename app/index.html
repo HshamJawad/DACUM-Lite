@@ -518,6 +518,19 @@
 
            لا تُعِد قاعدة خطّ عربي هنا. مكانها arabic-ui.css. */
 
+        /* ── أزرار الدعم في تبويب المساعدة ─────────────────── */
+        .hc-support{
+            display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px;
+        }
+        .hc-support-btn{
+            font-size:.85em;font-weight:600;padding:8px 14px;border-radius:8px;
+            border:1px solid #e5e7eb;background:#f9fafb;color:#374151;
+            cursor:pointer;text-decoration:none;display:inline-block;
+            font-family:inherit;transition:background .2s,border-color .2s;
+        }
+        .hc-support-btn:hover{background:#eef2ff;border-color:#c7d2fe;color:#3730a3;}
+        .hc-support-link{line-height:1.2;}
+
         /* ═══ UPDATE NOTIFIER ═════════════════════════════════
            The bar itself is built in update-notifier.js and is
            inline-styled there; only the entry animation and the
@@ -596,6 +609,39 @@
     <script type="module">
         import { initStorageMeter } from './storage-meter.js';
         initStorageMeter();
+    </script>
+
+    <!-- ── زر نسخ تقرير التشخيص (تبويب المساعدة) ────────────
+         يجمع سجلّ الأخطاء ونتيجة الفحص الذاتي في نصّ واحد. هذه
+         القناة الوحيدة لإخراج التقرير، فالنظام صامت تماماً. -->
+    <script type="module">
+        import { report as selfCheckReport, runSelfCheck } from './self-check.js';
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('btnCopyDiagnostics');
+            if (!btn) return;
+            btn.addEventListener('click', async () => {
+                await runSelfCheck();          // أعد الفحص ليكون التقرير حديثاً
+                const parts = [selfCheckReport()];
+                const errs  = window.DacumErrors?.text?.();
+                if (errs) parts.push('', '──── ERRORS ────', errs);
+                const text  = parts.join('\n');
+
+                let done = false;
+                try { await navigator.clipboard.writeText(text); done = true; }
+                catch {
+                    const ta = document.createElement('textarea');
+                    ta.value = text;
+                    ta.style.cssText = 'position:fixed;top:-9999px;opacity:0';
+                    document.body.appendChild(ta);
+                    ta.select();
+                    done = document.execCommand('copy');
+                    ta.remove();
+                }
+                const original = btn.textContent;
+                btn.textContent = done ? '✓' : '✕';
+                setTimeout(() => { btn.textContent = original; }, 1800);
+            });
+        });
     </script>
 
     <!-- ── فحص الإقلاع الذاتي ────────────────────────────────
@@ -1311,6 +1357,18 @@
              ويملؤه من APP_VERSION و APP_RELEASED. كان مفقوداً، فكان
              paintVersionText() يخرج صامتاً عبر الحارس if (footer). -->
         <p class="copyright-disclaimer" id="helpVersionFooter"></p>
+
+        <!-- ── الدعم والإبلاغ عن الأعطال ─────────────────────────
+             نظام تسجيل الأخطاء صامت تماماً: يسجّل في الخلفية ولا
+             يعرض شيئاً للمستخدم. هذان الزران هما القناة الوحيدة
+             لإخراج التقرير — النسخ إلى الحافظة، ثم اللصق في بريد.
+
+             البريد موجود أصلاً في قسم التواصل أعلى التبويب، فلا
+             داعي لتكراره هنا. -->
+        <p class="hc-support">
+            <button type="button" id="btnCopyDiagnostics" class="hc-support-btn"
+                    data-i18n="help.copyReport">Copy diagnostic report</button>
+        </p>
     </div>
 
     </div><!-- /#help-tab -->
