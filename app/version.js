@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.8.0';        // Semantic Versioning
+export const APP_VERSION  = '4.8.1';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-19';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,17 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.8.1',
+            date: '2026-08-19',
+            changes: [
+                'Wall View toolbar collapses to a single row on wide screens, freeing ~44px of vertical space — height is the scarce resource in Wall View, especially in fullscreen',
+                'The two rows were hard-coded via flex-direction:column, so this was a deliberate layout rather than wrapping caused by narrow space',
+                'The breakpoint is computed, not guessed: the controls plus tabs measure ~1187px with full Arabic labels, so the merge starts at 1150px with compacted labels and full labels return at 1400px',
+                'Between 1150 and 1399px the title is hidden and labels shrink — the active tab already shows where the user is, and "Exit fullscreen" alone costs ~160px',
+                'Narrow screens keep the two-row layout: seven controls cannot fit on one line there, and merging would produce worse wrapping than two tidy rows',
+            ]
+        },
         {
             version: '4.8.0',
             date: '2026-08-19',

@@ -290,6 +290,15 @@
         .wv-container { display:none;position:fixed;inset:0;z-index:3000;background:#eef2f7;flex-direction:column;overflow:hidden;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif; }
         .wv-container.wv-visible { display:flex; }
         /* Desktop: topbar is a column of two rows */
+        /* ── شريط الجدار: صفّ واحد على الشاشات الواسعة ────────
+           كان مثبّتاً على flex-direction:column، فالصفّان مقصودان
+           في التصميم لا ناتجان عن التفاف. على سطح المكتب يهدر ذلك
+           ~44px من الارتفاع — وهي مساحة ثمينة في عرض الجدار، حيث
+           الارتفاع هو المورد النادر، خصوصاً في ملء الشاشة.
+
+           الصفّان يبقيان على الشاشات الضيقة: هناك لا تتّسع الأدوات
+           السبع في سطر واحد أصلاً، ودمجها يُنتج التفافاً أسوأ من
+           الصفّين المرتّبين. */
         .wv-topbar {
             display:flex;flex-direction:column;
             background:#fff;border-bottom:1px solid #e2e8f0;
@@ -307,6 +316,60 @@
             gap:10px;
         }
         .wv-title { font-size:.95em;font-weight:700;color:#1e293b;margin:0;white-space:nowrap;flex:1; }
+
+        /* ≥1150px: ادمج الصفّين في شريط واحد.
+           العتبة محسوبة لا مقدَّرة: مجموع عرض العناصر بالعربية —
+           أطول اللغات الثلاث — يبلغ ~1187px بالتسميات الكاملة.
+           لذا يُدمج الصفّ من 1150px مع تقليص التسميات، ومن 1400px
+           تعود التسميات كاملة لأن المساحة تكفيها. */
+        @media (min-width:1150px) {
+            .wv-topbar {
+                flex-direction:row;
+                align-items:center;
+                gap:10px;
+                padding:0 14px;
+            }
+            .wv-topbar-row {
+                padding:7px 0;
+                border-bottom:none;
+            }
+            /* العنوان يتمدّد فيدفع التبويبات والأدوات إلى الطرفين */
+            .wv-topbar-row--nav {
+                flex:1;
+                min-width:0;
+                order:1;            /* العنوان والتبويبات أولاً */
+            }
+            .wv-topbar-row--controls {
+                flex-wrap:nowrap;   /* صفّ واحد صارم */
+                order:2;
+                flex-shrink:0;
+            }
+            /* العنوان لم يعد يحتاج flex:1 — الصفّ الحاوي يتكفّل */
+            .wv-topbar-row--nav .wv-title { flex:0 0 auto; }
+            .wv-topbar-row--nav .wv-view-tabs { margin-inline-start:auto; }
+        }
+
+        /* 1150–1399px: الصفّ مدموج لكن المساحة ضيّقة.
+           بدل التسميات الكاملة نُخفي نصّ الأزرار الثلاثة الطويلة
+           ونُبقي أيقوناتها — "إنهاء ملء الشاشة" وحدها تشغل ~160px.
+           العنوان يُخفى أيضاً: التبويب النشط يوضّح مكان المستخدم. */
+        @media (min-width:1150px) and (max-width:1399px) {
+            .wv-topbar .wv-title { display:none; }
+            .wv-topbar .wv-btn { padding:6px 9px;gap:0; }
+            .wv-topbar .wv-btn--exit { gap:4px; }
+            /* التسميات تُقلَّص بتصغير الخط لا بإخفائه: الأيقونات
+               محارف emoji مركّبة، و::first-letter لا يتعامل معها
+               بثبات عبر المتصفحات. التصغير يعمل دائماً ولا يخاطر
+               بإخفاء الأيقونة نفسها. */
+            .wv-topbar .wv-btn { font-size:.72em; }
+            .wv-topbar .wv-view-tab { padding:5px 10px;font-size:.75em; }
+            .wv-topbar-row { padding:6px 0;gap:6px; }
+        }
+
+        /* ≥1400px: مساحة وافرة — التسميات النصّية كاملة */
+        @media (min-width:1400px) {
+            .wv-topbar .wv-btn { padding:6px 13px; }
+        }
         .wv-view-tabs { display:flex;gap:4px;background:#f1f5f9;padding:3px;border-radius:9px;flex-shrink:0; }
         .wv-view-tab { padding:5px 13px;font-size:.8em;font-weight:600;border:none;border-radius:6px;cursor:pointer;background:transparent;color:#64748b;transition:all .15s;white-space:nowrap; }
         .wv-view-tab:hover { background:#e2e8f0;color:#1e293b; }
