@@ -97,32 +97,19 @@ html[data-theme="palette2"] {
 }
 
 /* ── Action-button overrides for Theme 2 & Theme 3 ────────────
-   Add Task / Add Duty / Add Section / Add Logo / Clear buttons
-   use fixed status colors (success/purple/danger) by default so
-   Theme 1 is untouched. Under palette1 & palette2 they switch to
-   the active palette so every action button reads as "on brand". */
-html[data-theme="palette1"] .btn-add,
-html[data-theme="palette1"] .btn-add-section-main,
-html[data-theme="palette1"] .cv-add-task,
-html[data-theme="palette1"] .cv-add-duty,
-html[data-theme="palette2"] .btn-add,
-html[data-theme="palette2"] .btn-add-section-main,
-html[data-theme="palette2"] .cv-add-task,
-html[data-theme="palette2"] .cv-add-duty {
-  background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-primary-deep) 100%);
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--brand-primary) 25%, transparent);
-}
-html[data-theme="palette1"] .btn-add:hover,
-html[data-theme="palette1"] .btn-add-section-main:hover,
-html[data-theme="palette1"] .cv-add-task:hover,
-html[data-theme="palette1"] .cv-add-duty:hover,
-html[data-theme="palette2"] .btn-add:hover,
-html[data-theme="palette2"] .btn-add-section-main:hover,
-html[data-theme="palette2"] .cv-add-task:hover,
-html[data-theme="palette2"] .cv-add-duty:hover {
-  background: linear-gradient(135deg, var(--brand-primary-deep) 0%, var(--brand-primary-deep) 100%);
-  box-shadow: 0 5px 15px color-mix(in srgb, var(--brand-primary) 40%, transparent);
-}
+   كتلة إعادة تلوين أزرار الإضافة حُذفت في v4.9.0.
+
+   كانت تفرض تدرّجاً أخضر على .btn-add و.cv-add-task و.cv-add-duty
+   ثم تستبدله بلون السمة تحت palette1/palette2. صارت زائدة: هذه
+   الأزرار تستخدم الآن var(--brand-primary-btn) مباشرةً، وهو
+   متغيّر يتبدّل مع السمة تلقائياً — فالتلوين يجري في مكان واحد
+   بدل ثلاثة.
+
+   الأهمّ أنها كانت ستتعارض: قواعد السمة هنا محدّدة بـ
+   html[data-theme=...] بوزن (0,2,1)، وكانت ستُعيد التدرّج الأخضر
+   عند اختيار Theme 2 أو 3 وتنقض التوحيد اللوني.
+
+   انظر قسم "TAB: DUTIES & TASKS" في نهاية components.css. */
 
 html[data-theme="palette1"] .btn-add-image,
 html[data-theme="palette2"] .btn-add-image {

@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.8.3';        // Semantic Versioning
+export const APP_VERSION  = '4.9.0';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-19';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,18 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.9.0',
+            date: '2026-08-19',
+            changes: [
+                'Duties & Tasks buttons harmonised in both card and table views — the tab was showing three loud colours at once (green add, filled red delete, pink clear) at sizes ranging from 8px to 14px of padding',
+                'Add buttons now use the toolbar brand colour instead of a green gradient, so they read as one family with the top bar; solid rather than gradient, matching the toolbar',
+                'Delete buttons adopt the quiet Clear style — pale background, red text, thin border — and fill with colour only on hover, so they stay visible to whoever wants them and stop competing with the task input fields',
+                'All action buttons share one size, which cuts visual noise more than the colour change alone',
+                'Removed the now-redundant Theme 2/3 add-button overrides from base.css: they forced a green gradient back at (0,2,1) specificity and would have undone the harmonisation, while the new rules follow --brand-primary-btn and track the theme automatically',
+                'Focus outlines kept explicit on both families, which matters more now that delete buttons are visually quieter',
+            ]
+        },
         {
             version: '4.8.3',
             date: '2026-08-19',

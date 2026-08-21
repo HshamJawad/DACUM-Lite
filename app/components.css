@@ -1281,3 +1281,119 @@ html[dir="rtl"] .sb-card-actions { padding: 0 3px 0 7px; }
   #updateBanner [data-ub="msg"] { flex: 1 1 auto !important; }
   #updateBanner [data-ub="now"] { margin-inline-start: 0 !important; }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   TAB: DUTIES & TASKS — تناسق بصري للأزرار  (v4.9.0)
+   ──────────────────────────────────────────────────────────────
+   المشكلة التي يعالجها هذا القسم:
+   كان التبويب يعرض ثلاثة ألوان صارخة في آن واحد — أخضر متدرّج
+   للإضافة، وأحمر ممتلئ للحذف، وأحمر أفتح للمسح — بأحجام متفاوتة
+   تصل إلى 14px حشواً رأسياً. النتيجة أن زر "حذف الواجب" يجذب
+   العين أكثر من حقل إدخال المهمة نفسه.
+
+   المبدأ المطبَّق: شدّة اللون تتبع تكرار الاستخدام لا خطورته.
+     • الإضافة  — الإجراء الأكثر تكراراً → لون العلامة التجارية
+                  (نفس أزرار الشريط العلوي، فتتوحّد اللغة البصرية)
+     • الحذف    — نادر ومدمّر → خلفية هادئة وحدّ رقيق، يتلوّن
+                  عند التحويم فقط. مرئي حين يُطلب، صامت وقتها.
+
+   هذا القسم في نهاية الملف عمداً: يجب أن يأتي بعد التعريفات
+   الأصلية ليتغلّب عليها دون رفع الانتقائية بمحدّدات معقّدة.
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── مقاس موحّد لكل أزرار التبويب ─────────────────────────────
+   الأزرار كانت تتراوح بين 8px و14px حشواً. التوحيد وحده يقلّل
+   التشتّت أكثر من أي تغيير لوني. */
+.btn-add,
+.btn-add-section-main,
+.cv-add-duty,
+.duty-header-actions .btn-remove,
+.duty-header-actions .btn-clear-section,
+.section-header-actions .btn-remove-section {
+  padding: 8px 16px !important;
+  font-size: 0.9em !important;
+  border-radius: 9px !important;
+  font-weight: 600;
+  gap: 6px;
+}
+
+/* ── أزرار الإضافة: لون العلامة التجارية بدل الأخضر ──────────
+   لون مصمت لا متدرّج: التدرّج يضيف وزناً بصرياً بلا معنى، وأزرار
+   الشريط العلوي مصمتة أصلاً — فالتوحيد يجعلهما يقرآن كعائلة
+   واحدة. */
+.btn-add,
+.btn-add-section-main,
+.cv-add-duty,
+.cv-add-task {
+  background: var(--brand-primary-btn) !important;
+  color: #fff !important;
+  border: 1px solid var(--brand-primary-btn) !important;
+}
+
+.btn-add:hover,
+.btn-add-section-main:hover,
+.cv-add-duty:hover,
+.cv-add-task:hover {
+  background: var(--brand-primary-deep) !important;
+  border-color: var(--brand-primary-deep) !important;
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--brand-primary-btn) 32%, transparent) !important;
+}
+
+/* ── أزرار الحذف: نمط "مسح" الهادئ ────────────────────────────
+   يرث .btn-clear-section مظهره: خلفية وردية باهتة، نصّ أحمر،
+   حدّ رقيق. يمتلئ باللون عند التحويم فقط — فيبقى واضحاً لمن
+   يقصده، وغير جاذب لمن لا يقصده. */
+.duty-header-actions .btn-remove,
+.section-header-actions .btn-remove-section,
+.task-item .btn-remove,
+.cv-delete-task,
+.cv-delete-duty {
+  background: #fdeeee !important;
+  color: #dc2626 !important;
+  border: 1.5px solid #f9d2d2 !important;
+  box-shadow: none !important;
+}
+
+.duty-header-actions .btn-remove:hover,
+.section-header-actions .btn-remove-section:hover,
+.task-item .btn-remove:hover,
+.cv-delete-task:hover,
+.cv-delete-duty:hover {
+  background: #dc2626 !important;
+  color: #fff !important;
+  border-color: #dc2626 !important;
+  box-shadow: 0 3px 10px rgba(220, 38, 38, 0.25) !important;
+}
+
+/* أزرار سلة المهملات المربّعة تحتفظ بمقاسها — تغييره يكسر
+   محاذاتها مع حقل الإدخال المجاور. اللون وحده هو ما يتغيّر. */
+.task-item .btn-remove {
+  padding: 0 !important;
+  border-radius: 10px !important;
+}
+
+/* ── عرض البطاقات: أزرار الحذف الدائرية ──────────────────────
+   دائرية ومصغّرة، فتحتاج ضبطاً مستقلاً للحدّ حتى لا يبتلع
+   الأيقونة. */
+.cv-delete-task,
+.cv-delete-duty {
+  border-width: 1px !important;
+}
+
+/* ── حالة التركيز: تبقى ظاهرة في كل الحالات ──────────────────
+   لأن أزرار الحذف صارت هادئة، فمؤشّر التركيز يصير أهمّ لا أقلّ
+   أهمية — هو ما يخبر مستخدم لوحة المفاتيح بموقعه. */
+.btn-add:focus-visible,
+.btn-add-section-main:focus-visible,
+.cv-add-duty:focus-visible,
+.cv-add-task:focus-visible {
+  outline: 2px solid var(--brand-primary-deep);
+  outline-offset: 2px;
+}
+.duty-header-actions .btn-remove:focus-visible,
+.task-item .btn-remove:focus-visible,
+.cv-delete-task:focus-visible,
+.cv-delete-duty:focus-visible {
+  outline: 2px solid #dc2626;
+  outline-offset: 2px;
+}
