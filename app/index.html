@@ -41,11 +41,20 @@
     <!-- ── v3.1 Additions ────────────────────────────────────── -->
     <style>
         /* ── Sidebar brand ───────────────────────────────────── */
-        .sb-brand { display:flex;align-items:center;gap:10px;padding:14px 12px;border-bottom:1px solid rgba(255,255,255,.06);flex-shrink:0;user-select:none;overflow:hidden; }
-        .sb-brand-logo { width:32px;height:32px;background:linear-gradient(135deg,var(--brand-primary),var(--brand-secondary));border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;box-shadow:0 2px 8px color-mix(in srgb, var(--brand-primary) 35%, transparent); }
-        .sb-brand-text { display:flex;flex-direction:column;gap:1px;line-height:1.15;flex:1;min-width:0;transition:opacity .2s,width .2s; }
+        /* v4.9.1 — the brand row is a SINGLE non-wrapping line whose
+           height never changes between the open and mini states, so the
+           collapse button can never be pushed onto a second row. */
+        .sb-brand {
+            display:flex;align-items:center;gap:10px;
+            flex-wrap:nowrap;                      /* never break the row */
+            padding:12px;box-sizing:border-box;
+            min-height:56px;height:56px;           /* identical in both states */
+            border-bottom:1px solid rgba(255,255,255,.06);
+            flex-shrink:0;user-select:none;overflow:hidden;
+            transition:padding .2s;
+        }
+        .sb-brand-text { display:flex;flex-direction:column;gap:1px;line-height:1.15;flex:1 1 auto;min-width:0;transition:opacity .2s,width .2s; }
         .sb-brand-name { font-size:15px;font-weight:700;color:#e2e8f0;letter-spacing:-0.2px;white-space:nowrap; }
-        .sb-brand-tagline { font-size:10px;color:#475569;font-weight:500;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap; }
 
         /* ── Sidebar collapse button (Claude-style) ──────────── */
         .sb-collapse-btn {
@@ -72,7 +81,7 @@
         body.sb-sidebar-closed #sidebar {
             width:60px;
         }
-        body.sb-sidebar-closed .sb-brand-text       { opacity:0;width:0;pointer-events:none; }
+        body.sb-sidebar-closed .sb-brand-text       { opacity:0;flex:0 0 0;width:0;overflow:hidden;pointer-events:none; }
         body.sb-sidebar-closed .sb-section-label    { opacity:0;height:0;padding:0;overflow:hidden; }
         body.sb-sidebar-closed .sb-nav-label        { opacity:0;width:0;overflow:hidden;pointer-events:none; }
         body.sb-sidebar-closed .sb-nav-item         { justify-content:center;padding:11px 0;border-left-color:transparent !important; }
@@ -86,17 +95,17 @@
         /* Mini mode: collapse btn stays visible, flips to point right (expand) */
         body.sb-sidebar-closed .sb-collapse-btn {
             transform: scaleX(-1);
-            margin-left: auto;
-            margin-right: auto;
+            margin: 0;                              /* auto margins caused drift */
         }
-        /* In mini mode the brand row centers just logo + flipped btn */
+        /* In mini mode the brand row holds ONLY the flipped button.
+           flex-wrap MUST stay nowrap — the old `wrap` is what dropped the
+           button onto a second line inside the 60px rail. */
         body.sb-sidebar-closed .sb-brand {
             justify-content: center;
-            flex-wrap: wrap;
-            gap: 6px;
+            flex-wrap: nowrap;
+            gap: 0;
             padding: 12px 0;
         }
-        body.sb-sidebar-closed .sb-brand-logo { margin: 0; }
 
         /* Mini mode: show a thin expand-hint strip at bottom of nav icons */
         body.sb-sidebar-closed .sb-mini-expand-hint { display:flex !important; }
@@ -585,7 +594,7 @@
         html[dir="rtl"] .sb-collapse-btn svg { transform:scaleX(-1); }
         html[dir="rtl"] body.sb-sidebar-closed .sb-collapse-btn {
             transform:scaleX(1);
-            margin-left:0;margin-right:auto;
+            margin:0;
         }
 
         /* Section border accent: flip left → right */
@@ -876,10 +885,8 @@
 
     <!-- Brand / App Identity -->
     <div class="sb-brand">
-        <div class="sb-brand-logo">📊</div>
         <div class="sb-brand-text">
             <span class="sb-brand-name">DACUM Lite</span>
-            <span class="sb-brand-tagline" data-i18n="sidebar.brandTagline">Chart Generator</span>
         </div>
         <!-- Collapse / Expand button — always visible -->
         <button class="sb-collapse-btn" id="sbCollapseBtn" onclick="pmToggleSidebar()" title="Toggle sidebar" aria-label="Toggle sidebar">

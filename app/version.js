@@ -27,8 +27,8 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.9.0';        // Semantic Versioning
-export const APP_RELEASED = '2026-08-19';   // ISO 8601 (YYYY-MM-DD)
+export const APP_VERSION  = '4.9.1';        // Semantic Versioning
+export const APP_RELEASED = '2026-08-25';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
 // index.html registers  ./sw.js?v=<APP_VERSION>  and sw.js rebuilds
@@ -55,6 +55,20 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.9.1',
+            date: '2026-08-25',
+            changes: [
+                'Sidebar collapse button no longer drops to a second line when the sidebar is collapsed — it stays on the same row it occupies when the sidebar is open',
+                'Root cause (a regression that returned after later edits): the mini-mode rule set flex-wrap:wrap on .sb-brand, and the 32px logo plus 6px gap plus the 28px button measured 66px inside a 60px rail, so the button had no choice but to wrap',
+                'The mini-mode brand row is now flex-wrap:nowrap with gap:0, and the auto left/right margins on the button were replaced with margin:0 — auto margins inside a centred row were a second source of drift',
+                '.sb-brand is now locked to a fixed 56px height with box-sizing:border-box in both states, so collapsing no longer shifts the navigation list vertically',
+                'Removed the 📊 logo tile beside the DACUM Lite title and the secondary tagline under it, for a quieter brand row',
+                'sidebar.brandTagline stays in translations.js for all three languages although no element consumes it now, so nothing breaks if the line is restored later',
+                'RTL mini mode audited alongside LTR: the button keeps its position on the right-hand rail',
+                'Version bumped so CACHE_VERSION changes and the service worker purges the stale shell for existing PWA installs',
+            ]
+        },
         {
             version: '4.9.0',
             date: '2026-08-19',
