@@ -1,9 +1,18 @@
 // ============================================================
 // word-settings.js — Word (.docx) Export Appearance Settings
 //
-// Scope: this module controls the LOOK OF THE EXPORTED .docx
-// FILE ONLY. It never touches the tool's own interface, the PDF
-// export, project data, or any language-specific behaviour.
+// Scope: this module controls the LOOK OF THE EXPORTED FILES.
+// It never touches the tool's own interface, project data, or
+// any language-specific behaviour.
+//
+//   Colours → applied to BOTH the .docx and the .pdf export.
+//   Sizes   → applied to the .docx export ONLY. The PDF is a
+//             hand-laid-out landscape chart whose row heights,
+//             cell padding and page-break maths are all derived
+//             from a fixed 5.5mm line height; raising the font
+//             there overlaps lines and spills text past the page
+//             edge. Sizes stay Word-only until that geometry is
+//             made size-aware, which is a separate job.
 //
 // The settings are global to the tool (one localStorage key),
 // shared by all three languages, and applied identically to
@@ -15,6 +24,8 @@
 //   saveWordSettings(obj)  → merge + persist
 //   resetWordSettings()    → back to WORD_DEFAULTS
 //   contrastText(hex)      → '000000' | 'FFFFFF' for that fill
+//   hexToRgb(hex)          → { r, g, b }
+//   tintHex(hex, alpha)    → hex of that colour at `alpha` over white
 //   initWordSettings()     → wire the sidebar button (once)
 //   openWordSettings()     → open the modal
 //   closeWordSettings()    → close the modal
@@ -89,6 +100,37 @@ export function contrastText(hex) {
 }
 
 // ══════════════════════════════════════════════════════════════
+//  hexToRgb / tintHex
+//
+//  jsPDF takes colours as three 0–255 channels, not hex, so the
+//  PDF export needs the split form. tintHex composites a colour
+//  over white at the given alpha — jsPDF has no alpha channel, so
+//  a lighter shade has to be computed rather than requested.
+// ══════════════════════════════════════════════════════════════
+export function hexToRgb(hex) {
+    const h = _validHex(hex, '000000');
+    return {
+        r: parseInt(h.substr(0, 2), 16),
+        g: parseInt(h.substr(2, 2), 16),
+        b: parseInt(h.substr(4, 2), 16)
+    };
+}
+
+export function tintHex(hex, alpha) {
+    const { r, g, b } = hexToRgb(hex);
+    const mix = (c) => Math.round(c * alpha + 255 * (1 - alpha));
+    return [mix(r), mix(g), mix(b)]
+        .map(c => c.toString(16).padStart(2, '0'))
+        .join('')
+        .toUpperCase();
+}
+
+/* The duties banner in the PDF is drawn at this alpha over white so
+   it reads as a lighter relative of the duty header bands beneath
+   it, rather than a second solid block of the same colour. */
+export const BANNER_ALPHA = 0.7;
+
+// ══════════════════════════════════════════════════════════════
 //  Read / write
 //
 //  Every field is validated on the way out, not on the way in, so
@@ -157,47 +199,89 @@ function _swatchRow(group, selected) {
     }).join('');
 }
 
+function _badges(list) {
+    return '<span class="ws-badges">' +
+        list.map(b => `<span class="ws-badge ws-badge--${b}">${b === 'word' ? 'Word' : 'PDF'}</span>`).join('') +
+        '</span>';
+}
+
 function _render() {
     const el = document.getElementById(MODAL_ID);
     if (!el) return;
     const s = _draft;
+    const bannerHex = tintHex(s.tableHeaderFill, BANNER_ALPHA);
+
     el.querySelector('.ws-body').innerHTML = `
         <p class="ws-note">${t('settings.scopeNote')}</p>
 
-        <div class="ws-field">
-            <label class="ws-label" for="wsTitleSize">${t('settings.titleSize')}</label>
-            ${_sizeSelect('wsTitleSize', s.titleSize)}
-        </div>
-        <div class="ws-field">
-            <label class="ws-label" for="wsHeadingSize">${t('settings.headingSize')}</label>
-            ${_sizeSelect('wsHeadingSize', s.headingSize)}
-        </div>
-        <div class="ws-field">
-            <label class="ws-label" for="wsBodySize">${t('settings.bodySize')}</label>
-            ${_sizeSelect('wsBodySize', s.bodySize)}
-        </div>
+        <!-- ── Colours: both formats ──────────────────────── -->
+        <section class="ws-section">
+            <h4 class="ws-section-title">
+                <span>${t('settings.groupColors')}</span>
+                ${_badges(['word', 'pdf'])}
+            </h4>
 
-        <div class="ws-group">
-            <div class="ws-label">${t('settings.headingColor')}</div>
-            <div class="ws-swatches">${_swatchRow('headingColor', s.headingColor)}</div>
-        </div>
+            <div class="ws-group">
+                <div class="ws-label">${t('settings.headingColor')}</div>
+                <div class="ws-swatches">${_swatchRow('headingColor', s.headingColor)}</div>
+            </div>
 
-        <div class="ws-group">
-            <div class="ws-label">${t('settings.tableHeaderFill')}</div>
-            <div class="ws-swatches">${_swatchRow('tableHeaderFill', s.tableHeaderFill)}</div>
-            <p class="ws-hint">${t('settings.contrastNote')}</p>
-        </div>
+            <div class="ws-group">
+                <div class="ws-label">${t('settings.tableHeaderFill')}</div>
+                <div class="ws-swatches">${_swatchRow('tableHeaderFill', s.tableHeaderFill)}</div>
+                <p class="ws-hint">${t('settings.contrastNote')}</p>
+                <p class="ws-hint">${t('settings.bannerNote')}</p>
+            </div>
+        </section>
 
-        <div class="ws-preview">
-            <div class="ws-preview-title"
-                 style="color:#${s.headingColor};font-size:${s.titleSize}pt">${t('settings.previewTitle')}</div>
-            <div class="ws-preview-heading"
-                 style="color:#${s.headingColor};font-size:${s.headingSize}pt">${t('settings.previewHeading')}</div>
-            <div class="ws-preview-th"
-                 style="background:#${s.tableHeaderFill};color:#${contrastText(s.tableHeaderFill)};font-size:${s.headingSize}pt">${t('settings.previewTableHeader')}</div>
-            <div class="ws-preview-body"
-                 style="font-size:${s.bodySize}pt">${t('settings.previewBody')}</div>
-        </div>
+        <!-- ── Sizes: Word only ───────────────────────────── -->
+        <section class="ws-section">
+            <h4 class="ws-section-title">
+                <span>${t('settings.groupSizes')}</span>
+                ${_badges(['word'])}
+            </h4>
+
+            <div class="ws-field">
+                <label class="ws-label" for="wsTitleSize">${t('settings.titleSize')}</label>
+                ${_sizeSelect('wsTitleSize', s.titleSize)}
+            </div>
+            <div class="ws-field">
+                <label class="ws-label" for="wsHeadingSize">${t('settings.headingSize')}</label>
+                ${_sizeSelect('wsHeadingSize', s.headingSize)}
+            </div>
+            <div class="ws-field">
+                <label class="ws-label" for="wsBodySize">${t('settings.bodySize')}</label>
+                ${_sizeSelect('wsBodySize', s.bodySize)}
+            </div>
+            <p class="ws-hint ws-hint--why">${t('settings.sizeScopeNote')}</p>
+        </section>
+
+        <!-- ── Preview ────────────────────────────────────── -->
+        <section class="ws-section">
+            <h4 class="ws-section-title"><span>${t('settings.preview')}</span></h4>
+
+            <div class="ws-preview">
+                <div class="ws-preview-tag">Word</div>
+                <div class="ws-preview-title"
+                     style="color:#${s.headingColor};font-size:${s.titleSize}pt">${t('settings.previewTitle')}</div>
+                <div class="ws-preview-heading"
+                     style="color:#${s.headingColor};font-size:${s.headingSize}pt">${t('settings.previewHeading')}</div>
+                <div class="ws-preview-th"
+                     style="background:#${s.tableHeaderFill};color:#${contrastText(s.tableHeaderFill)};font-size:${s.headingSize}pt">${t('settings.previewTableHeader')}</div>
+                <div class="ws-preview-body"
+                     style="font-size:${s.bodySize}pt">${t('settings.previewBody')}</div>
+            </div>
+
+            <div class="ws-preview">
+                <div class="ws-preview-tag">PDF</div>
+                <div class="ws-preview-banner"
+                     style="background:#${bannerHex};color:#${contrastText(bannerHex)}">${t('settings.previewHeading2')}</div>
+                <div class="ws-preview-th"
+                     style="background:#${s.tableHeaderFill};color:#${contrastText(s.tableHeaderFill)}">${t('settings.previewTableHeader')}</div>
+                <div class="ws-preview-body">${t('settings.previewBody')}</div>
+                <div class="ws-preview-heading" style="color:#${s.headingColor};margin-top:8px">${t('settings.previewHeading')}</div>
+            </div>
+        </section>
     `;
 
     el.querySelectorAll('.ws-select').forEach(sel => {

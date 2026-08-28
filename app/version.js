@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.10.0';        // Semantic Versioning
+export const APP_VERSION  = '4.11.0';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-25';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,21 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.11.0',
+            date: '2026-08-28',
+            changes: [
+                'The heading colour and table header colour now apply to the PDF export as well, so both formats carry the same visual identity: the PDF chart title, Produced For/By labels, occupation and job labels, section titles and column headings take the heading colour, the duty header bands take the header colour, and the Duties and Tasks banner takes a lighter 70% shade of it',
+                'Text drawn on the coloured bands is set to white or black from the same WCAG luminance calculation the Word export uses, computed separately for the banner because its lighter shade can flip the verdict',
+                'This matters most in Arabic: setBoldFont falls back to the regular face because the embedded Arabic TTF carries no bold, so Arabic PDF headings were never actually bold — colour restores the distinction they had been missing',
+                'Not one millimetre of the PDF geometry was touched. lineH12, minRowH, minHdrH, the padding constants, the banner rectangle height and every page-break comparison are byte-identical, because they are hand-calculated for a fixed line height and reading a font size into them would overlap lines and push text past the page edge',
+                'Font sizes therefore stay Word-only, and the modal now says so with the reason rather than just disabling the controls',
+                'The settings modal is reorganised into labelled Colours and Font sizes sections, each tagged with the formats it affects, instead of a radio switch — colours apply to both formats in every case, so a pick-one control would have described the wrong situation and added a stored preference that changed no output',
+                'The preview pane now shows a Word sample and a PDF sample side by side, including the lighter banner shade, so the effect of a colour is visible before exporting',
+                'jsPDF has no alpha channel, so the banner shade is composited over white in advance rather than requested as transparency',
+                'setTextColor is sticky in jsPDF, so every coloured heading is followed by an explicit reset to black and no colour leaks into the body text beneath it',
+            ]
+        },
         {
             version: '4.10.0',
             date: '2026-08-28',

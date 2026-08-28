@@ -16,7 +16,7 @@ import { saveToLocalStorage, loadFromLocalStorage } from './storage.js';
 import { Renderer } from './renderer.js';
 import { showStatus } from './design-system.js';
 import { exportProject, importProject } from './fileEngine.js';
-import { getWordSettings, contrastText } from './word-settings.js';
+import { getWordSettings, contrastText, hexToRgb, tintHex, BANNER_ALPHA } from './word-settings.js';
 
 
 /* ══════════════════════════════════════════════════════════════
@@ -1191,6 +1191,27 @@ export async function exportToPDF() {
 
         const RTL = isArabic && !!arabicFontName;
 
+        // ── Colour settings (shared with the Word export) ─────────
+        // Colours only: not one millimetre of the geometry below is
+        // read from settings. Row heights, cell padding and the page
+        // break maths all still derive from the fixed lineH12, so the
+        // layout is bit-for-bit what it was.
+        const _pws     = getWordSettings();
+        const _hcRgb   = hexToRgb(_pws.headingColor);
+        const _hdrRgb  = hexToRgb(_pws.tableHeaderFill);
+        const _hdrTxt  = hexToRgb(contrastText(_pws.tableHeaderFill));
+        /* jsPDF has no alpha channel, so the lighter banner shade is
+           composited over white up front rather than requested. */
+        const _bnrHex  = tintHex(_pws.tableHeaderFill, BANNER_ALPHA);
+        const _bnrRgb  = hexToRgb(_bnrHex);
+        const _bnrTxt  = hexToRgb(contrastText(_bnrHex));
+
+        /* setTextColor is sticky in jsPDF — every heading sets it and
+           every body run puts it back, so no colour ever leaks into
+           the block after it. */
+        const hcOn  = () => pdf.setTextColor(_hcRgb.r,  _hcRgb.g,  _hcRgb.b);
+        const blk   = () => pdf.setTextColor(0, 0, 0);
+
         // ── Font helpers ──────────────────────────────────────────
         const setBodyFont = () => {
             if (arabicFontName) pdf.setFont(arabicFontName, 'normal');
@@ -1275,9 +1296,10 @@ export async function exportToPDF() {
         // ══════════════════════════════════════════════════════════
         //  TITLE PAGE
         // ══════════════════════════════════════════════════════════
-        pdf.setFontSize(18); setBoldFont();
+        pdf.setFontSize(18); setBoldFont(); hcOn();
         pdf.text(prep(t('pdf.chartTitle', { title: occupationTitleInput.value })),
                  pageWidth / 2, yPos, opts('center'));
+        blk();
         yPos += 18;
 
         // In Arabic the identity column sits on the right and the
@@ -1290,8 +1312,8 @@ export async function exportToPDF() {
         let infoY = yPos, occY = yPos;
 
         if (producedForInput.value) {
-            pdf.setFontSize(16); setBoldFont();
-            drawText(t('pdf.producedFor'), infoX, halfW, infoY, 0); infoY += 8;
+            pdf.setFontSize(16); setBoldFont(); hcOn();
+            drawText(t('pdf.producedFor'), infoX, halfW, infoY, 0); blk(); infoY += 8;
             if (producedForImage) {
                 try { pdf.addImage(producedForImage, 'JPEG', imgX(infoX), infoY, 30, 20); infoY += 24; } catch (e) {}
             }
@@ -1299,8 +1321,8 @@ export async function exportToPDF() {
             drawText(producedForInput.value, infoX, halfW, infoY, 0); infoY += 16;
         }
         if (producedByInput.value) {
-            pdf.setFontSize(16); setBoldFont();
-            drawText(t('pdf.producedBy'), infoX, halfW, infoY, 0); infoY += 8;
+            pdf.setFontSize(16); setBoldFont(); hcOn();
+            drawText(t('pdf.producedBy'), infoX, halfW, infoY, 0); blk(); infoY += 8;
             if (producedByImage) {
                 try { pdf.addImage(producedByImage, 'JPEG', imgX(infoX), infoY, 30, 20); infoY += 24; } catch (e) {}
             }
@@ -1312,15 +1334,15 @@ export async function exportToPDF() {
             drawText(dacumDateFormatted, infoX, halfW, infoY, 0);
         }
 
-        pdf.setFontSize(14); setBoldFont();
-        drawText(t('pdf.occupationTitle'), occX, halfW, occY, 0); occY += 7;
+        pdf.setFontSize(14); setBoldFont(); hcOn();
+        drawText(t('pdf.occupationTitle'), occX, halfW, occY, 0); blk(); occY += 7;
         setBodyFont(); pdf.setFontSize(13);
         const occupationLines = wrap(occupationTitleInput.value, halfW - 3);
         drawLines(occupationLines, occX, halfW, occY, 3);
         occY += occupationLines.length * lineH12 + 8;
 
-        pdf.setFontSize(14); setBoldFont();
-        drawText(t('pdf.jobTitle'), occX, halfW, occY, 0); occY += 7;
+        pdf.setFontSize(14); setBoldFont(); hcOn();
+        drawText(t('pdf.jobTitle'), occX, halfW, occY, 0); blk(); occY += 7;
         setBodyFont(); pdf.setFontSize(13);
         drawLines(wrap(jobTitleInput.value, halfW - 3), occX, halfW, occY, 3);
 
@@ -1344,10 +1366,12 @@ export async function exportToPDF() {
                                   : (margin + i * cellW);
 
         const drawBanner = (key) => {
-            pdf.setFillColor(200, 200, 200);
+            pdf.setFillColor(_bnrRgb.r, _bnrRgb.g, _bnrRgb.b);
             pdf.rect(margin, yPos, chartWidth, 10, 'FD');
             pdf.setFontSize(14); setBoldFont();
+            pdf.setTextColor(_bnrTxt.r, _bnrTxt.g, _bnrTxt.b);
             pdf.text(prep(t(key)), pageWidth / 2, yPos + 7, opts('center'));
+            blk();
             yPos += 10;
         };
 
@@ -1357,10 +1381,12 @@ export async function exportToPDF() {
             const label = t('pdf.dutyLabel', { letter, title }) + (cont ? ' …' : '');
             const lines = wrap(label, chartWidth - (cellPadX * 2));
             const h = Math.max(minHdrH, cellPadTop + lines.length * lineH12 + cellPadBot);
-            pdf.setFillColor(220, 220, 220);
+            pdf.setFillColor(_hdrRgb.r, _hdrRgb.g, _hdrRgb.b);
             pdf.rect(margin, yPos, chartWidth, h, 'FD');
             pdf.setFontSize(12); setBoldFont();
+            pdf.setTextColor(_hdrTxt.r, _hdrTxt.g, _hdrTxt.b);
             drawLines(lines, margin, chartWidth, yPos + cellPadTop, cellPadX);
+            blk();
             yPos += h;
         };
 
@@ -1435,14 +1461,15 @@ export async function exportToPDF() {
         const bt = document.getElementById('behaviorsInput').value.trim();
         if (kt || st || bt) {
             pdf.addPage('a4', 'landscape'); yPos = margin + 5;
-            pdf.setFontSize(14); setBoldFont();
+            pdf.setFontSize(14); setBoldFont(); hcOn();
             pdf.text(prep(t('pdf.generalKnowledge')), pageWidth / 2, yPos, opts('center'));
+            blk();
             yPos += 10;
 
             const tw = chartWidth / 3;
             const pdfSection = (text, heading, x, yRef) => {
-                pdf.setFontSize(13); setBoldFont();
-                drawText(heading, x, tw, yRef, 2); yRef += 8;
+                pdf.setFontSize(13); setBoldFont(); hcOn();
+                drawText(heading, x, tw, yRef, 2); blk(); yRef += 8;
                 pdf.setFontSize(11); setBodyFont();
                 text.split('\n').filter(l => l.trim()).forEach(item => {
                     const lines = wrap(item.trim().replace(/^[•\-*]\s*/, ''), tw - 4);
@@ -1465,8 +1492,8 @@ export async function exportToPDF() {
             pdf.addPage('a4', 'landscape'); yPos = margin + 5;
             const hw = chartWidth / 2;
             const listBlock = (items, heading, x, yRef) => {
-                pdf.setFontSize(13); setBoldFont();
-                drawText(heading, x, hw, yRef, 2); yRef += 8;
+                pdf.setFontSize(13); setBoldFont(); hcOn();
+                drawText(heading, x, hw, yRef, 2); blk(); yRef += 8;
                 pdf.setFontSize(11); setBodyFont();
                 items.forEach(item => {
                     const lines = wrap(item.trim().replace(/^[•\-*]\s*/, ''), hw - 8);
@@ -1483,8 +1510,8 @@ export async function exportToPDF() {
         // ══════════════════════════════════════════════════════════
         const singleColumnPage = (heading, raw) => {
             pdf.addPage('a4', 'landscape'); yPos = margin + 5;
-            pdf.setFontSize(13); setBoldFont();
-            drawText(heading, margin, chartWidth, yPos, 2); yPos += 8;
+            pdf.setFontSize(13); setBoldFont(); hcOn();
+            drawText(heading, margin, chartWidth, yPos, 2); blk(); yPos += 8;
             pdf.setFontSize(11); setBodyFont();
             raw.split('\n').filter(l => l.trim()).forEach(item => {
                 const lines = wrap(item.trim().replace(/^[•\-*]\s*/, ''), chartWidth - 4);
