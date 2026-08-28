@@ -16,6 +16,7 @@ import { saveToLocalStorage, loadFromLocalStorage } from './storage.js';
 import { Renderer } from './renderer.js';
 import { showStatus } from './design-system.js';
 import { exportProject, importProject } from './fileEngine.js';
+import { getWordSettings, contrastText } from './word-settings.js';
 
 
 /* ══════════════════════════════════════════════════════════════
@@ -934,6 +935,24 @@ export async function exportToWord() {
            cell renders as a solid BLACK bar with the fill never shown.
            CLEAR means "no pattern", which is what lets w:fill through. */
 
+        /* ── Appearance settings (Word export only) ────────────
+           Read from localStorage on every export, so a change in
+           the Settings modal applies to the next export with no
+           reload. docx stores half-points, hence the ×2. The
+           defaults reproduce the sizes and the E8E8E8 shading this
+           export has always used, so an untouched install exports
+           exactly as before. */
+        const _ws        = getWordSettings();
+        const SZ_TITLE   = _ws.titleSize   * 2;
+        const SZ_HEADING = _ws.headingSize * 2;
+        const SZ_BODY    = _ws.bodySize    * 2;
+        const C_HEADING  = _ws.headingColor;
+        const C_TH_FILL  = _ws.tableHeaderFill;
+        /* Shaded header cells ignore C_HEADING on purpose: a heading
+           colour picked to read on a white page has no reason to be
+           readable on a coloured fill. */
+        const C_TH_TEXT  = contrastText(C_TH_FILL);
+
         /* Every run and shorthand paragraph below is built through these,
            so Arabic carries <w:lang> without touching each call site. */
         const TextRun   = _withArabicLang(_TextRun);
@@ -958,12 +977,12 @@ export async function exportToWord() {
         const children = [];
 
         // Title page
-        children.push(new Paragraph({ children: [new TextRun({ text: t('word.occupationTitle', { title: occupationTitle }), bold: true, size: 28 })], spacing: { after: 200 }, bidirectional: _rtl() }));
-        children.push(new Paragraph({ children: [new TextRun({ text: t('word.jobTitle', { title: jobTitle }), bold: true, size: 28 })], spacing: { after: 200 }, bidirectional: _rtl() }));
-        if (dacumDate) children.push(new Paragraph({ children: [new TextRun({ text: t('word.dacumDate', { date: dacumDate }), bold: true, size: 24 })], spacing: { after: 200 }, bidirectional: _rtl() }));
+        children.push(new Paragraph({ children: [new TextRun({ text: t('word.occupationTitle', { title: occupationTitle }), bold: true, size: SZ_TITLE, color: C_HEADING })], spacing: { after: 200 }, bidirectional: _rtl() }));
+        children.push(new Paragraph({ children: [new TextRun({ text: t('word.jobTitle', { title: jobTitle }), bold: true, size: SZ_TITLE, color: C_HEADING })], spacing: { after: 200 }, bidirectional: _rtl() }));
+        if (dacumDate) children.push(new Paragraph({ children: [new TextRun({ text: t('word.dacumDate', { date: dacumDate }), bold: true, size: SZ_BODY })], spacing: { after: 200 }, bidirectional: _rtl() }));
 
         if (producedFor) {
-            children.push(new Paragraph({ children: [new TextRun({ text: t('word.producedFor', { name: producedFor }), bold: true, size: 24 })], spacing: { after: 200 }, bidirectional: _rtl() }));
+            children.push(new Paragraph({ children: [new TextRun({ text: t('word.producedFor', { name: producedFor }), bold: true, size: SZ_BODY })], spacing: { after: 200 }, bidirectional: _rtl() }));
             if (producedForImage) {
                 try {
                     const base64Data = producedForImage.split(',')[1];
@@ -973,7 +992,7 @@ export async function exportToWord() {
         }
 
         if (producedBy) {
-            children.push(new Paragraph({ children: [new TextRun({ text: t('word.producedBy', { name: producedBy }), bold: true, size: 24 })], spacing: { after: 200 }, bidirectional: _rtl() }));
+            children.push(new Paragraph({ children: [new TextRun({ text: t('word.producedBy', { name: producedBy }), bold: true, size: SZ_BODY })], spacing: { after: 200 }, bidirectional: _rtl() }));
             if (producedByImage) {
                 try {
                     const base64Data = producedByImage.split(',')[1];
@@ -985,7 +1004,7 @@ export async function exportToWord() {
         }
 
         // Duties and tasks — read from central AppState (works in any view)
-        children.push(new Paragraph({ children: [new PageBreak(), new TextRun({ text: t('word.dutiesAndTasks'), bold: true, size: 28 })], alignment: AlignmentType.CENTER, spacing: { after: 300 }, bidirectional: _rtl() }));
+        children.push(new Paragraph({ children: [new PageBreak(), new TextRun({ text: t('word.dutiesAndTasks'), bold: true, size: SZ_TITLE, color: C_HEADING })], alignment: AlignmentType.CENTER, spacing: { after: 300 }, bidirectional: _rtl() }));
 
         const duties = AppState.duties.map(d => ({
             duty:  d.title,
@@ -999,7 +1018,7 @@ export async function exportToWord() {
             const numTaskRows = Math.ceil(dutyData.tasks.length / tasksPerRow);
             const tableRows = [];
 
-            tableRows.push(new TableRow({ children: [new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: dutyLabel, bold: true, size: 24 })], bidirectional: _rtl() })], columnSpan: 4, shading: { fill: 'E8E8E8', type: ShadingType.CLEAR }, width: { size: 100, type: WidthType.PERCENTAGE } })] }));
+            tableRows.push(new TableRow({ children: [new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: dutyLabel, bold: true, size: SZ_HEADING, color: C_TH_TEXT })], bidirectional: _rtl() })], columnSpan: 4, shading: { fill: C_TH_FILL, type: ShadingType.CLEAR }, width: { size: 100, type: WidthType.PERCENTAGE } })] }));
 
             for (let row = 0; row < numTaskRows; row++) {
                 const rowCells = [];
@@ -1007,7 +1026,7 @@ export async function exportToWord() {
                     const ti = row * tasksPerRow + col;
                     if (ti < dutyData.tasks.length) {
                         const tLabel = t('word.taskLabel', { letter, n: ti + 1, text: dutyData.tasks[ti] });
-                        rowCells.push(new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: tLabel, size: 24 })], bidirectional: _rtl() })], width: { size: 25, type: WidthType.PERCENTAGE } }));
+                        rowCells.push(new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: tLabel, size: SZ_BODY })], bidirectional: _rtl() })], width: { size: 25, type: WidthType.PERCENTAGE } }));
                     } else {
                         rowCells.push(new TableCell({ children: [new Paragraph('')], width: { size: 25, type: WidthType.PERCENTAGE } }));
                     }
@@ -1019,7 +1038,7 @@ export async function exportToWord() {
         });
 
         // Additional info
-        children.push(new Paragraph({ children: [new PageBreak(), new TextRun({ text: t('word.additionalInfo'), bold: true, size: 24 })], spacing: { after: 300 }, bidirectional: _rtl() }));
+        children.push(new Paragraph({ children: [new PageBreak(), new TextRun({ text: t('word.additionalInfo'), bold: true, size: SZ_HEADING, color: C_HEADING })], spacing: { after: 300 }, bidirectional: _rtl() }));
 
         const additionalInfoSections = [
             { heading1: document.getElementById('knowledgeHeading').textContent, content1: document.getElementById('knowledgeInput').value.trim(), heading2: document.getElementById('behaviorsHeading').textContent, content2: document.getElementById('behaviorsInput').value.trim() },
@@ -1028,20 +1047,20 @@ export async function exportToWord() {
             { heading1: document.getElementById('acronymsHeading').textContent,  content1: document.getElementById('acronymsInput').value.trim(),  heading2: document.getElementById('careerPathHeading').textContent, content2: document.getElementById('careerPathInput').value.trim() }
         ];
 
-        const makeTextRuns = (text, size = 24) => text.split('\n').filter(l => l.trim()).map(l => new Paragraph({ children: [new TextRun({ text: l.trim().replace(/^[•\-*]\s*/, '• '), size })], bidirectional: _rtl() }));
+        const makeTextRuns = (text, size = SZ_BODY) => text.split('\n').filter(l => l.trim()).map(l => new Paragraph({ children: [new TextRun({ text: l.trim().replace(/^[•\-*]\s*/, '• '), size })], bidirectional: _rtl() }));
 
         additionalInfoSections.forEach((section, index) => {
             if (index === 3 && section.content1) {
                 const row = new TableRow({ children: [
-                    new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: section.heading1, bold: true, size: 24 })], bidirectional: _rtl() })], shading: { fill: 'E8E8E8', type: ShadingType.CLEAR }, width: { size: 30, type: WidthType.PERCENTAGE } }),
+                    new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: section.heading1, bold: true, size: SZ_HEADING, color: C_TH_TEXT })], bidirectional: _rtl() })], shading: { fill: C_TH_FILL, type: ShadingType.CLEAR }, width: { size: 30, type: WidthType.PERCENTAGE } }),
                     new TableCell({ children: makeTextRuns(section.content1), width: { size: 70, type: WidthType.PERCENTAGE } })
                 ] });
                 children.push(new Table({ visuallyRightToLeft: _rtl(), width: { size: 9071, type: WidthType.DXA }, layout: 'fixed', rows: [row] }));
                 children.push(new Paragraph({ spacing: { after: 200 } }));
             } else if (section.content1 || section.content2) {
                 const row = new TableRow({ children: [
-                    new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: section.heading1, bold: true, size: 24 })], bidirectional: _rtl() }), ...makeTextRuns(section.content1)], width: { size: 50, type: WidthType.PERCENTAGE } }),
-                    new TableCell({ children: section.content2 ? [new Paragraph({ children: [new TextRun({ text: section.heading2, bold: true, size: 24 })], bidirectional: _rtl() }), ...makeTextRuns(section.content2)] : [new Paragraph('')], width: { size: 50, type: WidthType.PERCENTAGE } })
+                    new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: section.heading1, bold: true, size: SZ_HEADING, color: C_HEADING })], bidirectional: _rtl() }), ...makeTextRuns(section.content1)], width: { size: 50, type: WidthType.PERCENTAGE } }),
+                    new TableCell({ children: section.content2 ? [new Paragraph({ children: [new TextRun({ text: section.heading2, bold: true, size: SZ_HEADING, color: C_HEADING })], bidirectional: _rtl() }), ...makeTextRuns(section.content2)] : [new Paragraph('')], width: { size: 50, type: WidthType.PERCENTAGE } })
                 ] });
                 children.push(new Table({ visuallyRightToLeft: _rtl(), width: { size: 9071, type: WidthType.DXA }, layout: 'fixed', rows: [row] }));
                 children.push(new Paragraph({ spacing: { after: 200 } }));
@@ -1053,7 +1072,7 @@ export async function exportToWord() {
             const h = div.querySelector('h3');
             const t = div.querySelector('textarea');
             if (h && t && t.value.trim()) {
-                const row = new TableRow({ children: [new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: h.textContent, bold: true, size: 24 })], bidirectional: _rtl() }), ...makeTextRuns(t.value)], columnSpan: 2, width: { size: 100, type: WidthType.PERCENTAGE } })] });
+                const row = new TableRow({ children: [new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: h.textContent, bold: true, size: SZ_HEADING, color: C_HEADING })], bidirectional: _rtl() }), ...makeTextRuns(t.value)], columnSpan: 2, width: { size: 100, type: WidthType.PERCENTAGE } })] });
                 children.push(new Table({ visuallyRightToLeft: _rtl(), width: { size: 9071, type: WidthType.DXA }, layout: 'fixed', rows: [row] }));
                 children.push(new Paragraph({ spacing: { after: 200 } }));
             }

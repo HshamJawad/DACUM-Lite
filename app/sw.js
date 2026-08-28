@@ -83,6 +83,7 @@ const SHELL_ASSETS  = [
     './state.js',
     './storage.js',
     './version.js',
+    './word-settings.js',
     './update-notifier.js',
     './manifest.json',
     './fonts/Cairo.woff2'

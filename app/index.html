@@ -919,6 +919,16 @@
         </div>
     </nav>
 
+    <!-- Word export settings — deliberately NOT .sb-nav-item: the nav
+         handler in events.js reads data-tab and would clear the active
+         tab. Separate class, separate handler (word-settings.js). -->
+    <div class="sb-settings-row">
+        <button type="button" class="sb-settings-item" id="sbWordSettingsBtn">
+            <span class="sb-settings-icon">⚙️</span>
+            <span class="sb-settings-label" data-i18n="settings.button">Settings</span>
+        </button>
+    </div>
+
     <!-- Projects Section -->
     <div class="sb-section-label sb-section-label--projects">
         <span data-i18n="sidebar.projectsLabel">📁 PROJECTS</span>

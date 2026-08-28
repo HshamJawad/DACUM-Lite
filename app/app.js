@@ -41,6 +41,7 @@ import {
 } from './events.js';
 import { isDrawerMode, onViewportModeChange,
          initViewportMode }                     from './viewport-mode.js';
+import { initWordSettings }                     from './word-settings.js';
 import {
     createProject, deleteProject, renameProject,
     setActiveProject, getActiveProject, getAllProjects,
@@ -545,6 +546,10 @@ window.addEventListener('DOMContentLoaded', () => {
     // ── 4. Bind events and render UI ───────────────────────────
     EventBinder.init();
     renderSidebar();
+
+    // Word export settings — the sidebar button is not a .sb-nav-item,
+    // so it carries its own handler.
+    initWordSettings();
 
     // ── 4b. Re-render sidebar + all views on language change ───────────────
     // applyTranslations() handles static DOM; dynamic content

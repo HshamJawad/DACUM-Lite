@@ -1397,3 +1397,230 @@ html[dir="rtl"] .sb-card-actions { padding: 0 3px 0 7px; }
   outline: 2px solid #dc2626;
   outline-offset: 2px;
 }
+
+/* ================================================================
+   WORD EXPORT SETTINGS  (v4.10.0)
+   Sidebar button + modal. Scoped entirely to the .sb-settings-*
+   and .ws-* prefixes — nothing above this block is touched.
+   ================================================================ */
+
+/* ── Sidebar entry ───────────────────────────────────────────── */
+.sb-settings-row {
+  padding: 0 8px 8px;
+  flex-shrink: 0;
+}
+
+.sb-settings-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border: none;
+  border-left: 3px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  cursor: pointer;
+  text-align: start;
+  transition: background 0.15s;
+}
+.sb-settings-item:hover { background: #1a2440; }
+.sb-settings-item:focus-visible {
+  outline: 2px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+.sb-settings-icon {
+  font-size: 1.1em;
+  flex-shrink: 0;
+  width: 22px;
+  text-align: center;
+  line-height: 1;
+}
+
+.sb-settings-label {
+  font-size: 0.875em;
+  font-weight: 600;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+/* Mini sidebar: the icon stays, the label collapses — same
+   treatment the nav items get in the inline block in index.html. */
+body.sb-sidebar-closed .sb-settings-label {
+  opacity: 0;
+  width: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+body.sb-sidebar-closed .sb-settings-item {
+  justify-content: center;
+  padding: 11px 0;
+}
+body.sb-sidebar-closed .sb-settings-icon { width: auto; font-size: 1.3em; }
+
+/* ── Modal ───────────────────────────────────────────────────── */
+.ws-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 12, 22, 0.62);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 3000;
+}
+
+.ws-panel {
+  width: 100%;
+  max-width: 520px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--card-bg, #fff);
+  color: var(--text-primary, #1e293b);
+  border-radius: 14px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+.ws-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-color, #e2e8f0);
+  flex-shrink: 0;
+}
+.ws-title { font-size: 1.02em; font-weight: 700; }
+.ws-x {
+  border: none;
+  background: transparent;
+  font-size: 1em;
+  line-height: 1;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.6;
+  padding: 6px;
+  border-radius: 6px;
+}
+.ws-x:hover { opacity: 1; background: rgba(148, 163, 184, 0.18); }
+
+.ws-body {
+  padding: 16px 18px;
+  overflow-y: auto;
+}
+
+.ws-note {
+  margin: 0 0 14px;
+  font-size: 0.8em;
+  line-height: 1.6;
+  opacity: 0.72;
+}
+
+.ws-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.ws-label { font-size: 0.86em; font-weight: 600; }
+
+.ws-select {
+  min-width: 96px;
+  padding: 6px 10px;
+  border-radius: 7px;
+  border: 1px solid var(--border-color, #cbd5e1);
+  background: var(--input-bg, #fff);
+  color: inherit;
+  font-size: 0.86em;
+  cursor: pointer;
+}
+
+.ws-group { margin-top: 16px; }
+
+.ws-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.ws-swatch {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  border: 2px solid rgba(148, 163, 184, 0.45);
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s;
+}
+.ws-swatch:hover { transform: scale(1.08); }
+.ws-swatch--on {
+  border-color: var(--brand-primary, #6366f1);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand-primary, #6366f1) 40%, transparent);
+}
+.ws-swatch:focus-visible {
+  outline: 2px solid var(--brand-primary, #6366f1);
+  outline-offset: 2px;
+}
+
+.ws-hint {
+  margin: 8px 0 0;
+  font-size: 0.76em;
+  line-height: 1.5;
+  opacity: 0.65;
+}
+
+.ws-preview {
+  margin-top: 18px;
+  padding: 14px;
+  border: 1px dashed var(--border-color, #cbd5e1);
+  border-radius: 10px;
+  background: #fff;
+  color: #000;
+}
+.ws-preview-title   { font-weight: 700; margin-bottom: 6px; }
+.ws-preview-heading { font-weight: 700; margin-bottom: 8px; }
+.ws-preview-th      { font-weight: 700; padding: 5px 8px; border-radius: 4px; margin-bottom: 6px; }
+.ws-preview-body    { line-height: 1.5; }
+
+.ws-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  border-top: 1px solid var(--border-color, #e2e8f0);
+  flex-shrink: 0;
+}
+.ws-foot-spacer { flex: 1; }
+
+.ws-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.86em;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.15s, opacity 0.15s;
+}
+.ws-btn--ghost {
+  background: transparent;
+  border-color: var(--border-color, #cbd5e1);
+  color: inherit;
+}
+.ws-btn--ghost:hover { background: rgba(148, 163, 184, 0.15); }
+.ws-btn--primary {
+  background: var(--brand-primary-btn, #4f46e5);
+  color: #fff;
+}
+.ws-btn--primary:hover { opacity: 0.9; }
+
+@media (max-width: 520px) {
+  .ws-field { flex-direction: column; align-items: stretch; gap: 6px; }
+  .ws-select { width: 100%; }
+}

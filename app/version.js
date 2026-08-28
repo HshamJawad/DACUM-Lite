@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.9.1';        // Semantic Versioning
+export const APP_VERSION  = '4.10.0';        // Semantic Versioning
 export const APP_RELEASED = '2026-08-25';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,21 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.10.0',
+            date: '2026-08-28',
+            changes: [
+                'New Word export settings, reached from a Settings button in the sidebar: three font sizes (main title, section headings, table and body text) on Word\'s own 11–18pt scale, plus a heading colour and a table header fill picked from a fixed palette',
+                'The settings are global to the tool, stored in localStorage under dacum_word_settings, shared by English, French and Arabic, and applied with identical values whichever language the file is exported in — they are tied to no project file and no language',
+                'The export code was inspected first: it does distinguish a main title level (occupation, job title, Duties and Tasks banner) from a secondary heading level (Additional Information, duty labels, section headings, custom sections), so both got their own size field rather than one collapsed control',
+                'Defaults reproduce the previous output exactly — 14pt / 12pt / 12pt, black headings, E8E8E8 table header — so an untouched install exports the same file as before and Reset restores that state',
+                'E8E8E8 light grey was added as a ninth swatch precisely so the factory default stays inside the palette instead of silently changing every existing user\'s export on first launch',
+                'Text inside shaded header cells is computed from the fill by WCAG relative luminance and set to white or black, ignoring the heading colour: duty labels are both a heading and a table header cell, and a blue heading on a navy fill would be unreadable',
+                'PDF export is untouched by design — these settings govern the .docx file only, so the two formats can now differ visually',
+                'Only the fourteen size and colour literals inside exportToWord were changed; no other function in events.js was rewritten',
+                'Version bumped so CACHE_VERSION changes and the service worker purges the stale shell — word-settings.js is a new file and existing PWA installs would otherwise never fetch it',
+            ]
+        },
         {
             version: '4.9.1',
             date: '2026-08-25',
