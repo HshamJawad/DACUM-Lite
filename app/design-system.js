@@ -106,5 +106,40 @@ export function createEditable({
     if (onFocus) el.addEventListener('focus', onFocus);
     if (onInput) el.addEventListener('input', onInput);
     if (onBlur)  el.addEventListener('blur',  onBlur);
+
+    // ── Paste as plain text ────────────────────────────────
+    // النص الملصوق من مصادر خارجية (Word، صفحات ويب، إلخ) يحمل معه
+    // تنسيقه الأصلي (نوع/حجم الخط، الألوان...) وهذا يكسر تصميم
+    // البطاقة. هنا نعترض عملية اللصق ونُدخل نص عادي فقط، بحيث
+    // يرث فوراً تنسيق البطاقة (الفونت والحجم) بدلاً من تنسيق المصدر.
+    el.addEventListener('paste', (e) => {
+        e.preventDefault();
+        const clipboard = e.clipboardData || window.clipboardData;
+        const rawText = clipboard ? clipboard.getData('text/plain') : '';
+        // نزيل فواصل الأسطر ونستبدلها بمسافة لأن هذه البطاقات نص
+        // سطر واحد (div عادي وليس pre-wrap)، فنحافظ على نفس سلوك
+        // الكتابة المباشرة أو الضبط الأولي عبر textContent.
+        const plainText = rawText.replace(/\r?\n+/g, ' ');
+
+        if (document.queryCommandSupported && document.queryCommandSupported('insertText')) {
+            document.execCommand('insertText', false, plainText);
+        } else {
+            // بديل احتياطي عبر Selection/Range API للمتصفحات التي لا
+            // تدعم execCommand.
+            const selection = window.getSelection();
+            if (!selection || !selection.rangeCount) return;
+            const range = selection.getRangeAt(0);
+            range.deleteContents();
+            const textNode = document.createTextNode(plainText);
+            range.insertNode(textNode);
+            range.setStartAfter(textNode);
+            range.setEndAfter(textNode);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            // execCommand يُطلق حدث input تلقائياً؛ البديل هنا لا يفعل ذلك.
+            if (onInput) onInput();
+        }
+    });
+
     return el;
 }
