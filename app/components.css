@@ -2082,3 +2082,17 @@ html.i18n-switching *::after {
 }
 .top-toolbar.tb-fit-4::-webkit-scrollbar { display: none; }
 .top-toolbar.tb-fit-4 .top-toolbar-spacer { display: none; }
+
+/* ================================================================
+   RTL TOOLBAR — full width   (v4.12.9)
+   index.html sets  html[dir="rtl"] .top-toolbar { left:auto; right:260px }.
+   A fixed element with left:auto shrinks to its content, so in Arabic the
+   bar stopped short of the left edge and looked cut off. Anchoring left:0
+   stretches it to the window edge again (and gives toolbar-fit.js a real
+   width to measure). The extra `body` outweighs the index.html rule, which
+   loads after this file. The sidebar open/close now animates `right`.
+   ================================================================ */
+html[dir="rtl"] body .top-toolbar {
+  left: 0;
+  transition: right 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+}

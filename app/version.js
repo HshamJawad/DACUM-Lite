@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.12.8';        // Semantic Versioning
+export const APP_VERSION  = '4.12.9';        // Semantic Versioning
 export const APP_RELEASED = '2026-09-30';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,13 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.12.9',
+            date: '2026-09-30',
+            changes: [
+                'Arabic interface: the top toolbar reaches the left edge of the window again instead of stopping short and looking cut off — it was anchored with left:auto, which shrinks a fixed bar to its content',
+            ]
+        },
         {
             version: '4.12.8',
             date: '2026-09-30',
