@@ -48,6 +48,11 @@
 //   • Added OPTIONAL_ASSETS for the jsPDF Arabic TTF candidates.
 //     Caching the loader without the font it fetches would only have
 //     moved the offline failure one step later.
+//
+// v4.12.6 change log:
+//   • Added './date-default.js' to the shell. It is imported by
+//     word-settings.js, so a first offline start without it cached
+//     would fail to load that module and everything that imports it.
 // ============================================================
 
 // ── Version, derived from the registration URL ───────────────
@@ -84,6 +89,7 @@ const SHELL_ASSETS  = [
     './storage.js',
     './version.js',
     './word-settings.js',
+    './date-default.js',
     './update-notifier.js',
     './manifest.json',
     './fonts/Cairo.woff2'

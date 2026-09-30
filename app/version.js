@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.12.5';        // Semantic Versioning
+export const APP_VERSION  = '4.12.6';        // Semantic Versioning
 export const APP_RELEASED = '2026-09-30';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,16 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.12.6',
+            date: '2026-09-30',
+            changes: [
+                'The DACUM Date field now shows today\'s date by default instead of an empty field, and keeps any date the user picks',
+                'Cause of the garbled text: on Android an empty date field draws the phone\'s own placeholder; with the phone in Arabic that is «يوم/شهر/سنة», but the control lays it out left to right, so the letters came out reversed and unjoined («موي/رهش/ةنس»). The page cannot style that native placeholder, so the field is simply never left empty',
+                'Every path that used to blank the field (new project, Clear All, loading a file without a date) now falls back to today; the date is local time, not UTC, so it is correct just after midnight in Baghdad',
+                'New module date-default.js, added to the service-worker shell so it is available offline',
+            ]
+        },
         {
             version: '4.12.5',
             date: '2026-09-30',

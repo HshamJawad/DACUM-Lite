@@ -49,6 +49,7 @@
 
 import { t, getLang } from './i18n.js';
 import { showStatus } from './design-system.js';
+import { initDateDefault } from './date-default.js';
 
 const STORAGE_KEY = 'dacum_word_settings';
 
@@ -714,6 +715,11 @@ function _wordExportGuard(e) {
 
 export function initWordSettings() {
     applyCardColors();
+    /* DACUM Date defaults to today (v4.12.6). Called here because this
+       is the first hook app.js runs after the project has been loaded
+       into the form — see date-default.js for why the field must never
+       be empty on Android. Guarded so a failure can't stop the boot. */
+    try { initDateDefault(); } catch (e) { console.warn('[DateDefault] init failed:', e); }
     if (!document.documentElement.dataset.wordGuard) {
         document.documentElement.dataset.wordGuard = '1';
         document.addEventListener('click', _wordExportGuard, true);
