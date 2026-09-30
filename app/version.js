@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.12.0';        // Semantic Versioning
+export const APP_VERSION  = '4.12.1';        // Semantic Versioning
 export const APP_RELEASED = '2026-09-30';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,14 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.12.1',
+            date: '2026-09-30',
+            changes: [
+                'Card View task cards are a further 5% taller: minimum height 71px → 75px, so cards read comfortably on small laptop screens',
+                'Duty cards stretch to their row, so they grow with the task cards; Wall View and Table View are unchanged',
+            ]
+        },
         {
             version: '4.12.0',
             date: '2026-09-30',

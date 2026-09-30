@@ -1715,7 +1715,8 @@ body.sb-sidebar-closed .sb-settings-icon { width: auto; font-size: 1.3em; }
    3. HEIGHT (+5%)
       Card View task card: natural single-line height measured at
       67.4px (8+8 padding, 2+2 border, 20px top row, 4px gap, 23.4px
-      text line) → 71px (+5.3%, rounded up to a whole pixel).
+      text line) → 71px (+5.3%, v4.12.0) → 75px (a further +5%, v4.12.1,
+      Card View only — requested for small laptop screens).
       Wall View task card: min-height 82px → 86px (+4.9%).
       Duty cards in both views stretch to the height of their row,
       so they grow with the task cards automatically. Taller cards
@@ -1747,7 +1748,7 @@ body.sb-sidebar-closed .sb-settings-icon { width: auto; font-size: 1.3em; }
 .cv-duty-text:empty::before { color: color-mix(in srgb, var(--card-duty) 70%, white); }
 
 .cv-task-card {
-  min-height: 71px;                                   /* +5% — see note 3 */
+  min-height: 75px;                                   /* +5% +5% — see note 3 */
   background: color-mix(in srgb, var(--card-task) 22%, white);
   border-color: var(--card-task);
   box-shadow: 0 2px 6px color-mix(in srgb, var(--card-task) 20%, transparent);
