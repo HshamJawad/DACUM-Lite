@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.12.6';        // Semantic Versioning
+export const APP_VERSION  = '4.12.7';        // Semantic Versioning
 export const APP_RELEASED = '2026-09-30';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,14 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.12.7',
+            date: '2026-09-30',
+            changes: [
+                'The version number is no longer shown in the top toolbar; it remains in the Help tab (version line and copyright)',
+                'The toolbar badge still appears as the "Update" button when a new release is waiting and the update bar was dismissed with "Later", so the update offer is never lost',
+            ]
+        },
         {
             version: '4.12.6',
             date: '2026-09-30',

@@ -2035,3 +2035,19 @@ html.i18n-switching *::after {
   .lang-dd-short { display: inline; font-weight: 700; }
   .lang-dd-opt   { padding: 11px 14px; }   /* comfortable touch target */
 }
+
+/* ================================================================
+   TOOLBAR VERSION BADGE — hidden at rest   (v4.12.7)
+   ----------------------------------------------------------------
+   The version number now appears in the Help tab only
+   (#helpVersionFooter and the copyright line). The toolbar badge is
+   hidden in its resting "vX.Y.Z" state.
+
+   It is NOT deleted from index.html: update-notifier.js turns it
+   into the "⟳ Update" button when a release is waiting and the user
+   has pressed "Later" on the update bar — without it that offer
+   would be lost until the next reload. So it reappears only in that
+   state (.tb-version--update), and self-check keeps finding the
+   element it expects.
+   ================================================================ */
+#versionBadge:not(.tb-version--update) { display: none !important; }
