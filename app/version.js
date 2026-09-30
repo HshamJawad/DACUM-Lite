@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.12.2';        // Semantic Versioning
+export const APP_VERSION  = '4.12.3';        // Semantic Versioning
 export const APP_RELEASED = '2026-09-30';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,15 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.12.3',
+            date: '2026-09-30',
+            changes: [
+                'Card View cards are clearly larger: task cards 180px wide with a 100px minimum height, duty cards 180px wide (originally 150 × 67px); Wall View and Table View are unchanged',
+                'Language switching no longer shakes the page: flipping <html dir> changed properties that are animated for the sidebar (appWrapper margin-left, toolbar left, sidebar width, the phone drawer transform), so the content slid and squeezed for ~0.3s and the closed drawer flew across the screen on phones — transitions are now suspended for the two frames of the flip',
+                'The Arabic font (Cairo) is warmed up in the background at start-up, so the first switch to Arabic no longer reflows the page a second time when the font arrives',
+            ]
+        },
         {
             version: '4.12.2',
             date: '2026-09-30',

@@ -123,12 +123,61 @@ function _syncLangSelect() {
 }
 
 // ══════════════════════════════════════════════════════════════
+//  No-animation window around a direction flip  (v4.12.3)
+//
+//  Flipping <html dir> changes properties that are ANIMATED for the
+//  sidebar open/close (#appWrapper margin-left, .top-toolbar left,
+//  #sidebar width, the phone drawer's transform). Left alone, the
+//  page slid and squeezed for ~0.3s on every switch, and on phones
+//  the closed drawer flew across the screen. .i18n-switching (see
+//  the end of components.css) suspends transitions until the new
+//  layout has been painted — two frames: one to apply the new
+//  styles, one to paint them — then normal animations resume.
+// ══════════════════════════════════════════════════════════════
+let _switchTimer = null;
+
+function _suspendTransitions() {
+    const html = document.documentElement;
+    html.classList.add('i18n-switching');
+    if (_switchTimer) cancelAnimationFrame(_switchTimer);
+    _switchTimer = requestAnimationFrame(() => {
+        _switchTimer = requestAnimationFrame(() => {
+            html.classList.remove('i18n-switching');
+            _switchTimer = null;
+        });
+    });
+}
+
+// ══════════════════════════════════════════════════════════════
+//  Cairo warm-up  (v4.12.3)
+//
+//  Cairo is declared with an Arabic unicode-range, so the browser
+//  only downloads it the first time Arabic text is on screen. The
+//  first switch to Arabic therefore laid the page out twice: once
+//  in the fallback face, again when Cairo arrived — a second jolt
+//  after the switch. Loading it in the background at start-up (from
+//  the service-worker cache, normally) removes that second pass.
+//  Best-effort: any failure is ignored.
+// ══════════════════════════════════════════════════════════════
+function _warmArabicFont() {
+    try {
+        if (!document.fonts || typeof document.fonts.load !== 'function') return;
+        const go = () => document.fonts.load('16px Cairo', 'عربي').catch(() => {});
+        if ('requestIdleCallback' in window) requestIdleCallback(go, { timeout: 3000 });
+        else setTimeout(go, 1500);
+    } catch (e) { /* cosmetic only */ }
+}
+
+// ══════════════════════════════════════════════════════════════
 //  setLang() — switch language, persist, update DOM
 // ══════════════════════════════════════════════════════════════
 export function setLang(lang) {
     if (!LANG_ORDER.includes(lang)) return;   // guard
     _lang = lang;
     localStorage.setItem(LANG_KEY, lang);
+
+    // Freeze animations BEFORE the direction flips (see above)
+    _suspendTransitions();
 
     // Update <html> attributes for RTL support and browser accessibility
     const html = document.documentElement;
@@ -159,8 +208,8 @@ export function toggleLang() {
 //
 //  1. Applies the stored language to <html> lang + dir
 //  2. Runs applyTranslations() to translate the initial DOM
-//  3. Sets the toggle button label
-//  4. Wires the toggle button click handler
+//  3. Wires the language dropdown
+//  4. Warms up the Arabic font in the background
 // ══════════════════════════════════════════════════════════════
 export function initI18n() {
     // Apply <html> attributes immediately (before paint if possible)
@@ -177,4 +226,6 @@ export function initI18n() {
         sel.value = _lang;
         sel.addEventListener('change', () => setLang(sel.value));
     }
+
+    if (_lang !== 'ar') _warmArabicFont();
 }

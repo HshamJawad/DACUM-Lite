@@ -1721,6 +1721,10 @@ body.sb-sidebar-closed .sb-settings-icon { width: auto; font-size: 1.3em; }
       task card height 75px → 83px, task card width 150px → 165px
       (min-width 130px → 143px), duty card width 150px → 165px.
       Wall View and Table View are untouched.
+      v4.12.3: a clearly visible step — task card 180 × 100px minimum,
+      duty card 180px wide (≈ +20% width, +48% height over the
+      original 150 × 67px). min-width equals width so a card never
+      shrinks back when the row is crowded.
       Wall View task card: min-height 82px → 86px (+4.9%).
       Duty cards in both views stretch to the height of their row,
       so they grow with the task cards automatically. Taller cards
@@ -1747,15 +1751,15 @@ body.sb-sidebar-closed .sb-settings-icon { width: auto; font-size: 1.3em; }
   border-color: color-mix(in srgb, var(--card-duty) 55%, white);
   color: color-mix(in srgb, var(--card-duty) 65%, black);
 }
-.cv-duty-card { width: 165px; min-width: 165px; }    /* 150px × 1.10 (v4.12.2) */
+.cv-duty-card { width: 180px; min-width: 180px; }    /* v4.12.3 (was 150px) */
 .cv-duty-index-label { color: var(--card-duty); }
 .cv-duty-text        { color: color-mix(in srgb, var(--card-duty) 65%, black); }
 .cv-duty-text:empty::before { color: color-mix(in srgb, var(--card-duty) 70%, white); }
 
 .cv-task-card {
-  min-height: 83px;                                   /* 75px × 1.10 — see note 3 */
-  width: 165px;                                       /* 150px × 1.10 (v4.12.2) */
-  min-width: 143px;                                   /* 130px × 1.10 (v4.12.2) */
+  min-height: 100px;                                  /* v4.12.3 — see note 3 */
+  width: 180px;                                       /* v4.12.3 (was 150px) */
+  min-width: 180px;                                   /* v4.12.3 (was 130px) */
   background: color-mix(in srgb, var(--card-task) 22%, white);
   border-color: var(--card-task);
   box-shadow: 0 2px 6px color-mix(in srgb, var(--card-task) 20%, transparent);
@@ -1913,4 +1917,27 @@ html[dir="rtl"] .ws-cc-wtask-label,
 html[dir="rtl"] .ws-cc-duty-label,
 html[dir="rtl"] .ws-cc-wduty-label {
   unicode-bidi: isolate;
+}
+
+/* ================================================================
+   LANGUAGE SWITCH — no animated reflow   (v4.12.3)
+   ----------------------------------------------------------------
+   Switching language flips <html dir>. Several layout properties
+   are animated for the sidebar open/close — #appWrapper margin-left,
+   .top-toolbar left, #sidebar width, and on phones the drawer's
+   transform — and a direction flip changes exactly those properties.
+   The result was the page visibly sliding and shaking for ~0.3s:
+   margin-left animated from 260px to 0 while margin-right snapped
+   to 260px (content squeezed, then expanded), and on phones the
+   closed drawer flew across the screen from -100% to +100%.
+
+   i18n.js adds .i18n-switching to <html> for the duration of the
+   flip (two animation frames), so the new layout is applied in one
+   step. Sidebar open/close animations are untouched otherwise.
+   ================================================================ */
+html.i18n-switching *,
+html.i18n-switching *::before,
+html.i18n-switching *::after {
+  transition: none !important;
+  animation: none !important;
 }
