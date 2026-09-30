@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.12.4';        // Semantic Versioning
+export const APP_VERSION  = '4.12.5';        // Semantic Versioning
 export const APP_RELEASED = '2026-09-30';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,15 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.12.5',
+            date: '2026-09-30',
+            changes: [
+                'Pressing Word export with the Occupation Title or Job Title empty now shows the same warning dialog as the PDF export',
+                'Cause: exportToWord() reported the missing fields through the in-page status bar, which sits far down the page and is off-screen when the toolbar button is pressed, so the click looked like it did nothing; exportToPDF() used alert() and was always visible',
+                'The check runs before the export starts, uses the same translated message and the same test as the PDF path, and moves the cursor to the empty field afterwards; with both fields filled the Word export runs exactly as before',
+            ]
+        },
         {
             version: '4.12.4',
             date: '2026-09-30',

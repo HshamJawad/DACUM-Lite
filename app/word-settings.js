@@ -681,8 +681,43 @@ export function closeWordSettings() {
 //  .sb-nav-item: the nav handler in events.js reads data-tab and
 //  would clear the active tab if this were one of them.
 // ══════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
+//  Word export pre-flight  (v4.12.5)
+//
+//  exportToPDF() stops with alert() when the Occupation Title or Job
+//  Title is empty. exportToWord() checked the same two fields but
+//  reported through showStatus() — the in-page #status bar, which sits
+//  near the bottom of the page and is usually off-screen when the user
+//  presses the toolbar button. The Word click therefore looked like it
+//  did nothing at all.
+//
+//  This guard runs in the CAPTURE phase on document, i.e. before the
+//  button's inline onclick="exportToWord()". When a field is missing
+//  it shows the SAME alert, with the SAME translated text and the SAME
+//  test as the PDF path, and stops the click from reaching the export.
+//  When both fields are filled it does nothing, so the export itself
+//  is untouched. The field whose value is missing receives focus after
+//  the alert is dismissed.
+// ══════════════════════════════════════════════════════════════
+function _wordExportGuard(e) {
+    const btn = e.target && e.target.closest && e.target.closest('#btnExportWord');
+    if (!btn || btn.disabled) return;
+    const occ = document.getElementById('occupationTitle');
+    const job = document.getElementById('jobTitle');
+    if (!occ || !job) return;                       // let the export decide
+    if (occ.value && job.value) return;             // same test as exportToPDF()
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    alert(t('status.pdfMissingFields'));
+    (occ.value ? job : occ).focus?.();
+}
+
 export function initWordSettings() {
     applyCardColors();
+    if (!document.documentElement.dataset.wordGuard) {
+        document.documentElement.dataset.wordGuard = '1';
+        document.addEventListener('click', _wordExportGuard, true);
+    }
     const btn = document.getElementById('sbWordSettingsBtn');
     if (btn && !btn.dataset.wsBound) {
         btn.dataset.wsBound = '1';
