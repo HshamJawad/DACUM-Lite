@@ -53,6 +53,9 @@
 //   • Added './date-default.js' to the shell. It is imported by
 //     word-settings.js, so a first offline start without it cached
 //     would fail to load that module and everything that imports it.
+//
+// v4.12.8 change log:
+//   • Added './toolbar-fit.js' to the shell (imported by i18n.js).
 // ============================================================
 
 // ── Version, derived from the registration URL ───────────────
@@ -90,6 +93,7 @@ const SHELL_ASSETS  = [
     './version.js',
     './word-settings.js',
     './date-default.js',
+    './toolbar-fit.js',
     './update-notifier.js',
     './manifest.json',
     './fonts/Cairo.woff2'

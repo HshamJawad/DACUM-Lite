@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.12.7';        // Semantic Versioning
+export const APP_VERSION  = '4.12.8';        // Semantic Versioning
 export const APP_RELEASED = '2026-09-30';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,18 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.12.8',
+            date: '2026-09-30',
+            changes: [
+                'Undo and Redo no longer disappear off the right edge of the toolbar when the sidebar is open on a laptop screen',
+                'Cause: the desktop toolbar is a single non-wrapping row, and with the 260px sidebar open the English and French button labels were wider than the space left, so the last group was pushed past the window edge',
+                'The toolbar now measures itself and compacts only as far as needed: first tighter spacing, then icon-only buttons (Export Project keeps its label), then icon-only everywhere with the language menu showing EN / FR / ع, and as a last resort a sideways-scrolling row instead of clipping',
+                'It re-fits when the sidebar opens or collapses, the window is resized, the language changes, or a label changes; with the sidebar collapsed, full labels come back',
+                'Icon-only buttons keep their name as a tooltip and aria-label in the current language',
+                'New module toolbar-fit.js, imported by i18n.js and added to the service-worker shell; phone / drawer mode is unchanged',
+            ]
+        },
         {
             version: '4.12.7',
             date: '2026-09-30',

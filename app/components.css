@@ -2051,3 +2051,34 @@ html.i18n-switching *::after {
    element it expects.
    ================================================================ */
 #versionBadge:not(.tb-version--update) { display: none !important; }
+
+/* ================================================================
+   TOOLBAR FIT — progressive compaction   (v4.12.8)
+   ----------------------------------------------------------------
+   Levels are added by toolbar-fit.js only when the row overflows, and
+   only on desktop (never in drawer / phone mode). Cumulative: level 2
+   also carries tb-fit-1, and so on.
+   ================================================================ */
+.top-toolbar.tb-fit-1 { gap: 2px; padding-left: 10px; padding-right: 10px; }
+.top-toolbar.tb-fit-1 .top-toolbar-group   { gap: 3px; }
+.top-toolbar.tb-fit-1 .top-toolbar-divider { margin: 0 3px; }
+.top-toolbar.tb-fit-1 .tb-btn              { padding-left: 9px; padding-right: 9px; }
+.top-toolbar.tb-fit-1 .lang-dd-btn         { min-width: 96px; }
+
+.top-toolbar.tb-fit-2 .tb-btn:not(.tb-btn--primary) .tb-label { display: none; }
+.top-toolbar.tb-fit-2 .tb-btn:not(.tb-btn--primary)           { gap: 0; }
+.top-toolbar.tb-fit-2 .tb-btn .tb-icon { font-size: 1.05em; line-height: 1; }
+
+.top-toolbar.tb-fit-3 .tb-btn .tb-label { display: none; }
+.top-toolbar.tb-fit-3 .tb-btn           { gap: 0; }
+.top-toolbar.tb-fit-3 .lang-dd-btn      { min-width: 0; }
+.top-toolbar.tb-fit-3 .lang-dd-label    { display: none; }
+.top-toolbar.tb-fit-3 .lang-dd-short    { display: inline; font-weight: 700; }
+
+.top-toolbar.tb-fit-4 {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+.top-toolbar.tb-fit-4::-webkit-scrollbar { display: none; }
+.top-toolbar.tb-fit-4 .top-toolbar-spacer { display: none; }

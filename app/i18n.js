@@ -20,6 +20,7 @@
 // ============================================================
 
 import { translations } from './translations.js';
+import { initToolbarFit } from './toolbar-fit.js';
 
 // ── Persistence key ───────────────────────────────────────────
 const LANG_KEY = 'dacum_lang';
@@ -414,4 +415,8 @@ export function initI18n() {
     }
 
     if (_lang !== 'ar') _warmArabicFont();
+
+    // Keep every toolbar button on screen (v4.12.8) — runs after the
+    // language menu is built, since that menu is part of the row.
+    try { initToolbarFit(); } catch (e) { console.warn('[i18n] toolbar fit failed:', e); }
 }
