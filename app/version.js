@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.12.3';        // Semantic Versioning
+export const APP_VERSION  = '4.12.4';        // Semantic Versioning
 export const APP_RELEASED = '2026-09-30';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,18 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.12.4',
+            date: '2026-09-30',
+            changes: [
+                'The language list in the toolbar is now a custom dropdown instead of the native <select>: it opens directly under the button, aligned to its right edge in Arabic and its left edge in English and French, and stays inside the screen',
+                'Cause of the shaking: the select shared the toolbar-button hover lift (1px transform with a transition), and the operating-system popup is anchored to it — moving the pointer into the list dropped the hover, the select slid back, and the popup was redrawn, leaving a blank frame behind; Chrome also offsets native select popups under dir="rtl"',
+                'The new button never moves on hover, the chosen language is marked with a tick, and the list works from the keyboard (arrows, Home/End, Enter, Escape)',
+                'On phones the button shows the short code (EN / FR / ع) and the list escapes the scrollable toolbar instead of being clipped by it',
+                'The original <select id="langSelect"> stays in the page, hidden and kept in sync, so nothing that reads it breaks; if the custom menu ever fails to build, the native select is shown again',
+                'Cards are unchanged in this release',
+            ]
+        },
         {
             version: '4.12.3',
             date: '2026-09-30',

@@ -1941,3 +1941,97 @@ html.i18n-switching *::after {
   transition: none !important;
   animation: none !important;
 }
+
+/* ================================================================
+   LANGUAGE DROPDOWN — custom menu   (v4.12.4)
+   ----------------------------------------------------------------
+   Replaces the native <select id="langSelect"> in the toolbar (see
+   i18n.js for why). The native element stays in the DOM, hidden.
+   The button never moves on hover: the shared .tb-btn:hover lift
+   was one of the two causes of the shaking popup.
+   ================================================================ */
+#langSelect.lang-native-hidden { display: none !important; }
+
+.lang-dd { position: relative; display: inline-flex; flex-shrink: 0; }
+
+.lang-dd-btn {
+  gap: 8px;
+  min-width: 108px;
+  justify-content: space-between;
+}
+/* Two classes + !important: must beat .tb-btn:hover wherever the
+   stylesheets happen to load (layout.css / index.html <style>). */
+.lang-dd .lang-dd-btn,
+.lang-dd .lang-dd-btn:hover,
+.lang-dd .lang-dd-btn:active { transform: none !important; }
+.lang-dd--open .lang-dd-btn {
+  background: #e5e7eb;
+  border-color: var(--brand-primary, #6366f1);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--brand-primary, #6366f1) 22%, transparent);
+}
+.lang-dd-btn:focus-visible {
+  outline: 2px solid var(--brand-primary, #6366f1);
+  outline-offset: 2px;
+}
+.lang-dd-short { display: none; }
+.lang-dd-chev  { flex-shrink: 0; opacity: 0.6; transition: transform 0.15s ease; }
+.lang-dd--open .lang-dd-chev { transform: rotate(180deg); }
+
+.lang-dd-menu {
+  position: fixed;
+  z-index: 2500;                 /* above toolbar (999) and sidebar (1000) */
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.16), 0 2px 6px rgba(15, 23, 42, 0.08);
+  font-size: 0.9rem;
+  box-sizing: border-box;
+}
+.lang-dd-menu[hidden] { display: none; }
+
+.lang-dd-opt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 7px;
+  color: #374151;
+  cursor: pointer;
+  white-space: nowrap;
+  text-align: start;
+  outline: none;
+  user-select: none;
+}
+.lang-dd-opt[lang="ar"] { font-family: 'Cairo', 'Segoe UI', Tahoma, Arial, sans-serif; }
+.lang-dd-opt:hover,
+.lang-dd-opt:focus { background: #f3f4f6; }
+.lang-dd-opt--on {
+  color: var(--brand-primary-deep, #4338ca);
+  font-weight: 700;
+  background: color-mix(in srgb, var(--brand-primary, #6366f1) 10%, white);
+}
+.lang-dd-opt--on::after {
+  content: '✓';
+  margin-inline-start: auto;
+  font-size: 0.85em;
+}
+
+/* Phones / drawer mode: compact button showing the short code only —
+   same breakpoint as the rest of the toolbar (index.html). */
+@media (max-width: 768px),
+       (pointer: coarse) and (max-height: 520px) and (max-width: 1024px) {
+  .lang-dd-btn {
+    min-width: 58px;
+    width: auto !important;
+    height: 52px !important;
+    flex-direction: row !important;
+    padding: 0 8px !important;
+    gap: 5px !important;
+  }
+  .lang-dd-label { display: none; }
+  .lang-dd-short { display: inline; font-weight: 700; }
+  .lang-dd-opt   { padding: 11px 14px; }   /* comfortable touch target */
+}

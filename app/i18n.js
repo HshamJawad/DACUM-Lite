@@ -120,6 +120,186 @@ export function applyTranslations() {
 function _syncLangSelect() {
     const sel = document.getElementById('langSelect');
     if (sel && sel.value !== _lang) sel.value = _lang;
+    _syncLangDropdown();
+}
+
+// ══════════════════════════════════════════════════════════════
+//  Custom language dropdown  (v4.12.4)
+//
+//  WHY the native <select> was replaced:
+//    1. It carried .tb-btn, whose :hover lifts the control 1px with a
+//       transform transition. The OS popup is anchored to the select,
+//       so when the pointer moved from the select into the popup the
+//       hover state dropped, the select slid back down, and the popup
+//       was re-laid out — the visible shaking, plus a stale blank frame
+//       left where the popup had been.
+//    2. Chrome positions native <select> popups unreliably under
+//       dir="rtl": the list opened offset to the side of the button.
+//  A native popup cannot be styled or positioned, so neither problem
+//  can be fixed with CSS.
+//
+//  The replacement is a button + listbox that WE position: the menu is
+//  position:fixed and computed from the button's rectangle, aligned to
+//  the button's start edge (right edge in Arabic, left edge otherwise),
+//  clamped to the viewport. position:fixed also escapes the toolbar's
+//  overflow-x:auto on phones, which would clip an absolute menu.
+//
+//  The original <select id="langSelect"> stays in the DOM (hidden) and
+//  is kept in sync, so self-check and any other code that reads it keep
+//  working.
+// ══════════════════════════════════════════════════════════════
+const LANG_NAMES = { en: 'English', fr: 'Français', ar: 'العربية' };
+const LANG_SHORT = { en: 'EN',      fr: 'FR',       ar: 'ع'       };
+
+let _dd = null;          // { root, btn, menu, items[] }
+
+function _syncLangDropdown() {
+    if (!_dd) return;
+    _dd.btn.querySelector('.lang-dd-label').textContent = LANG_NAMES[_lang];
+    _dd.btn.querySelector('.lang-dd-short').textContent = LANG_SHORT[_lang];
+    _dd.items.forEach(li => {
+        const on = li.dataset.lang === _lang;
+        li.setAttribute('aria-selected', on ? 'true' : 'false');
+        li.classList.toggle('lang-dd-opt--on', on);
+    });
+}
+
+function _placeMenu() {
+    const { btn, menu } = _dd;
+    const r   = btn.getBoundingClientRect();
+    const rtl = document.documentElement.dir === 'rtl';
+    const vw  = document.documentElement.clientWidth;
+    const w   = Math.max(r.width, menu.offsetWidth);
+
+    menu.style.top      = Math.round(r.bottom + 4) + 'px';
+    menu.style.minWidth = Math.round(r.width) + 'px';
+    // Start-edge alignment, clamped inside an 8px viewport margin.
+    let left = rtl ? r.right - w : r.left;
+    left = Math.min(Math.max(8, left), vw - w - 8);
+    menu.style.left  = Math.round(left) + 'px';
+    menu.style.right = 'auto';
+}
+
+function _isOpen() { return !!_dd && !_dd.menu.hidden; }
+
+function _openMenu(focusItem = true) {
+    if (!_dd || _isOpen()) return;
+    const { btn, menu, items } = _dd;
+    menu.hidden = false;
+    btn.setAttribute('aria-expanded', 'true');
+    _dd.root.classList.add('lang-dd--open');
+    _placeMenu();
+    if (focusItem) (items.find(li => li.dataset.lang === _lang) || items[0]).focus();
+    document.addEventListener('pointerdown', _onOutside, true);
+    window.addEventListener('resize', _closeMenuQuiet);
+    window.addEventListener('scroll', _closeMenuQuiet, true);
+}
+
+function _closeMenu(returnFocus = true) {
+    if (!_isOpen()) return;
+    const { btn, menu } = _dd;
+    menu.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+    _dd.root.classList.remove('lang-dd--open');
+    document.removeEventListener('pointerdown', _onOutside, true);
+    window.removeEventListener('resize', _closeMenuQuiet);
+    window.removeEventListener('scroll', _closeMenuQuiet, true);
+    if (returnFocus) btn.focus();
+}
+
+function _closeMenuQuiet(e) {
+    // Scrolling inside the menu itself must not close it.
+    if (e && e.type === 'scroll' && _dd && _dd.menu.contains(e.target)) return;
+    _closeMenu(false);
+}
+
+function _onOutside(e) {
+    if (_dd && !_dd.root.contains(e.target) && !_dd.menu.contains(e.target)) _closeMenu(false);
+}
+
+function _choose(lang) {
+    _closeMenu(true);
+    if (lang !== _lang) {
+        const sel = document.getElementById('langSelect');
+        if (sel) sel.value = lang;
+        setLang(lang);
+    }
+}
+
+function _buildLangDropdown(sel) {
+    if (!sel || document.getElementById('langDropdown')) return;
+
+    const root = document.createElement('div');
+    root.className = 'lang-dd';
+    root.id = 'langDropdown';
+
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'tb-btn tb-btn--neutral lang-dd-btn';
+    btn.title = sel.title || 'Interface language';
+    btn.setAttribute('aria-haspopup', 'listbox');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.innerHTML =
+        '<span class="lang-dd-label"></span>' +
+        '<span class="lang-dd-short"></span>' +
+        '<svg class="lang-dd-chev" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true">' +
+        '<path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+    // The menu lives on <body>: position:fixed inside the toolbar would
+    // still be clipped on browsers that treat a transformed ancestor as
+    // the containing block, and body is never transformed.
+    const menu = document.createElement('ul');
+    menu.className = 'lang-dd-menu';
+    menu.id = 'langDropdownMenu';
+    menu.setAttribute('role', 'listbox');
+    menu.hidden = true;
+    btn.setAttribute('aria-controls', menu.id);
+
+    const items = LANG_ORDER.map(code => {
+        const li = document.createElement('li');
+        li.setAttribute('role', 'option');
+        li.tabIndex = -1;
+        li.dataset.lang = code;
+        li.lang = code;
+        li.dir  = RTL_LANGS.includes(code) ? 'rtl' : 'ltr';
+        li.className = 'lang-dd-opt';
+        li.textContent = LANG_NAMES[code];
+        li.addEventListener('click', () => _choose(code));
+        menu.appendChild(li);
+        return li;
+    });
+
+    btn.addEventListener('click', () => (_isOpen() ? _closeMenu() : _openMenu()));
+    btn.addEventListener('keydown', e => {
+        if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); _openMenu(); }
+    });
+
+    menu.addEventListener('keydown', e => {
+        const i = items.indexOf(document.activeElement);
+        const move = n => { e.preventDefault(); items[(n + items.length) % items.length].focus(); };
+        switch (e.key) {
+            case 'ArrowDown': move(i + 1); break;
+            case 'ArrowUp':   move(i - 1); break;
+            case 'Home':      move(0); break;
+            case 'End':       move(items.length - 1); break;
+            case 'Enter':
+            case ' ':         e.preventDefault(); if (i >= 0) _choose(items[i].dataset.lang); break;
+            case 'Escape':    e.preventDefault(); _closeMenu(true); break;
+            case 'Tab':       _closeMenu(false); break;
+        }
+    });
+
+    root.appendChild(btn);
+    sel.insertAdjacentElement('afterend', root);
+    document.body.appendChild(menu);
+
+    // Hide the native control but keep it for compatibility.
+    sel.classList.add('lang-native-hidden');
+    sel.setAttribute('aria-hidden', 'true');
+    sel.tabIndex = -1;
+
+    _dd = { root, btn, menu, items };
+    _syncLangDropdown();
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -208,7 +388,7 @@ export function toggleLang() {
 //
 //  1. Applies the stored language to <html> lang + dir
 //  2. Runs applyTranslations() to translate the initial DOM
-//  3. Wires the language dropdown
+//  3. Wires the language dropdown (custom menu over the native select)
 //  4. Warms up the Arabic font in the background
 // ══════════════════════════════════════════════════════════════
 export function initI18n() {
@@ -225,6 +405,12 @@ export function initI18n() {
     if (sel) {
         sel.value = _lang;
         sel.addEventListener('change', () => setLang(sel.value));
+        try { _buildLangDropdown(sel); }
+        catch (e) {
+            // Fall back to the native select rather than lose the control.
+            console.warn('[i18n] custom language dropdown failed:', e);
+            sel.classList.remove('lang-native-hidden');
+        }
     }
 
     if (_lang !== 'ar') _warmArabicFont();
