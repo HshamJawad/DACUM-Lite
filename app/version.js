@@ -27,8 +27,8 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.11.0';        // Semantic Versioning
-export const APP_RELEASED = '2026-08-25';   // ISO 8601 (YYYY-MM-DD)
+export const APP_VERSION  = '4.12.0';        // Semantic Versioning
+export const APP_RELEASED = '2026-09-30';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
 // index.html registers  ./sw.js?v=<APP_VERSION>  and sw.js rebuilds
@@ -55,6 +55,21 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.12.0',
+            date: '2026-09-30',
+            changes: [
+                'Duties & Tasks cards are 5% taller: the Card View task card now has a 71px minimum height (measured natural height 67.4px) and the Wall View task card goes from 82px to 86px; duty cards stretch with their row, so they grow with the task cards',
+                'New Card colours section at the top of the Settings modal: eight colours (blue, teal, green, amber, orange, rose, purple, slate) for duty cards and, separately, for task cards, plus a "Theme colour" chip that returns the cards to the active theme',
+                'The pick holds regardless of the theme: it is written as an inline style on <html>, which outranks both :root and html[data-theme=…], so cycling themes still recolours the rest of the interface while the cards keep the user\'s colour',
+                'A mini preview in the modal shows a duty card and two task cards in both Card View and Wall View styles with the draft colours, before anything is saved; Close discards, Save applies, Reset returns both the export settings and the card colours to their defaults',
+                'Cards are painted from five new tokens (--card-duty, --card-duty-deep, --card-task, --card-task-dark, --card-task-ink) whose :root defaults point at the theme tokens — verified in headless Chromium that every card colour in Default and Theme 2 is computed identically to 4.11.0 when no pick is saved',
+                'The table view duty block follows the duty colour too; Knowledge/Skills and Behaviour rows, which shared its original rule, are untouched',
+                'Stored separately under dacum_card_colors, so the Word/PDF export settings and their validation are unaffected; exported files never change with the card colour',
+                'Wall View overrides are prefixed with .wv-container to outweigh the index.html <style> block, so index.html itself needed no edit; drag-and-drop indicators keep their !important borders',
+                'Card-colour strings for English, French and Arabic live inside word-settings.js, so a stale cached translations.js during an update can never show raw keys in the new section',
+            ]
+        },
         {
             version: '4.11.0',
             date: '2026-08-28',
@@ -342,15 +357,15 @@ export const VERSION = {
             date: '2026-08-18',
             changes: [
                 'Additional Information: each section now has bullet-list and numbered-list buttons that format the whole box in one tap',
-                'Both list buttons toggle \u2014 tap again to strip the markers, or tap the other one to switch between bullets and numbering',
+                'Both list buttons toggle — tap again to strip the markers, or tap the other one to switch between bullets and numbering',
                 'Blank lines are left alone and never numbered, so the spacing between groups of items survives formatting',
                 'Additional Information: the Clear and Rename buttons swapped places, matching the layout used in DACUM Live Pro',
                 'Rename is now an icon-only button on the same quiet surface as the list buttons, so the four tools read as one row',
-                'Clear is now a soft-red icon button instead of a solid red block \u2014 still the obvious destructive action, minus the shouting in every section header',
+                'Clear is now a soft-red icon button instead of a solid red block — still the obvious destructive action, minus the shouting in every section header',
                 'The Clear button keeps its soft-red look under Theme 1 and Theme 2 instead of picking up the palette accent',
                 'The new list buttons are icon-only and stay square on narrow screens instead of stretching like the text buttons',
                 'List button tooltips are translated in Arabic, English and French',
-                'Copyright line moved inside the Help tab \u2014 it no longer repeats at the bottom of every other tab',
+                'Copyright line moved inside the Help tab — it no longer repeats at the bottom of every other tab',
             ]
         },
         {
@@ -360,7 +375,7 @@ export const VERSION = {
                 'Card view in Arabic: the duty title now types right-to-left like the task cards did — one hardcoded text-align: left was overriding the interface direction',
                 'It is now text-align: start, a logical value that follows the language instead of fighting it, so no separate RTL rule is needed',
                 'Card view in Arabic: the sticky duty column now pins to the right edge, where the duty card actually sits — it was pinned left and drifted out of view when scrolling a row with many tasks',
-                'Card view in Arabic: the duty card\u2019s rounded corners and drop shadow mirror with it, so the column no longer faces the wrong way',
+                'Card view in Arabic: the duty card’s rounded corners and drop shadow mirror with it, so the column no longer faces the wrong way',
                 'Removed a dead APP_VERSION constant from app.js that was never read and had drifted three major versions behind this file',
             ]
         },
