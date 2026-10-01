@@ -17,6 +17,8 @@ import { Renderer } from './renderer.js';
 import { showStatus } from './design-system.js';
 import { exportProject, importProject } from './fileEngine.js';
 import { getWordSettings, contrastText, hexToRgb, tintHex, BANNER_ALPHA } from './word-settings.js';
+import { getWorkshopData, applyWorkshopData, resetWorkshopData,
+         formatDateRange, workshopExportLines } from './workshop-info.js';
 
 
 /* ══════════════════════════════════════════════════════════════
@@ -55,7 +57,7 @@ const _LANG_AR    = 'ar-IQ';
 const _LANG_LATIN = 'en-US';
 
 /* Arabic + Supplement/Extended + Presentation Forms A and B. */
-const _ARABIC_RE = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+const _ARABIC_RE = /[؀-ۿݐ-ݿࢠ-ࣿﭐ-﷿ﹰ-﻿]/;
 const _hasArabic = (v) => _ARABIC_RE.test(String(v ?? ''));
 
 /* The library exposes no class for <w:lang>, but its serializer passes
@@ -364,6 +366,9 @@ export function clearAll() {
     // Clear Chart Info fields
     ['dacumDate', 'producedFor', 'producedBy', 'occupationTitle', 'jobTitle']
         .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+
+    // Workshop dates / format / venue (v4.13.0) back to defaults
+    resetWorkshopData();
 
     // Clear images
     producedForImage = null;
@@ -958,12 +963,15 @@ export async function exportToWord() {
         const TextRun   = _withArabicLang(_TextRun);
         const Paragraph = _withArabicLangParagraph(_Paragraph, TextRun);
 
+        /* Workshop dates / format / venue (v4.13.0). A multi-day
+           workshop prints as "from – to"; a single day as before. */
+        const _wk = getWorkshopData();
+        const _fmtWordDate = (iso) => {
+            const d = new Date(iso + 'T00:00:00');
+            return `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')}/${d.getFullYear()}`;
+        };
         const dacumDateValue = document.getElementById('dacumDate').value;
-        let dacumDate = '';
-        if (dacumDateValue) {
-            const dateObj = new Date(dacumDateValue + 'T00:00:00');
-            dacumDate = `${String(dateObj.getMonth()+1).padStart(2,'0')}/${String(dateObj.getDate()).padStart(2,'0')}/${dateObj.getFullYear()}`;
-        }
+        const dacumDate = formatDateRange(dacumDateValue, _wk.multiDay ? _wk.dacumDateTo : '', _fmtWordDate, ' – ');
         const producedFor     = document.getElementById('producedFor').value;
         const producedBy      = document.getElementById('producedBy').value;
         const occupationTitle = document.getElementById('occupationTitle').value;
@@ -980,6 +988,11 @@ export async function exportToWord() {
         children.push(new Paragraph({ children: [new TextRun({ text: t('word.occupationTitle', { title: occupationTitle }), bold: true, size: SZ_TITLE, color: C_HEADING })], spacing: { after: 200 }, bidirectional: _rtl() }));
         children.push(new Paragraph({ children: [new TextRun({ text: t('word.jobTitle', { title: jobTitle }), bold: true, size: SZ_TITLE, color: C_HEADING })], spacing: { after: 200 }, bidirectional: _rtl() }));
         if (dacumDate) children.push(new Paragraph({ children: [new TextRun({ text: t('word.dacumDate', { date: dacumDate }), bold: true, size: SZ_BODY })], spacing: { after: 200 }, bidirectional: _rtl() }));
+
+        // Workshop format + venue / platform
+        workshopExportLines(_wk).forEach(line => {
+            children.push(new Paragraph({ children: [new TextRun({ text: line, bold: true, size: SZ_BODY })], spacing: { after: 200 }, bidirectional: _rtl() }));
+        });
 
         if (producedFor) {
             children.push(new Paragraph({ children: [new TextRun({ text: t('word.producedFor', { name: producedFor }), bold: true, size: SZ_BODY })], spacing: { after: 200 }, bidirectional: _rtl() }));
@@ -1268,11 +1281,15 @@ export async function exportToPDF() {
         const trendsInput           = document.getElementById('trendsInput');
         const acronymsInput         = document.getElementById('acronymsInput');
 
-        let dacumDateFormatted = '';
-        if (dacumDateInput.value) {
-            const d = new Date(dacumDateInput.value + 'T00:00:00');
-            dacumDateFormatted = `${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}-${d.getFullYear()}`;
-        }
+        /* Workshop dates / format / venue (v4.13.0). The PDF keeps its
+           own MM-DD-YYYY format; a plain hyphen joins the range because
+           it is in every font the PDF may embed. */
+        const _wk = getWorkshopData();
+        const _fmtPdfDate = (iso) => {
+            const d = new Date(iso + 'T00:00:00');
+            return `${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}-${d.getFullYear()}`;
+        };
+        const dacumDateFormatted = formatDateRange(dacumDateInput.value, _wk.multiDay ? _wk.dacumDateTo : '', _fmtPdfDate, ' - ');
         if (!occupationTitleInput.value || !jobTitleInput.value) {
             alert(t('status.pdfMissingFields'));
             return;
@@ -1332,7 +1349,16 @@ export async function exportToPDF() {
         if (dacumDateFormatted) {
             pdf.setFontSize(13); setBoldFont();
             drawText(dacumDateFormatted, infoX, halfW, infoY, 0);
+            infoY += 8;
         }
+
+        // Workshop format + venue / platform, under the date
+        pdf.setFontSize(12); setBodyFont();
+        workshopExportLines(_wk).forEach(line => {
+            const ls = wrap(line, halfW);
+            drawLines(ls, infoX, halfW, infoY, 0);
+            infoY += ls.length * lineH12 + 1.5;
+        });
 
         pdf.setFontSize(14); setBoldFont(); hcOn();
         drawText(t('pdf.occupationTitle'), occX, halfW, occY, 0); blk(); occY += 7;
@@ -1687,11 +1713,18 @@ export function getChartInfoData() {
         panelMembers:   document.getElementById('panelMembers')?.value   || '',
         producedForImage: producedForImage || null,
         producedByImage:  producedByImage  || null,
+        // v4.13.0 — multiDay, dacumDateTo, workshopMode, venue
+        ...getWorkshopData(),
     };
 }
 
 /** Restore chart-info fields + logos to the DOM */
 export function applyChartInfoData(info) {
+    // Workshop fields first, and even for a record with no chartInfo:
+    // otherwise a project without them would inherit the previous
+    // project's multi-day / format / venue values left on screen.
+    applyWorkshopData(info && typeof info === 'object' ? info : {});
+
     if (!info || typeof info !== 'object') return;
     const set = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined) el.value = val; };
     set('dacumDate',       info.dacumDate);
@@ -1703,6 +1736,9 @@ export function applyChartInfoData(info) {
     set('facilitators',    info.facilitators);
     set('observers',       info.observers);
     set('panelMembers',    info.panelMembers);
+
+    // The "To" date depends on the start date just restored above.
+    applyWorkshopData(info);
 
     // Restore logo images
     _restoreImagePreview('producedFor', info.producedForImage);

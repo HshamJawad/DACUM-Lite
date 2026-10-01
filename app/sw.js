@@ -56,6 +56,9 @@
 //
 // v4.12.8 change log:
 //   • Added './toolbar-fit.js' to the shell (imported by i18n.js).
+//
+// v4.13.0 change log:
+//   • Added './workshop-info.js' to the shell (imported by events.js).
 // ============================================================
 
 // ── Version, derived from the registration URL ───────────────
@@ -94,6 +97,7 @@ const SHELL_ASSETS  = [
     './word-settings.js',
     './date-default.js',
     './toolbar-fit.js',
+    './workshop-info.js',
     './update-notifier.js',
     './manifest.json',
     './fonts/Cairo.woff2'

@@ -27,8 +27,8 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.12.9';        // Semantic Versioning
-export const APP_RELEASED = '2026-09-30';   // ISO 8601 (YYYY-MM-DD)
+export const APP_VERSION  = '4.13.0';        // Semantic Versioning
+export const APP_RELEASED = '2026-10-01';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
 // index.html registers  ./sw.js?v=<APP_VERSION>  and sw.js rebuilds
@@ -55,6 +55,19 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.13.0',
+            date: '2026-10-01',
+            changes: [
+                'Chart Info: new "Multi-day workshop (from – to)" option under DACUM Date. When ticked, a "To" date appears; the exports then show the date as a range',
+                'The "To" date opens on the day after the start date, can never fall before it, and is never left empty while visible, so Android does not draw its reversed Arabic placeholder in it',
+                'Chart Info: new Workshop format choice — In person, Online or Hybrid. The venue field follows it: Venue for in person, Online platform for online (e.g. Zoom, Teams), Venue / platform for hybrid — re-purposed rather than disabled, because an online workshop still has a place worth recording',
+                'Word and PDF title pages now show the date range, the workshop format and the venue or platform, in the interface language',
+                'The new values are stored inside chartInfo (multiDay, dacumDateTo, workshopMode, venue), so they are saved with the project and travel in exported project files; older projects open as a single-day, in-person workshop',
+                'Clear All resets them, and switching projects never carries them over from the previous project',
+                'New module workshop-info.js, imported by events.js and added to the service-worker shell',
+            ]
+        },
         {
             version: '4.12.9',
             date: '2026-09-30',

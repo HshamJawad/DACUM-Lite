@@ -2096,3 +2096,89 @@ html[dir="rtl"] body .top-toolbar {
   left: 0;
   transition: right 0.28s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* ================================================================
+   WORKSHOP DATES / FORMAT / VENUE — Chart Info   (v4.13.0)
+   Built by workshop-info.js directly under DACUM Date.
+   ================================================================ */
+.wk-block { margin: -2px 0 10px; }
+
+/* base.css makes every <label> a bold 1.1em block — the checkbox row
+   needs an inline, lighter label instead. */
+.wk-block label.wk-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0 14px;
+  font-size: 0.98em;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+}
+.wk-check input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin: 0;
+  flex-shrink: 0;
+  accent-color: var(--brand-primary-btn, #4f46e5);
+  cursor: pointer;
+}
+
+.wk-to[hidden] { display: none !important; }
+.wk-to input[type="date"] { width: 100%; }
+
+.wk-label {
+  margin-bottom: 8px;
+  color: var(--text-body, #333);
+  font-weight: 600;
+  font-size: 1.1em;
+}
+
+/* Segmented control: three radio pills in one rounded track */
+.wk-seg {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+.wk-block label.wk-seg-opt {
+  display: inline-flex;
+  margin: 0;
+  font-size: 0.95em;
+  font-weight: 600;
+  cursor: pointer;
+}
+.wk-seg-opt input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  pointer-events: none;
+}
+.wk-seg-opt span {
+  padding: 8px 18px;
+  border-radius: 7px;
+  color: #475569;
+  transition: background 0.15s, color 0.15s, box-shadow 0.15s;
+}
+.wk-seg-opt:hover span { background: #e2e8f0; color: #1e293b; }
+.wk-seg-opt input:checked + span {
+  background: var(--brand-primary-btn, #4f46e5);
+  color: #fff;
+  box-shadow: 0 2px 6px color-mix(in srgb, var(--brand-primary-btn, #4f46e5) 30%, transparent);
+}
+.wk-seg-opt input:focus-visible + span {
+  outline: 2px solid var(--brand-primary, #6366f1);
+  outline-offset: 2px;
+}
+
+@media (max-width: 600px) {
+  .wk-seg { display: flex; width: 100%; }
+  .wk-block label.wk-seg-opt { flex: 1 1 0; }
+  .wk-seg-opt span { flex: 1; text-align: center; padding: 9px 6px; }
+}
+/* Own spacing, independent of the .mb-10 utility in base.css */
+.wk-block .wk-mode { margin-bottom: 14px; }
