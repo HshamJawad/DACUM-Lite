@@ -100,6 +100,20 @@ setHistoryRender(state => {
     Renderer.renderAll(state);             // then paint content
 });
 
+// ── Live sidebar counts (v4.13.3) ─────────────────────────────
+// Every add / delete / move / undo / redo / snapshot restore of a duty
+// or task ends in Renderer.renderAll(), whether it is called from here,
+// from events.js or from history.js. Wrapping that one method covers
+// all of those paths without touching the modules that call it.
+{
+    const _renderAll = Renderer.renderAll.bind(Renderer);
+    Renderer.renderAll = function (state) {
+        const out = _renderAll(state);
+        try { _refreshActiveCardCounts(); } catch (e) { /* cosmetic only */ }
+        return out;
+    };
+}
+
 // ── Wire action callbacks into Renderer ───────────────────────
 setRendererActions({ addDuty, removeDuty, addTask, removeTask, clearDuty });
 
@@ -245,6 +259,33 @@ function _taskCountStr(n) {
     let lang = 'en';
     try { lang = getLang() || 'en'; } catch (e) { /* default */ }
     return (_TASK_COUNT[lang] || _TASK_COUNT.en)(n);
+}
+
+/* ── Duty + task count line, shared by the card and the live refresh ── */
+function _countsStr(duties) {
+    const list      = Array.isArray(duties) ? duties : [];
+    const dutyCount = list.length;
+    const dutyStr   = dutyCount === 1
+        ? t('sidebar.dutyCount.one')
+        : t('sidebar.dutyCount.other', { n: dutyCount });
+    const taskCount = list.reduce((sum, d) => sum + (Array.isArray(d?.tasks) ? d.tasks.length : 0), 0);
+    return `📋 ${dutyStr} · ${_taskCountStr(taskCount)}`;
+}
+
+/* ── Live counts on the ACTIVE project card (v4.13.3) ────────
+   The sidebar used to be rebuilt only on project switch, language
+   change or reload, so after adding duties or tasks the card kept
+   showing the old numbers. This updates just that one text span from
+   the live AppState — no rebuild, so it can never interrupt an inline
+   rename, steal focus, or reorder the list while the user works. */
+function _refreshActiveCardCounts() {
+    const id = getActiveProject()?.id;
+    if (!id) return;
+    const card = document.querySelector(`.sb-project-card[data-pid="${CSS.escape(id)}"]`);
+    const el   = card?.querySelector('.sb-meta-counts');
+    if (!el) return;
+    const text = _countsStr(AppState.duties);
+    if (el.textContent !== text) el.textContent = text;
 }
 
 /** Save current project data before switching away */
@@ -416,14 +457,9 @@ export function renderSidebar(filterText) {
     list.innerHTML = '';
     visible.forEach(proj => {
         const isActive  = proj.id === active?.id;
-        const dutyCount = proj.state?.duties?.length || 0;
-        const dutyStr   = dutyCount === 1
-            ? t('sidebar.dutyCount.one')
-            : t('sidebar.dutyCount.other', { n: dutyCount });
-        // v4.13.2 — total tasks across all duties, shown beside the duty count
-        const taskCount = (proj.state?.duties || [])
-            .reduce((sum, d) => sum + (Array.isArray(d?.tasks) ? d.tasks.length : 0), 0);
-        const taskStr   = _taskCountStr(taskCount);
+        // v4.13.2 — duties + total tasks. The active card reads the LIVE
+        // AppState (the stored record can lag behind the last edit).
+        const countsStr = _countsStr(isActive ? AppState.duties : proj.state?.duties);
         const dateStr   = _relDate(proj.updatedAt);
 
         // ── Editing-mode flag ─────────────────────────────────
@@ -483,7 +519,7 @@ export function renderSidebar(filterText) {
         metaEl.className = 'sb-card-meta';
         metaEl.innerHTML =
             `<span class="sb-meta-item">🕐 ${dateStr}</span>` +
-            `<span class="sb-meta-item">📋 ${dutyStr} · ${taskStr}</span>`;
+            `<span class="sb-meta-item sb-meta-counts">${countsStr}</span>`;
 
         // ── Card body (switches project on click) ─────────────
         const cardBody = document.createElement('div');

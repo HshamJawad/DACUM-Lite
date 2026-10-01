@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.13.2';        // Semantic Versioning
+export const APP_VERSION  = '4.13.3';        // Semantic Versioning
 export const APP_RELEASED = '2026-10-01';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,14 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.13.3',
+            date: '2026-10-01',
+            changes: [
+                'The duty and task counts on the active project card now update immediately when duties or tasks are added, deleted, moved, undone or restored from a snapshot — before, they changed only on project switch, language change or reload, so the card could show numbers that no longer matched the chart',
+                'Only the count text of the active card is updated, so an inline rename in progress is never interrupted',
+            ]
+        },
         {
             version: '4.13.2',
             date: '2026-10-01',
