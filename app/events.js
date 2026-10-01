@@ -1038,8 +1038,16 @@ export async function exportToWord() {
                 for (let col = 0; col < tasksPerRow; col++) {
                     const ti = row * tasksPerRow + col;
                     if (ti < dutyData.tasks.length) {
-                        const tLabel = t('word.taskLabel', { letter, n: ti + 1, text: dutyData.tasks[ti] });
-                        rowCells.push(new TableCell({ children: [new Paragraph({ children: [new TextRun({ text: tLabel, size: SZ_BODY })], bidirectional: _rtl() })], width: { size: 25, type: WidthType.PERCENTAGE } }));
+                        /* v4.13.1 — same layout as the PDF cell: the task label
+                           ("Task A1:" / "Tâche A1 :" / "المهمة A1:") in bold on its
+                           own line, the task text in regular weight beneath it.
+                           pdf.taskLabel exists in all three languages and is the
+                           exact wording the PDF prints. */
+                        const tLabel = t('pdf.taskLabel', { letter, n: ti + 1 });
+                        rowCells.push(new TableCell({ children: [
+                            new Paragraph({ children: [new TextRun({ text: tLabel, bold: true, size: SZ_BODY })], bidirectional: _rtl() }),
+                            new Paragraph({ children: [new TextRun({ text: dutyData.tasks[ti], size: SZ_BODY })], bidirectional: _rtl() })
+                        ], width: { size: 25, type: WidthType.PERCENTAGE } }));
                     } else {
                         rowCells.push(new TableCell({ children: [new Paragraph('')], width: { size: 25, type: WidthType.PERCENTAGE } }));
                     }

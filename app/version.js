@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.13.0';        // Semantic Versioning
+export const APP_VERSION  = '4.13.1';        // Semantic Versioning
 export const APP_RELEASED = '2026-10-01';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,13 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.13.1',
+            date: '2026-10-01',
+            changes: [
+                'Word export, Duties and Tasks: each task cell now matches the PDF — the task label (Task A1: / Tâche A1 : / المهمة A1:) in bold on its own line, the task text in regular weight beneath it, in all three languages',
+            ]
+        },
         {
             version: '4.13.0',
             date: '2026-10-01',
