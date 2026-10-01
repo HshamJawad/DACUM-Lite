@@ -8,7 +8,7 @@
 // Connects all modules, initialises project manager, renders
 // the sidebar, and bootstraps the app on DOMContentLoaded.
 // ============================================================
-import { t }                                                                from './i18n.js';
+import { t, getLang }                                                       from './i18n.js';
 import { AppState, StateManager, applyProjectState, extractProjectState } from './state.js';
 import { showStatus }                                                       from './design-system.js';
 import {
@@ -228,6 +228,25 @@ function _relDate(isoString) {
     return new Date(isoString).toLocaleDateString([], { month: 'short', day: 'numeric' });
 }
 
+/* ── Task count for the project card (v4.13.2) ───────────────
+   Kept here rather than in translations.js so a stale cached
+   translations.js during an update can never show a raw key on
+   every project card. Arabic follows its plural rules: 1 مهمة,
+   2 مهمتان, 3–10 مهام, 11+ مهمة. */
+const _TASK_COUNT = {
+    en: n => n === 1 ? '1 task' : `${n} tasks`,
+    fr: n => n <= 1 ? `${n} tâche` : `${n} tâches`,
+    ar: n => n === 1 ? 'مهمة واحدة'
+           : n === 2 ? 'مهمتان'
+           : (n >= 3 && n <= 10) ? `${n} مهام`
+           : `${n} مهمة`
+};
+function _taskCountStr(n) {
+    let lang = 'en';
+    try { lang = getLang() || 'en'; } catch (e) { /* default */ }
+    return (_TASK_COUNT[lang] || _TASK_COUNT.en)(n);
+}
+
 /** Save current project data before switching away */
 function _saveCurrentProject() {
     // extractProjectState() captures AppState (duties/tasks/snapshots).
@@ -401,6 +420,10 @@ export function renderSidebar(filterText) {
         const dutyStr   = dutyCount === 1
             ? t('sidebar.dutyCount.one')
             : t('sidebar.dutyCount.other', { n: dutyCount });
+        // v4.13.2 — total tasks across all duties, shown beside the duty count
+        const taskCount = (proj.state?.duties || [])
+            .reduce((sum, d) => sum + (Array.isArray(d?.tasks) ? d.tasks.length : 0), 0);
+        const taskStr   = _taskCountStr(taskCount);
         const dateStr   = _relDate(proj.updatedAt);
 
         // ── Editing-mode flag ─────────────────────────────────
@@ -460,7 +483,7 @@ export function renderSidebar(filterText) {
         metaEl.className = 'sb-card-meta';
         metaEl.innerHTML =
             `<span class="sb-meta-item">🕐 ${dateStr}</span>` +
-            `<span class="sb-meta-item">📋 ${dutyStr}</span>`;
+            `<span class="sb-meta-item">📋 ${dutyStr} · ${taskStr}</span>`;
 
         // ── Card body (switches project on click) ─────────────
         const cardBody = document.createElement('div');

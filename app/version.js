@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.13.1';        // Semantic Versioning
+export const APP_VERSION  = '4.13.2';        // Semantic Versioning
 export const APP_RELEASED = '2026-10-01';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,13 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.13.2',
+            date: '2026-10-01',
+            changes: [
+                'Sidebar project cards now show the number of tasks next to the number of duties (e.g. "2 duties · 7 tasks"), counted across all duties, in all three languages; Arabic follows its plural forms (مهمة واحدة، مهمتان، 3 مهام، 11 مهمة)',
+            ]
+        },
         {
             version: '4.13.1',
             date: '2026-10-01',
