@@ -27,8 +27,8 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.13.3';        // Semantic Versioning
-export const APP_RELEASED = '2026-10-01';   // ISO 8601 (YYYY-MM-DD)
+export const APP_VERSION  = '4.14.0';        // Semantic Versioning
+export const APP_RELEASED = '2026-10-09';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
 // index.html registers  ./sw.js?v=<APP_VERSION>  and sw.js rebuilds
@@ -55,6 +55,16 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.14.0',
+            date: '2026-10-09',
+            changes: [
+                'Chart Info: two optional fields under Job Title — Sector (e.g. Automotive, Healthcare, IT) and Country / Context (e.g. Iraq, Middle East) — in all three languages, the same fields as DACUM Live Pro',
+                'They are saved with the project, travel in exported project files (chartInfo.sector, chartInfo.context), and DACUM Live Pro 3.95.1 reads them when it opens a Lite project',
+                'Clear All empties them, and switching projects never carries them over from the previous project; older projects open with them empty',
+                'Fixed: a new project no longer starts with the previous project\'s Chart Info (occupation, job title, scope, bodies, team, logos) — it opens empty, with today\'s date; projects saved before a field existed open with that field empty',
+            ]
+        },
         {
             version: '4.13.3',
             date: '2026-10-01',

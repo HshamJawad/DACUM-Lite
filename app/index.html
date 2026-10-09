@@ -1180,6 +1180,22 @@
                        placeholder="e.g., Service Technician Level 2"
                        data-i18n-placeholder="chartInfo.jobTitle.ph">
             </div>
+
+            <!-- v4.14.0 — same optional fields as DACUM Live Pro, so a
+                 Lite project carries them over when opened there. -->
+            <div class="mb-10">
+                <label for="sector" data-i18n="chartInfo.sector">🏭 Sector (Optional):</label>
+                <input type="text" id="sector"
+                       placeholder="e.g., Automotive, Healthcare, IT"
+                       data-i18n-placeholder="chartInfo.sector.ph">
+            </div>
+
+            <div class="mb-10">
+                <label for="context" data-i18n="chartInfo.context">🌍 Country / Context (Optional):</label>
+                <input type="text" id="context"
+                       placeholder="e.g., Iraq, Middle East"
+                       data-i18n-placeholder="chartInfo.context.ph">
+            </div>
         </div>
 
         <!-- Scope of Work -->

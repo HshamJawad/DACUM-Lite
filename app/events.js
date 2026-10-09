@@ -364,7 +364,7 @@ export function clearAll() {
     if (!confirm(t('confirm.clearAll'))) return;
 
     // Clear Chart Info fields
-    ['dacumDate', 'producedFor', 'producedBy', 'occupationTitle', 'jobTitle']
+    ['dacumDate', 'producedFor', 'producedBy', 'occupationTitle', 'jobTitle', 'sector', 'context']
         .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
 
     // Workshop dates / format / venue (v4.13.0) back to defaults
@@ -746,6 +746,8 @@ export function saveToJSON() {
                 producedBy:       document.getElementById('producedBy').value,
                 occupationTitle:  document.getElementById('occupationTitle').value,
                 jobTitle:         document.getElementById('jobTitle').value,
+                sector:           document.getElementById('sector')?.value  || '',
+                context:          document.getElementById('context')?.value || '',
                 producedForImage,
                 producedByImage
             },
@@ -807,7 +809,7 @@ export function loadFromJSON(event) {
 
                 // Chart Info
                 if (data.chartInfo) {
-                    ['dacumDate','producedFor','producedBy','occupationTitle','jobTitle']
+                    ['dacumDate','producedFor','producedBy','occupationTitle','jobTitle','sector','context']
                         .forEach(id => {
                             const el = document.getElementById(id);
                             if (el) el.value = data.chartInfo[id] || '';
@@ -1715,6 +1717,9 @@ export function getChartInfoData() {
         producedBy:     document.getElementById('producedBy')?.value     || '',
         occupationTitle:document.getElementById('occupationTitle')?.value|| '',
         jobTitle:       document.getElementById('jobTitle')?.value       || '',
+        // v4.14.0 — optional, as in DACUM Live Pro
+        sector:         document.getElementById('sector')?.value         || '',
+        context:        document.getElementById('context')?.value        || '',
         scopeOfWork:    document.getElementById('scopeOfWork')?.value    || '',
         facilitators:   document.getElementById('facilitators')?.value   || '',
         observers:      document.getElementById('observers')?.value      || '',
@@ -1733,13 +1738,20 @@ export function applyChartInfoData(info) {
     // project's multi-day / format / venue values left on screen.
     applyWorkshopData(info && typeof info === 'object' ? info : {});
 
-    if (!info || typeof info !== 'object') return;
-    const set = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined) el.value = val; };
+    // v4.14.0: a project with no chart info (a new one) or a field it
+    // lacks (an older one) gets the field emptied. Returning early here
+    // used to leave the previous project's occupation, job title, team…
+    // on screen, and they were then saved into the new project. An empty
+    // DACUM Date becomes today (date-default.js).
+    if (!info || typeof info !== 'object') info = {};
+    const set = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
     set('dacumDate',       info.dacumDate);
     set('producedFor',     info.producedFor);
     set('producedBy',      info.producedBy);
     set('occupationTitle', info.occupationTitle);
     set('jobTitle',        info.jobTitle);
+    set('sector',          info.sector);
+    set('context',         info.context);
     set('scopeOfWork',     info.scopeOfWork);
     set('facilitators',    info.facilitators);
     set('observers',       info.observers);
