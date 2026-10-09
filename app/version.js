@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.14.0';        // Semantic Versioning
+export const APP_VERSION  = '4.14.1';        // Semantic Versioning
 export const APP_RELEASED = '2026-10-09';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,16 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.14.1',
+            date: '2026-10-09',
+            changes: [
+                'User Guide: one file, user-guide.html, in English, French and Arabic, with a language switch in the top bar — user-guide-fr.html and user-guide-ar.html are gone. It opens in the language of the DACUM Lite interface (or ?lang=en|fr|ar) and remembers a language chosen there',
+                'In Arabic the whole guide reads right to left: the top bar starts with Overview on the right and the contents list sits on the right',
+                'Export: a new part on the project file (JSON) — what it holds, and its uses: a backup, moving or sharing the project, carrying on in DACUM Live Pro',
+                'New section "Continue in DACUM Live Pro", and the Sector and Country / Context fields under Chart Info; the About card shows the current e-mail and LinkedIn in every language',
+            ]
+        },
         {
             version: '4.14.0',
             date: '2026-10-09',
