@@ -76,7 +76,6 @@ body {
   padding: 0 40px;
   height: 58px;
   overflow-x: auto;
-  flex-direction: row-reverse;
 }
 .nav-brand {
   display: flex;
@@ -94,7 +93,7 @@ body {
   font-size: 14px;
 }
 .nav-brand-name { font-size: .9em; font-weight: 700; color: var(--indigo); }
-.nav-links { display: flex; gap: 2px; flex-direction: row-reverse; }
+.nav-links { display: flex; gap: 2px; }
 .nav-link {
   padding: 6px 13px;
   border-radius: 7px;
@@ -182,10 +181,14 @@ body {
   margin: 0 auto;
   padding: 48px 32px 80px;
   display: grid;
-  grid-template-columns: 1fr 240px;
+  /* RTL: the first column is on the right, so the contents list sits
+     on the right and the text beside it, as an Arabic reader expects. */
+  grid-template-columns: 240px 1fr;
   gap: 36px;
   align-items: start;
 }
+.page-wrap > .toc  { grid-column: 1; grid-row: 1; }
+.page-wrap > main  { grid-column: 2; grid-row: 1; min-width: 0; }
 
 /* ── Sidebar TOC ────────────────────────────────────────────── */
 .toc {
@@ -443,6 +446,7 @@ footer {
 /* Responsive */
 @media (max-width: 860px) {
   .page-wrap { grid-template-columns: 1fr; }
+  .page-wrap > main { grid-column: 1; }
   .toc { display: none; }
   .feat-grid { grid-template-columns: 1fr 1fr; }
 }
@@ -535,6 +539,10 @@ footer {
           <div class="feat-desc">أدِر مخططات DACUM متعددة في الشريط الجانبي. يُحفظ كل مشروع تلقائياً.</div>
         </div>
       </div>
+      <div class="note note--info">
+        <span class="note-icon">🔗</span>
+        <span><strong>هل تحتاج إلى أكثر من المخطط؟</strong> يبني DACUM Lite المخطط نفسه. وحين يمتد التحليل إلى التحقق من المهام، واختيار المهام وتحليلها، والكفاءات، ومخرجات التعلم، والوحدات التدريبية، افتح المشروع نفسه في <strong>DACUM Live Pro</strong>. انظر <a href="#live-pro">المتابعة في DACUM Live Pro</a>.</span>
+      </div>
     </section>
 
     <!-- ── Quick Start ─────────────────────────────────────── -->
@@ -563,6 +571,9 @@ footer {
         <span class="note-icon">💡</span>
         <span>تشمل النطاقات الجيدة: المسؤوليات الرئيسية، الأدوات النموذجية، بيئات العمل، وما هو مستثنى صراحةً (مثل الوظائف الإدارية).</span>
       </div>
+
+      <h3 id="sector">🏭 القطاع والدولة / السياق</h3>
+      <p>حقلان اختياريان تحت حقل العمل: القطاع (مثل المركبات، الصحة، تكنولوجيا المعلومات)، والدولة أو السياق الإقليمي (مثل العراق، الشرق الأوسط). يُحفظان مع المشروع ويُنقلان إلى DACUM Live Pro، حيث يساعدان الذكاء الاصطناعي على اقتراح مهام تناسب سوق العمل المحلي. ولا يظهران في ملفات Word وPDF المصدَّرة.</p>
 
       <h3 id="panel">👥 لجنة ورشة العمل</h3>
       <p>يُسجِّل قسم لجنة ورشة العمل أسماء جميع الحاضرين في ورشة DACUM:</p>
@@ -716,6 +727,22 @@ footer {
       <p>قبل إجراء تعديل كبير، احفظ لقطة مُسمَّاة باستخدام زر <code>📸</code> في شريط الأدوات. تتيح لك اللقطات استعادة أي حالة سابقة للمخطط بنقرة واحدة.</p>
     </section>
 
+    <!-- ── DACUM Live Pro ─────────────────────────────────── -->
+    <section class="doc-section" id="live-pro">
+      <h2>🔗 المتابعة في DACUM Live Pro</h2>
+      <p>يغطي DACUM Lite معلومات المخطط، والواجبات والمهام، والمعلومات الإضافية. أما <strong>DACUM Live Pro</strong> فيكمل المخطط نفسه: التحقق من المهام والتصويت المباشر في الورشة، واختيار المهام للتدريب، وتحليل المهام، وعناقيد الكفاءات، والمعيار المهني، ومخرجات التعلم، والوحدات التدريبية، ومنهج الوحدة، مع مساعدة الذكاء الاصطناعي في كل مرحلة.</p>
+      <div class="steps">
+        <div class="step"><div class="step-n">1</div><div class="step-body"><strong>صدّر المشروع</strong><span>اضغط <code>📤 تصدير المشروع</code> في شريط الأدوات، فيُحفظ المشروع في ملف <code>.json</code>.</span></div></div>
+        <div class="step"><div class="step-n">2</div><div class="step-body"><strong>افتح DACUM Live Pro</strong><span><a href="https://dacumlivepropilot.hshaam77.workers.dev/" target="_blank" rel="noopener">dacumlivepropilot.hshaam77.workers.dev</a></span></div></div>
+        <div class="step"><div class="step-n">3</div><div class="step-body"><strong>استورد الملف</strong><span>اضغط <code>⬆ استيراد</code> في DACUM Live Pro واختر الملف، فيصبح مشروعاً جديداً باسم المهنة.</span></div></div>
+        <div class="step"><div class="step-n">4</div><div class="step-body"><strong>تابع العمل</strong><span>واصل من تبويب <em>التحقق من المهام</em>.</span></div></div>
+      </div>
+      <div class="note note--info">
+        <span class="note-icon">ℹ️</span>
+        <span>يُنقل كل ما في التبويبات الثلاثة: معلومات المخطط مع تواريخ الورشة وشكلها ومكانها، والشعارات، ولجنة الورشة، والواجبات والمهام بترتيبها، وأقسام المعلومات الإضافية ومعها الأقسام المخصّصة. أما اللقطات فتبقى في DACUM Lite.</span>
+      </div>
+    </section>
+
     <!-- ── Shortcuts ───────────────────────────────────────── -->
     <section class="doc-section" id="shortcuts">
       <h2>⌨️ اختصارات لوحة المفاتيح</h2>
@@ -761,6 +788,7 @@ footer {
       <li><a href="#quickstart">البداية السريعة</a></li>
       <li><a href="#chart-info">معلومات المخطط</a></li>
       <li class="toc-sub"><a href="#scope">نطاق العمل</a></li>
+      <li class="toc-sub"><a href="#sector">القطاع والدولة</a></li>
       <li class="toc-sub"><a href="#panel">لجنة ورشة العمل</a></li>
       <li><a href="#duties-tasks">الواجبات والمهام</a></li>
       <li class="toc-sub"><a href="#numbering">ترقيم DACUM</a></li>
@@ -770,6 +798,7 @@ footer {
       <li><a href="#additional">معلومات إضافية</a></li>
       <li><a href="#projects">المشاريع</a></li>
       <li><a href="#export">التصدير</a></li>
+      <li><a href="#live-pro">المتابعة في DACUM Live Pro</a></li>
       <li><a href="#shortcuts">الاختصارات</a></li>
       <li><a href="#about">عن المطوّر</a></li>
     </ul>
