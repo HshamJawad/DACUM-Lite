@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.15.6';        // Semantic Versioning
+export const APP_VERSION  = '4.15.7';        // Semantic Versioning
 export const APP_RELEASED = '2026-10-28';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,13 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.15.7',
+            date: '2026-10-28',
+            changes: [
+                'Added anonymous visit counting (Cloudflare Web Analytics: no cookies, no personal data, live site only). Nothing is sent from localhost or from the automated tests',
+            ]
+        },
         {
             version: '4.15.6',
             date: '2026-10-28',
