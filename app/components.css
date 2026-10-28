@@ -2314,3 +2314,28 @@ html[dir="rtl"] body .top-toolbar {
   .cv-agree-btn::before { content: ''; position: absolute; inset: -8px -6px; }
   .cv-agree-btn:hover { transform: none; }
 }
+
+/* ================================================================
+   DUTY CARD OUTLINE FIX  (v4.15.2)
+   The duty card sits flush against the edge of .cv-duty-row, which
+   clips its content with a 14 px rounded corner (--radius-lg). The
+   card was rounded 12 px on its physical LEFT side only, so:
+     • in Arabic (card on the right) its square corners were cut off
+       by the row's curve and the outline vanished at the corners;
+     • in English the 12 px vs 14 px mismatch nibbled the outline too.
+   The card's outer corners now use the row's own radius, on the side
+   that faces the row's edge (flips with dir=rtl), so the border
+   follows the clip curve exactly. The "agreed" ring is drawn inside
+   the card, because a ring outside it was clipped along the row edge.
+   ================================================================ */
+.cv-duty-card {
+  border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+}
+html[dir="rtl"] .cv-duty-card {
+  border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+  box-shadow: -2px 0 8px color-mix(in srgb, var(--brand-primary) 10%, transparent);
+}
+.cv-duty-card.is-agreed,
+html[dir="rtl"] .cv-duty-card.is-agreed {
+  box-shadow: inset 0 0 0 1px var(--agree-color);
+}
