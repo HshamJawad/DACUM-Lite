@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.15.2';        // Semantic Versioning
+export const APP_VERSION  = '4.15.3';        // Semantic Versioning
 export const APP_RELEASED = '2026-10-28';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,13 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.15.3',
+            date: '2026-10-28',
+            changes: [
+                'Removed the pop animation on the 👍 button: adding a duty or task redraws the board, which replayed the animation on every agreed button so they blinked. The button now just changes colour',
+            ]
+        },
         {
             version: '4.15.2',
             date: '2026-10-28',

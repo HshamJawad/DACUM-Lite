@@ -2294,15 +2294,9 @@ html[dir="rtl"] body .top-toolbar {
   box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.22);
 }
 
-/* Short pop when it flips on — skipped for reduced-motion users */
-@media (prefers-reduced-motion: no-preference) {
-  .cv-agree-btn.is-agreed { animation: agreePop 0.28s ease-out; }
-}
-@keyframes agreePop {
-  0%   { transform: scale(0.8); }
-  60%  { transform: scale(1.18); }
-  100% { transform: scale(1); }
-}
+/* No pop animation (removed in v4.15.3): adding a duty or task redraws
+   the board, which replayed it on every agreed button and made them
+   blink. The colour change alone shows the state. */
 
 /* Touch devices (tablets, phones): the visible button stays compact,
    but the tappable area grows to ~44 px with an invisible halo, so a
