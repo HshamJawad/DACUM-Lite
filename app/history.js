@@ -181,6 +181,28 @@ export function makeEditTaskCmd(dutyId, taskId, oldVal, newVal) {
     };
 }
 
+/**
+ * TOGGLE_AGREE — the 👍 "the group agrees" mark on a duty or a task.
+ * taskId === null means the mark is on the duty itself.
+ * The flag is stored as `agreed: true` and deleted when off, so a
+ * chart nobody has voted on stays byte-identical to older projects.
+ */
+export function makeToggleAgreeCmd(dutyId, taskId, oldVal, newVal) {
+    const _set = (val) => {
+        const d = AppState.duties.find(d => d.id === dutyId);
+        if (!d) return;
+        const target = taskId ? d.tasks.find(t => t.id === taskId) : d;
+        if (!target) return;
+        if (val) target.agreed = true; else delete target.agreed;
+    };
+    return {
+        type: 'TOGGLE_AGREE',
+        payload: { dutyId, taskId, oldVal, newVal },
+        execute() { _set(newVal); },
+        undo()    { _set(oldVal); }
+    };
+}
+
 /** CLEAR_ALL — stores entire prior state for single-step undo */
 export function makeClearAllCmd(priorDuties, priorDutyCount, priorTaskCounts) {
     return {

@@ -2220,3 +2220,90 @@ html[dir="rtl"] body .top-toolbar {
 }
 /* Own spacing, independent of the .mb-10 utility in base.css */
 .wk-block .wk-mode { margin-bottom: 14px; }
+
+/* ================================================================
+   AGREEMENT MARK 👍  (v4.15.0) — card view
+   A round thumbs-up on every duty and task card. During a workshop
+   the facilitator (or a participant) taps it to record that the
+   panel agrees with the item. Neutral until tapped, then green with
+   a green card outline, so agreed items read from across the room.
+   ================================================================ */
+:root { --agree-color: #16a34a; --agree-color-deep: #15803d; }
+
+/* Thumb + delete sit together at the card's top corner */
+.cv-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cv-agree-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  padding: 0;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #94a3b8;
+  border: 1.5px solid #dbe3ee;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  cursor: pointer;
+  gap: 0;
+  font-size: 1em;
+  touch-action: manipulation;          /* no double-tap-zoom delay on tablets */
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  transition: background 0.18s, color 0.18s, border-color 0.18s, box-shadow 0.18s, transform 0.12s;
+}
+.cv-agree-btn svg { display: block; width: 18px; height: 18px; }
+.cv-agree-btn:hover {
+  color: var(--agree-color);
+  border-color: var(--agree-color);
+  transform: none;
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.25);
+}
+.cv-agree-btn:active { transform: scale(0.92); }
+.cv-agree-btn:focus-visible {
+  outline: 2px solid var(--agree-color-deep);
+  outline-offset: 2px;
+}
+
+/* Agreed: solid green, filled thumb */
+.cv-agree-btn.is-agreed {
+  background: var(--agree-color);
+  color: #ffffff;
+  border-color: var(--agree-color-deep);
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.4);
+}
+.cv-agree-btn.is-agreed svg { fill: currentColor; fill-opacity: 0.22; }
+.cv-agree-btn.is-agreed:hover { background: var(--agree-color-deep); color: #ffffff; }
+
+/* The card itself: green outline + soft ring (specificity beats the
+   per-card border colours set earlier in this file). */
+.cv-duty-card.is-agreed,
+.cv-task-card.is-agreed {
+  border-color: var(--agree-color);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.22);
+}
+
+/* Short pop when it flips on — skipped for reduced-motion users */
+@media (prefers-reduced-motion: no-preference) {
+  .cv-agree-btn.is-agreed { animation: agreePop 0.28s ease-out; }
+}
+@keyframes agreePop {
+  0%   { transform: scale(0.8); }
+  60%  { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+
+/* Touch devices (tablets, phones): a thumb-sized target, and extra
+   space beside the small × so a tap on 👍 never lands on delete. */
+@media (hover: none), (pointer: coarse) {
+  .cv-agree-btn { width: 40px; height: 40px; min-width: 40px; }
+  .cv-agree-btn svg { width: 22px; height: 22px; }
+  .cv-card-actions { gap: 12px; }
+  .cv-agree-btn:hover { transform: none; }
+}
