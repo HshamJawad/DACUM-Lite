@@ -527,27 +527,6 @@ function _render() {
             </div>
         </section>
 
-        <!-- ── Sizes: Word only ───────────────────────────── -->
-        <section class="ws-section">
-            <h4 class="ws-section-title">
-                <span>${t('settings.groupSizes')}</span>
-                ${_badges(['word'])}
-            </h4>
-
-            <div class="ws-field">
-                <label class="ws-label" for="wsTitleSize">${t('settings.titleSize')}</label>
-                ${_sizeSelect('wsTitleSize', s.titleSize)}
-            </div>
-            <div class="ws-field">
-                <label class="ws-label" for="wsHeadingSize">${t('settings.headingSize')}</label>
-                ${_sizeSelect('wsHeadingSize', s.headingSize)}
-            </div>
-            <div class="ws-field">
-                <label class="ws-label" for="wsBodySize">${t('settings.bodySize')}</label>
-                ${_sizeSelect('wsBodySize', s.bodySize)}
-            </div>
-            <p class="ws-hint ws-hint--why">${t('settings.sizeScopeNote')}</p>
-        </section>
 
         <!-- ── Preview ────────────────────────────────────── -->
         <section class="ws-section">
@@ -574,6 +553,28 @@ function _render() {
                 <div class="ws-preview-body">${t('settings.previewBody')}</div>
                 <div class="ws-preview-heading" style="color:#${s.headingColor};margin-top:8px">${t('settings.previewHeading')}</div>
             </div>
+        </section>
+
+        <!-- ── Sizes: Word only — last, below the preview (v4.15.5) ── -->
+        <section class="ws-section">
+            <h4 class="ws-section-title">
+                <span>${t('settings.groupSizes')}</span>
+                ${_badges(['word'])}
+            </h4>
+
+            <div class="ws-field">
+                <label class="ws-label" for="wsTitleSize">${t('settings.titleSize')}</label>
+                ${_sizeSelect('wsTitleSize', s.titleSize)}
+            </div>
+            <div class="ws-field">
+                <label class="ws-label" for="wsHeadingSize">${t('settings.headingSize')}</label>
+                ${_sizeSelect('wsHeadingSize', s.headingSize)}
+            </div>
+            <div class="ws-field">
+                <label class="ws-label" for="wsBodySize">${t('settings.bodySize')}</label>
+                ${_sizeSelect('wsBodySize', s.bodySize)}
+            </div>
+            <p class="ws-hint ws-hint--why">${t('settings.sizeScopeNote')}</p>
         </section>
     `;
 
