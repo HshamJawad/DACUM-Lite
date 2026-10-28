@@ -86,6 +86,47 @@ export function createDeleteCircle({ type = 'task', onClick = null, title = 'Rem
     return btn;
 }
 
+// ── Agree (👍) toggle ─────────────────────────────────────────
+/**
+ * createAgreeButton({ agreed, titleOn, titleOff, onToggle })
+ * Round thumbs-up toggle for duty / task cards: tapped during a
+ * workshop to record that the panel agrees with the item.
+ * onToggle(nextValue) is called with the new boolean; the button
+ * updates its own look immediately (no full re-render, so a tablet's
+ * horizontal scroll position is never lost mid-session).
+ * The returned element also carries .setAgreed(bool) to set its look
+ * without firing onToggle.
+ */
+const _THUMB_SVG =
+    '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" ' +
+    'stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+    '<path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3z"/>' +
+    '<path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>';
+
+export function createAgreeButton({ agreed = false, titleOn = '', titleOff = '', onToggle = null } = {}) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'cv-agree-btn';
+    btn.innerHTML = _THUMB_SVG;
+
+    const apply = (val) => {
+        btn.classList.toggle('is-agreed', !!val);
+        btn.setAttribute('aria-pressed', val ? 'true' : 'false');
+        btn.title = val ? titleOn : titleOff;
+        btn.setAttribute('aria-label', btn.title);
+    };
+    apply(agreed);
+    btn.setAgreed = apply;
+
+    btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const next = !btn.classList.contains('is-agreed');
+        apply(next);
+        if (onToggle) onToggle(next);
+    });
+    return btn;
+}
+
 // ── Editable Content Div ──────────────────────────────────────
 /**
  * createEditable({ className, text, placeholder, onInput, onFocus, onBlur })

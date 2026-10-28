@@ -244,7 +244,8 @@ export function clearDuty(dutyId) {
         const duty = AppState.duties.find(d => d.id === dutyId);
         if (duty) {
             duty.title = '';
-            duty.tasks.forEach(t => { t.text = ''; });
+            delete duty.agreed;
+            duty.tasks.forEach(t => { t.text = ''; delete t.agreed; });
         }
         saveToLocalStorage();
         updateHistoryButtons();

@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.14.2';        // Semantic Versioning
+export const APP_VERSION  = '4.15.0';        // Semantic Versioning
 export const APP_RELEASED = '2026-10-28';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,16 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.15.0',
+            date: '2026-10-28',
+            changes: [
+                'Card view: a round 👍 button on every duty and task card to record that the workshop panel agrees with it. Tap to mark, tap again to undo; marked cards turn green (button and card outline) so agreed items stand out across the room',
+                'Touch-friendly: on tablets and phones the button grows to a 40 px target with extra space beside the delete ×, and tapping it never re-renders the board, so the horizontal scroll position is kept mid-session',
+                'Undo / Redo cover it; it is saved with the project, travels in exported project files (agreed: true on the duty or task) and in snapshots; Clear duty resets it',
+                'Tooltip and screen-reader labels in English, French and Arabic; the button reports its state to assistive technology (aria-pressed)',
+            ]
+        },
         {
             version: '4.14.2',
             date: '2026-10-28',
