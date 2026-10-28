@@ -20,6 +20,7 @@
 // ============================================================
 
 import { translations } from './translations.js';
+import { trackEvent } from './analytics.js';
 import { initToolbarFit } from './toolbar-fit.js';
 
 // ── Persistence key ───────────────────────────────────────────
@@ -354,8 +355,10 @@ function _warmArabicFont() {
 // ══════════════════════════════════════════════════════════════
 export function setLang(lang) {
     if (!LANG_ORDER.includes(lang)) return;   // guard
+    const _changed = _lang !== lang;
     _lang = lang;
     localStorage.setItem(LANG_KEY, lang);
+    if (_changed) trackEvent('language_' + lang);
 
     // Freeze animations BEFORE the direction flips (see above)
     _suspendTransitions();

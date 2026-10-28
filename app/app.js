@@ -8,6 +8,7 @@
 // Connects all modules, initialises project manager, renders
 // the sidebar, and bootstraps the app on DOMContentLoaded.
 // ============================================================
+import { trackEvent } from './analytics.js';
 import { t, getLang }                                                       from './i18n.js';
 import { AppState, StateManager, applyProjectState, extractProjectState } from './state.js';
 import { showStatus }                                                       from './design-system.js';
@@ -740,6 +741,7 @@ window.addEventListener('DOMContentLoaded', () => {
             if (name === null || !name.trim()) return;
             _saveCurrentProject();
             const proj = createProject(name.trim());
+            trackEvent('new_project');
             setActiveProject(proj.id);
             persistProjects();
             _loadProjectIntoUI(proj);

@@ -99,6 +99,7 @@ export const translations = {
 
         // ── Status — project operations ───────────────────────
         'status.projectImported': 'Project "{{name}}" imported ✓',
+        'help.privacyCount': 'Anonymous usage counts (page visits and button clicks such as exports) are collected to improve the tool. No project content or personal data is ever sent.',
         'help.versionFooter': 'DACUM Lite — version {{v}} · released {{d}}',
         'update.stuck': 'Update did not complete — reload the page manually',
         'storage.titleWarn': 'Local storage is filling up',
@@ -519,6 +520,7 @@ export const translations = {
 
         // ── Status — project operations ───────────────────────
         'status.projectImported': 'Projet « {{name}} » importé ✓',
+        'help.privacyCount': 'Des statistiques anonymes d’utilisation (visites et clics comme les exports) sont collectées pour améliorer l’outil. Aucun contenu de projet ni donnée personnelle n’est envoyé.',
         'help.versionFooter': 'DACUM Lite — version {{v}} · publiée le {{d}}',
         'update.stuck': "La mise à jour n'a pas abouti — rechargez la page",
         'storage.titleWarn': 'Le stockage local se remplit',
@@ -930,6 +932,7 @@ export const translations = {
 
         // ── Status — project operations ───────────────────────
         'status.projectImported': 'تم استيراد المشروع "{{name}}" ✓',
+        'help.privacyCount': 'تُجمع إحصاءات استخدام مجهولة (عدد الزيارات والنقرات مثل التصدير) لتحسين الأداة. لا يُرسل أي محتوى من مشاريعك ولا أي بيانات شخصية.',
         'help.versionFooter': 'DACUM Lite — الإصدار {{v}} · تاريخ الإصدار {{d}}',
         'update.stuck': 'لم يكتمل التحديث — أعد تحميل الصفحة يدوياً',
         'storage.titleWarn': 'مساحة التخزين تقترب من الامتلاء',

@@ -1440,6 +1440,7 @@
              ويملؤه من APP_VERSION و APP_RELEASED. كان مفقوداً، فكان
              paintVersionText() يخرج صامتاً عبر الحارس if (footer). -->
         <p class="copyright-disclaimer" id="helpVersionFooter"></p>
+        <p class="copyright-disclaimer" data-i18n="help.privacyCount"></p>
     </div>
 
     </div><!-- /#help-tab -->
@@ -1507,6 +1508,15 @@ if (location.hostname === 'hshamjawad.github.io') {
     s.src = 'https://static.cloudflareinsights.com/beacon.min.js';
     s.setAttribute('data-cf-beacon', '{"token": "d3257056a68947b99299d2a3e7ce5e8c"}');
     document.head.appendChild(s);
+}
+</script>
+<script>
+if (location.hostname === 'hshamjawad.github.io') {
+    var g = document.createElement('script');
+    g.async = true;
+    g.src = '//gc.zgo.at/count.js';
+    g.setAttribute('data-goatcounter', 'https://dacumlite.goatcounter.com/count');
+    document.head.appendChild(g);
 }
 </script>
 </body>
