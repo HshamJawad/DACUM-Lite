@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.15.3';        // Semantic Versioning
+export const APP_VERSION  = '4.15.4';        // Semantic Versioning
 export const APP_RELEASED = '2026-10-28';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,14 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.15.4',
+            date: '2026-10-28',
+            changes: [
+                'The 👍 button is a little smaller (26×20 px; 30×24 px on touch screens, where its invisible tap area stays about 44 px)',
+                'An agreed duty or task no longer gets a green outline around its card; the green button alone shows that it is agreed',
+            ]
+        },
         {
             version: '4.15.3',
             date: '2026-10-28',

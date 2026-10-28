@@ -24,10 +24,9 @@ import {
 // ── 👍 Agreement mark (card view) ─────────────────────────────
 // Builds the thumbs-up toggle for a duty (task === null) or a task.
 // It records the toggle as an undoable command and updates only the
-// button and its card in place, so tapping it never re-renders the
-// board — a tablet keeps its horizontal scroll position mid-workshop.
-// `getCard` is a function because the card is created after the button.
-function _makeAgreeBtn(duty, task, getCard) {
+// button in place, so tapping it never re-renders the board — a tablet
+// keeps its horizontal scroll position mid-workshop.
+function _makeAgreeBtn(duty, task) {
     const target = task || duty;
     const btn = createAgreeButton({
         agreed:   !!target.agreed,
@@ -37,8 +36,6 @@ function _makeAgreeBtn(duty, task, getCard) {
             const cmd = makeToggleAgreeCmd(duty.id, task ? task.id : null, !next, next);
             cmd.execute();
             pushCommand(cmd);
-            const card = getCard();
-            if (card) card.classList.toggle('is-agreed', next);
         }
     });
     return btn;
@@ -696,8 +693,6 @@ export const Renderer = {
                 }
             });
 
-            let dutyCard = null;
-
             const topRow = document.createElement('div');
             topRow.className = 'cv-duty-card-top';
             topRow.appendChild(dutyDragHandle);
@@ -715,11 +710,11 @@ export const Renderer = {
                 }
             });
 
-            dutyCard = document.createElement('div');
-            dutyCard.className = 'cv-duty-card' + (duty.agreed ? ' is-agreed' : '');
+            const dutyCard = document.createElement('div');
+            dutyCard.className = 'cv-duty-card';
             dutyCard.appendChild(topRow);
             dutyCard.appendChild(dutyTextEl);
-            dutyCard.appendChild(_makeCardFoot(_makeAgreeBtn(duty, null, () => dutyCard)));
+            dutyCard.appendChild(_makeCardFoot(_makeAgreeBtn(duty, null)));
             row.appendChild(dutyCard);
 
             // Tasks wrapper
@@ -766,15 +761,13 @@ export const Renderer = {
                     topLeftEl.appendChild(taskDragHandle);
                     topLeftEl.appendChild(labelEl);
 
-                    let taskCard = null;
-                    taskCard = createCard({
+                    const taskCard = createCard({
                         type: 'task',
                         topLeft: topLeftEl,
                         topRight: deleteTaskBtn,
                         content: taskTextEl
                     });
-                    taskCard.appendChild(_makeCardFoot(_makeAgreeBtn(duty, task, () => taskCard)));
-                    if (task.agreed) taskCard.classList.add('is-agreed');
+                    taskCard.appendChild(_makeCardFoot(_makeAgreeBtn(duty, task)));
 
                     tasksWrapper.appendChild(taskCard);
                     _attachTaskDragListeners(taskCard, taskDragHandle, duty, task);
