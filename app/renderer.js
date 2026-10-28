@@ -8,7 +8,8 @@ import {
     makeEditDutyCmd,
     makeEditTaskCmd,
     makeMoveDutyCmd,
-    makeMoveTaskCmd
+    makeMoveTaskCmd,
+    makeToggleAgreeCmd
 } from './history.js';
 import { saveToLocalStorage } from './storage.js';
 import {
@@ -16,8 +17,32 @@ import {
     createHeader,
     createDeleteCircle,
     createEditable,
-    createButton
+    createButton,
+    createAgreeButton
 } from './design-system.js';
+
+// ── 👍 Agreement mark (card view) ─────────────────────────────
+// Builds the thumbs-up toggle for a duty (task === null) or a task.
+// It records the toggle as an undoable command and updates only the
+// button and its card in place, so tapping it never re-renders the
+// board — a tablet keeps its horizontal scroll position mid-workshop.
+// `getCard` is a function because the card is created after the button.
+function _makeAgreeBtn(duty, task, getCard) {
+    const target = task || duty;
+    const btn = createAgreeButton({
+        agreed:   !!target.agreed,
+        titleOn:  t('renderer.agreedTitle'),
+        titleOff: t('renderer.agreeTitle'),
+        onToggle(next) {
+            const cmd = makeToggleAgreeCmd(duty.id, task ? task.id : null, !next, next);
+            cmd.execute();
+            pushCommand(cmd);
+            const card = getCard();
+            if (card) card.classList.toggle('is-agreed', next);
+        }
+    });
+    return btn;
+}
 
 // ── Action callbacks injected by app.js ───────────────────────
 let _actions = {};
@@ -662,11 +687,19 @@ export const Renderer = {
                 }
             });
 
+            let dutyCard = null;
+            const dutyAgreeBtn = _makeAgreeBtn(duty, null, () => dutyCard);
+
+            const dutyActions = document.createElement('div');
+            dutyActions.className = 'cv-card-actions';
+            dutyActions.appendChild(dutyAgreeBtn);
+            dutyActions.appendChild(deleteDutyBtn);
+
             const topRow = document.createElement('div');
             topRow.className = 'cv-duty-card-top';
             topRow.appendChild(dutyDragHandle);
             topRow.appendChild(dutyIndexLabel);
-            topRow.appendChild(deleteDutyBtn);
+            topRow.appendChild(dutyActions);
 
             const dutyTextEl = createEditable({
                 className: 'cv-duty-text', text: duty.title, placeholder: t('renderer.dutyPlaceholderCard'),
@@ -679,8 +712,8 @@ export const Renderer = {
                 }
             });
 
-            const dutyCard = document.createElement('div');
-            dutyCard.className = 'cv-duty-card';
+            dutyCard = document.createElement('div');
+            dutyCard.className = 'cv-duty-card' + (duty.agreed ? ' is-agreed' : '');
             dutyCard.appendChild(topRow);
             dutyCard.appendChild(dutyTextEl);
             row.appendChild(dutyCard);
@@ -729,12 +762,19 @@ export const Renderer = {
                     topLeftEl.appendChild(taskDragHandle);
                     topLeftEl.appendChild(labelEl);
 
-                    const taskCard = createCard({
+                    let taskCard = null;
+                    const taskActions = document.createElement('div');
+                    taskActions.className = 'cv-card-actions';
+                    taskActions.appendChild(_makeAgreeBtn(duty, task, () => taskCard));
+                    taskActions.appendChild(deleteTaskBtn);
+
+                    taskCard = createCard({
                         type: 'task',
                         topLeft: topLeftEl,
-                        topRight: deleteTaskBtn,
+                        topRight: taskActions,
                         content: taskTextEl
                     });
+                    if (task.agreed) taskCard.classList.add('is-agreed');
 
                     tasksWrapper.appendChild(taskCard);
                     _attachTaskDragListeners(taskCard, taskDragHandle, duty, task);
