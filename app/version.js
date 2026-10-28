@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.15.5';        // Semantic Versioning
+export const APP_VERSION  = '4.15.6';        // Semantic Versioning
 export const APP_RELEASED = '2026-10-28';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,13 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.15.6',
+            date: '2026-10-28',
+            changes: [
+                'Help tab: removed the "Copy diagnostic report" button. Its job — catching broken links between files — is now done by automated tests on GitHub before each release, and the silent boot self-check stays as a safety net (open index.html?selfcheck to read its report)',
+            ]
+        },
         {
             version: '4.15.5',
             date: '2026-10-28',
