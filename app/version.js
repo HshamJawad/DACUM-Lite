@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.16.0';        // Semantic Versioning
+export const APP_VERSION  = '4.16.1';        // Semantic Versioning
 export const APP_RELEASED = '2026-10-28';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,13 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.16.1',
+            date: '2026-10-28',
+            changes: [
+                'User guide: the DACUM Live Pro link is replaced by "Coming soon"; added the 👍 agreement mark (Card View), the logo add / remove buttons, and a short note on anonymous usage counts — in English, French and Arabic',
+            ]
+        },
         {
             version: '4.16.0',
             date: '2026-10-28',
