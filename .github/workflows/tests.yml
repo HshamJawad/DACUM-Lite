@@ -1,0 +1,41 @@
+name: Tests
+
+# Runs the small browser test suite in tests/ on every pull request and
+# on every push to main. See tests/README.md.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  browser-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: tests/package-lock.json
+
+      - name: Install dependencies
+        working-directory: tests
+        run: npm ci
+
+      - name: Install Chromium
+        working-directory: tests
+        run: npx playwright install --with-deps chromium
+
+      - name: Run tests
+        working-directory: tests
+        run: npm test
+
+      - name: Keep the traces of a failed run
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: tests/test-results
+          retention-days: 7
