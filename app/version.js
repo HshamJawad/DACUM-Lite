@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.15.4';        // Semantic Versioning
+export const APP_VERSION  = '4.15.5';        // Semantic Versioning
 export const APP_RELEASED = '2026-10-28';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,13 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.15.5',
+            date: '2026-10-28',
+            changes: [
+                'Settings: the Font sizes card now sits at the bottom of the dialog, after the Preview card',
+            ]
+        },
         {
             version: '4.15.4',
             date: '2026-10-28',
