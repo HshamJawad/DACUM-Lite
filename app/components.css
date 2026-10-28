@@ -93,21 +93,59 @@
   outline-offset: 2px;
 }
 
-.btn-add-image {
-  background: linear-gradient(135deg, var(--color-purple) 0%, var(--color-purple-dark) 100%);
-  color: white;
-  padding: 8px 16px;
-  font-size: 0.95em;
+/* ── Logo buttons (Chart Info → Produced For / Produced By) ───
+   Add Logo wears the same colour as the toolbar's Export Project
+   button (.tb-btn--primary → var(--brand-primary-btn)), so it follows
+   the active theme with no per-theme override. Remove Logo is the
+   soft-red icon-only button used for Clear section: quiet until
+   needed, and it only appears once a logo has been loaded. */
+.logo-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-.btn-add-image:hover { box-shadow: 0 5px 15px rgba(139,92,246,0.4); }
+.btn-add-image {
+  background: var(--brand-primary-btn);
+  color: #ffffff;
+  border: 1px solid var(--brand-primary-btn);
+  border-radius: 8px;
+  height: 36px;
+  padding: 0 14px;
+  font-size: 0.95em;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.btn-add-image:hover {
+  background: var(--brand-primary-deep);
+  border-color: var(--brand-primary-deep);
+  box-shadow: 0 3px 10px color-mix(in srgb, var(--brand-primary-btn) 35%, transparent);
+}
+.btn-add-image:focus-visible {
+  outline: 2px solid var(--brand-primary-deep);
+  outline-offset: 2px;
+}
 
 .btn-remove-image {
-  background: linear-gradient(135deg, var(--color-danger-light) 0%, var(--color-danger) 100%);
-  color: white;
-  padding: 6px 12px;
-  font-size: 0.85em;
+  background: #fdeeee;
+  color: #dc2626;
+  border: 1.5px solid #f9d2d2;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  padding: 0;
+  justify-content: center;
+  gap: 0;
 }
-.btn-remove-image:hover { box-shadow: 0 5px 15px rgba(239,68,68,0.4); }/* Remove section button (custom sections) */
+.btn-remove-image svg { display: block; width: 18px; height: 18px; }
+.btn-remove-image:hover {
+  background: #fbdede;
+  box-shadow: 0 5px 15px rgba(220,38,38,0.20);
+}
+.btn-remove-image:focus-visible {
+  outline: 2px solid var(--color-danger);
+  outline-offset: 2px;
+}/* Remove section button (custom sections) */
 .btn-remove-section {
   background: linear-gradient(135deg, var(--color-danger-light) 0%, var(--color-danger) 100%);
   color: white;

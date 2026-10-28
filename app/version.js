@@ -27,8 +27,8 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.14.1';        // Semantic Versioning
-export const APP_RELEASED = '2026-10-09';   // ISO 8601 (YYYY-MM-DD)
+export const APP_VERSION  = '4.14.2';        // Semantic Versioning
+export const APP_RELEASED = '2026-10-28';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
 // index.html registers  ./sw.js?v=<APP_VERSION>  and sw.js rebuilds
@@ -55,6 +55,15 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.14.2',
+            date: '2026-10-28',
+            changes: [
+                'Chart Info: the Add Logo buttons (Produced For / Produced By) now use the same colour as the Export Project button and follow the selected theme, instead of the old purple',
+                'A delete button sits beside each Add Logo button — a soft-red trash icon, the same style as Clear section — and appears once a logo has been loaded; it asks for confirmation before removing the logo',
+                'The delete button has a tooltip and screen-reader label in English, French and Arabic',
+            ]
+        },
         {
             version: '4.14.1',
             date: '2026-10-09',

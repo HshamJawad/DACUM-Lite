@@ -556,7 +556,9 @@ export function handleImageUpload(event, imageType) {
         const preview = document.getElementById(imageType + 'ImagePreview');
         if (preview) { preview.innerHTML = `<img src="${imageData}" alt="${imageType} logo">`; preview.classList.add('has-image'); }
         const removeBtn = document.getElementById('remove' + cap + 'Image');
-        if (removeBtn) removeBtn.style.display = 'inline-block';
+        // '' (not 'inline-block') so the stylesheet's inline-flex applies
+        // and the trash icon stays centred in its button.
+        if (removeBtn) removeBtn.style.display = '';
         showStatus(t('status.imageUploaded'), 'success');
 
         // The upload path does not go through a command, so the save
@@ -819,14 +821,14 @@ export function loadFromJSON(event) {
                         const p = document.getElementById('producedForImagePreview');
                         if (p) { p.innerHTML = `<img src="${producedForImage}" alt="Produced For logo">`; p.classList.add('has-image'); }
                         const r = document.getElementById('removeProducedForImage');
-                        if (r) r.style.display = 'inline-block';
+                        if (r) r.style.display = '';
                     }
                     if (data.chartInfo.producedByImage) {
                         producedByImage = data.chartInfo.producedByImage;
                         const p = document.getElementById('producedByImagePreview');
                         if (p) { p.innerHTML = `<img src="${producedByImage}" alt="Produced By logo">`; p.classList.add('has-image'); }
                         const r = document.getElementById('removeProducedByImage');
-                        if (r) r.style.display = 'inline-block';
+                        if (r) r.style.display = '';
                     }
                 }
 
