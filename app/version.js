@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.15.1';        // Semantic Versioning
+export const APP_VERSION  = '4.15.2';        // Semantic Versioning
 export const APP_RELEASED = '2026-10-28';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,14 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.15.2',
+            date: '2026-10-28',
+            changes: [
+                'Card view: the duty card\'s outline no longer fades at its corners. The card sits flush against the rounded edge of its row, which clipped the corners it did not share (the square side in Arabic, a 12 px vs 14 px mismatch in English); its outer corners now use the row\'s own radius, on the correct side in both directions',
+                'The green "agreed" ring on a duty card is drawn inside the card, so it is no longer cut off along the row edge',
+            ]
+        },
         {
             version: '4.15.1',
             date: '2026-10-28',
