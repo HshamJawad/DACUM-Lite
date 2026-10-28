@@ -2226,8 +2226,7 @@ html[dir="rtl"] body .top-toolbar {
    A small rounded thumbs-up at the bottom of every duty and task
    card (same placement as DACUM Live Pro). During a workshop it is
    tapped to record that the panel agrees with the item. Neutral
-   until tapped, then green with a green card outline, so agreed
-   items read from across the room.
+   until tapped, then green.
    ================================================================ */
 :root { --agree-color: #16a34a; --agree-color-deep: #15803d; }
 
@@ -2246,11 +2245,11 @@ html[dir="rtl"] body .top-toolbar {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 24px;
-  min-width: 30px;
+  width: 26px;
+  height: 20px;
+  min-width: 26px;
   padding: 0;
-  border-radius: 8px;
+  border-radius: 7px;
   background: rgba(255, 255, 255, 0.85);
   color: #94a3b8;
   border: 1.5px solid #dbe3ee;
@@ -2263,7 +2262,7 @@ html[dir="rtl"] body .top-toolbar {
   user-select: none;
   transition: background 0.18s, color 0.18s, border-color 0.18s, box-shadow 0.18s, transform 0.12s;
 }
-.cv-agree-btn svg { display: block; width: 15px; height: 15px; }
+.cv-agree-btn svg { display: block; width: 13px; height: 13px; }
 .cv-agree-btn:hover {
   color: var(--agree-color);
   border-color: var(--agree-color);
@@ -2286,13 +2285,8 @@ html[dir="rtl"] body .top-toolbar {
 .cv-agree-btn.is-agreed svg { fill: currentColor; }
 .cv-agree-btn.is-agreed:hover { background: var(--agree-color-deep); color: #ffffff; }
 
-/* The card itself: green outline + soft ring (specificity beats the
-   per-card border colours set earlier in this file). */
-.cv-duty-card.is-agreed,
-.cv-task-card.is-agreed {
-  border-color: var(--agree-color);
-  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.22);
-}
+/* The card itself carries no agreed styling (removed in v4.15.4): the
+   green button alone shows the state. */
 
 /* No pop animation (removed in v4.15.3): adding a duty or task redraws
    the board, which replayed it on every agreed button and made them
@@ -2303,9 +2297,9 @@ html[dir="rtl"] body .top-toolbar {
    finger lands on it easily and it is far from the delete x at the
    top of the card. */
 @media (hover: none), (pointer: coarse) {
-  .cv-agree-btn { width: 34px; height: 28px; min-width: 34px; }
-  .cv-agree-btn svg { width: 17px; height: 17px; }
-  .cv-agree-btn::before { content: ''; position: absolute; inset: -8px -6px; }
+  .cv-agree-btn { width: 30px; height: 24px; min-width: 30px; }
+  .cv-agree-btn svg { width: 15px; height: 15px; }
+  .cv-agree-btn::before { content: ''; position: absolute; inset: -10px -8px; }
   .cv-agree-btn:hover { transform: none; }
 }
 
@@ -2328,8 +2322,4 @@ html[dir="rtl"] body .top-toolbar {
 html[dir="rtl"] .cv-duty-card {
   border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
   box-shadow: -2px 0 8px color-mix(in srgb, var(--brand-primary) 10%, transparent);
-}
-.cv-duty-card.is-agreed,
-html[dir="rtl"] .cv-duty-card.is-agreed {
-  box-shadow: inset 0 0 0 1px var(--agree-color);
 }
