@@ -2222,34 +2222,39 @@ html[dir="rtl"] body .top-toolbar {
 .wk-block .wk-mode { margin-bottom: 14px; }
 
 /* ================================================================
-   AGREEMENT MARK 👍  (v4.15.0) — card view
-   A round thumbs-up on every duty and task card. During a workshop
-   the facilitator (or a participant) taps it to record that the
-   panel agrees with the item. Neutral until tapped, then green with
-   a green card outline, so agreed items read from across the room.
+   AGREEMENT MARK 👍  (v4.15.0, compact + bottom since v4.15.1)
+   A small rounded thumbs-up at the bottom of every duty and task
+   card (same placement as DACUM Live Pro). During a workshop it is
+   tapped to record that the panel agrees with the item. Neutral
+   until tapped, then green with a green card outline, so agreed
+   items read from across the room.
    ================================================================ */
 :root { --agree-color: #16a34a; --agree-color-deep: #15803d; }
 
-/* Thumb + delete sit together at the card's top corner */
-.cv-card-actions {
+/* Footer row pinned to the bottom of the card; the button sits on the
+   inline-end side (flex-end flips with dir=rtl). */
+.cv-card-foot {
   display: flex;
+  justify-content: flex-end;
   align-items: center;
-  gap: 8px;
+  margin-top: auto;
+  padding-top: 6px;
 }
 
 .cv-agree-btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  min-width: 32px;
+  width: 30px;
+  height: 24px;
+  min-width: 30px;
   padding: 0;
-  border-radius: 50%;
-  background: #ffffff;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.85);
   color: #94a3b8;
   border: 1.5px solid #dbe3ee;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  box-shadow: none;
   cursor: pointer;
   gap: 0;
   font-size: 1em;
@@ -2258,12 +2263,12 @@ html[dir="rtl"] body .top-toolbar {
   user-select: none;
   transition: background 0.18s, color 0.18s, border-color 0.18s, box-shadow 0.18s, transform 0.12s;
 }
-.cv-agree-btn svg { display: block; width: 18px; height: 18px; }
+.cv-agree-btn svg { display: block; width: 15px; height: 15px; }
 .cv-agree-btn:hover {
   color: var(--agree-color);
   border-color: var(--agree-color);
   transform: none;
-  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.25);
+  box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
 }
 .cv-agree-btn:active { transform: scale(0.92); }
 .cv-agree-btn:focus-visible {
@@ -2271,14 +2276,14 @@ html[dir="rtl"] body .top-toolbar {
   outline-offset: 2px;
 }
 
-/* Agreed: solid green, filled thumb */
+/* Agreed: solid green, white filled thumb */
 .cv-agree-btn.is-agreed {
   background: var(--agree-color);
   color: #ffffff;
   border-color: var(--agree-color-deep);
-  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.4);
+  box-shadow: 0 1px 4px rgba(22, 163, 74, 0.4);
 }
-.cv-agree-btn.is-agreed svg { fill: currentColor; fill-opacity: 0.22; }
+.cv-agree-btn.is-agreed svg { fill: currentColor; }
 .cv-agree-btn.is-agreed:hover { background: var(--agree-color-deep); color: #ffffff; }
 
 /* The card itself: green outline + soft ring (specificity beats the
@@ -2299,11 +2304,13 @@ html[dir="rtl"] body .top-toolbar {
   100% { transform: scale(1); }
 }
 
-/* Touch devices (tablets, phones): a thumb-sized target, and extra
-   space beside the small × so a tap on 👍 never lands on delete. */
+/* Touch devices (tablets, phones): the visible button stays compact,
+   but the tappable area grows to ~44 px with an invisible halo, so a
+   finger lands on it easily and it is far from the delete x at the
+   top of the card. */
 @media (hover: none), (pointer: coarse) {
-  .cv-agree-btn { width: 40px; height: 40px; min-width: 40px; }
-  .cv-agree-btn svg { width: 22px; height: 22px; }
-  .cv-card-actions { gap: 12px; }
+  .cv-agree-btn { width: 34px; height: 28px; min-width: 34px; }
+  .cv-agree-btn svg { width: 17px; height: 17px; }
+  .cv-agree-btn::before { content: ''; position: absolute; inset: -8px -6px; }
   .cv-agree-btn:hover { transform: none; }
 }

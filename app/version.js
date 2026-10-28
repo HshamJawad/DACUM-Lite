@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.15.0';        // Semantic Versioning
+export const APP_VERSION  = '4.15.1';        // Semantic Versioning
 export const APP_RELEASED = '2026-10-28';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,15 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.15.1',
+            date: '2026-10-28',
+            changes: [
+                'The 👍 agreement button is smaller and now sits at the bottom of each duty and task card (a compact rounded button, as in DACUM Live Pro), instead of next to the delete × at the top',
+                'On tablets and phones the button stays compact but gets an invisible larger tap area (about 44 px), so it is easy to hit and far from the delete ×',
+                'Agreed state unchanged: green button with a white thumb and a green card outline',
+            ]
+        },
         {
             version: '4.15.0',
             date: '2026-10-28',
