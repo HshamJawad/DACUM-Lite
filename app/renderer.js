@@ -44,6 +44,15 @@ function _makeAgreeBtn(duty, task, getCard) {
     return btn;
 }
 
+// Footer row at the bottom of a card; holds the 👍 button on the
+// inline-end side (left in Arabic, right in English/French).
+function _makeCardFoot(btn) {
+    const foot = document.createElement('div');
+    foot.className = 'cv-card-foot';
+    foot.appendChild(btn);
+    return foot;
+}
+
 // ── Action callbacks injected by app.js ───────────────────────
 let _actions = {};
 export function setRendererActions(actions) { _actions = actions; }
@@ -688,18 +697,12 @@ export const Renderer = {
             });
 
             let dutyCard = null;
-            const dutyAgreeBtn = _makeAgreeBtn(duty, null, () => dutyCard);
-
-            const dutyActions = document.createElement('div');
-            dutyActions.className = 'cv-card-actions';
-            dutyActions.appendChild(dutyAgreeBtn);
-            dutyActions.appendChild(deleteDutyBtn);
 
             const topRow = document.createElement('div');
             topRow.className = 'cv-duty-card-top';
             topRow.appendChild(dutyDragHandle);
             topRow.appendChild(dutyIndexLabel);
-            topRow.appendChild(dutyActions);
+            topRow.appendChild(deleteDutyBtn);
 
             const dutyTextEl = createEditable({
                 className: 'cv-duty-text', text: duty.title, placeholder: t('renderer.dutyPlaceholderCard'),
@@ -716,6 +719,7 @@ export const Renderer = {
             dutyCard.className = 'cv-duty-card' + (duty.agreed ? ' is-agreed' : '');
             dutyCard.appendChild(topRow);
             dutyCard.appendChild(dutyTextEl);
+            dutyCard.appendChild(_makeCardFoot(_makeAgreeBtn(duty, null, () => dutyCard)));
             row.appendChild(dutyCard);
 
             // Tasks wrapper
@@ -763,17 +767,13 @@ export const Renderer = {
                     topLeftEl.appendChild(labelEl);
 
                     let taskCard = null;
-                    const taskActions = document.createElement('div');
-                    taskActions.className = 'cv-card-actions';
-                    taskActions.appendChild(_makeAgreeBtn(duty, task, () => taskCard));
-                    taskActions.appendChild(deleteTaskBtn);
-
                     taskCard = createCard({
                         type: 'task',
                         topLeft: topLeftEl,
-                        topRight: taskActions,
+                        topRight: deleteTaskBtn,
                         content: taskTextEl
                     });
+                    taskCard.appendChild(_makeCardFoot(_makeAgreeBtn(duty, task, () => taskCard)));
                     if (task.agreed) taskCard.classList.add('is-agreed');
 
                     tasksWrapper.appendChild(taskCard);
