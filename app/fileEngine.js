@@ -24,6 +24,7 @@
 // ============================================================
 
 import { t } from './i18n.js';
+import { trackEvent } from './analytics.js';
 
 // ── Schema identity constants ─────────────────────────────────
 const APP_NAME       = 'DACUM Professional Tool';
@@ -97,6 +98,7 @@ export function exportProject(projectId) {
 
         _download(url, fileName);
         URL.revokeObjectURL(url);
+        trackEvent('export_json');
 
     } catch (err) {
         console.error('[FileEngine] exportProject failed:', err);

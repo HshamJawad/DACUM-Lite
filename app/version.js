@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.15.7';        // Semantic Versioning
+export const APP_VERSION  = '4.16.0';        // Semantic Versioning
 export const APP_RELEASED = '2026-10-28';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,13 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.16.0',
+            date: '2026-10-28',
+            changes: [
+                'Anonymous usage counts (GoatCounter): visits plus these events only — new project, export PDF / Word / JSON, language change, wall view, 👍 agreement. Only the event name is sent, never project content. Nothing is sent from localhost or the automated tests. A short notice was added at the bottom of the Help tab (EN/FR/AR)',
+            ]
+        },
         {
             version: '4.15.7',
             date: '2026-10-28',

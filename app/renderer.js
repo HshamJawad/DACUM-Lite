@@ -2,6 +2,7 @@
 // renderer.js — DOM Rendering Layer  (DACUM Lite v3.1)
 // ============================================================
 import { t }                        from './i18n.js';
+import { trackEvent }               from './analytics.js';
 import { AppState, StateManager }   from './state.js';
 import {
     pushCommand,
@@ -36,6 +37,7 @@ function _makeAgreeBtn(duty, task) {
             const cmd = makeToggleAgreeCmd(duty.id, task ? task.id : null, !next, next);
             cmd.execute();
             pushCommand(cmd);
+            if (next) trackEvent('agree');
         }
     });
     return btn;

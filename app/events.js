@@ -2,6 +2,7 @@
 // events.js — Feature Functions & Event Binding Layer
 // ============================================================
 import { t, getLang, applyTranslations }        from './i18n.js';
+import { trackEvent } from './analytics.js';
 import { loadArabicFont, getArabicFontName,
          shapeArabic, bidiVisual, arabicVisual } from './arabic-font.js';
 import { AppState, StateManager }               from './state.js';
@@ -270,6 +271,7 @@ export function showWallView() {
     const container = document.getElementById('wallViewContainer');
     if (!container) return;
     Renderer.renderWallView(StateManager.state);
+    trackEvent('wall_view');
     _wallZoom = 100;
     _applyWallZoom();
     container.classList.add('wv-visible');
@@ -1115,6 +1117,7 @@ export async function exportToWord() {
         _applyDocDefaultsLang(doc);
 
         const blob = await Packer.toBlob(doc);
+        trackEvent('export_word');
         const url  = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
@@ -1574,6 +1577,7 @@ export async function exportToPDF() {
         });
 
         pdf.save(`${occupationTitleInput.value}_${jobTitleInput.value}_DACUM_Chart.pdf`);
+        trackEvent('export_pdf');
         showStatus(t('status.pdfExported'), 'success');
     } catch (err) {
         console.error('Error generating PDF:', err);
