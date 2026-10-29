@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.16.2';        // Semantic Versioning
+export const APP_VERSION  = '4.16.3';        // Semantic Versioning
 export const APP_RELEASED = '2026-10-29';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,13 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.16.3',
+            date: '2026-10-29',
+            changes: [
+                'Opening DACUM Lite from the landing page now opens it in the language chosen on the landing page (English, French or Arabic). The app reads ?lang=en|fr|ar from its address and remembers it',
+            ]
+        },
         {
             version: '4.16.2',
             date: '2026-10-29',
