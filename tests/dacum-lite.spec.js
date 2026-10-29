@@ -67,12 +67,21 @@ test('a duty and a task are still there after a reload', async ({ page }) => {
   await expect(page.locator('.cv-task-text').first()).toHaveText('Arrange the chairs');
 });
 
+/** Give the first duty and its first task some text. */
+async function writeFirstCards(page) {
+  await page.locator('.cv-duty-text').first().fill('Prepare the workshop room');
+  await page.locator('.cv-duty-text').first().blur();
+  await page.locator('.cv-task-text').first().fill('Arrange the chairs');
+  await page.locator('.cv-task-text').first().blur();
+}
+
 /* ── 3. The 👍 agreement mark: desktop and touch tablet ─────────
    Toggles, undoes, and survives a reload. On the tablet it is
    tapped, as in a workshop. */
 async function agreementFlow(page, press) {
   await openApp(page);
   await showCards(page);
+  await writeFirstCards(page);                 // an empty card cannot be marked
   const duty = page.locator('.cv-duty-card .cv-agree-btn').first();
   const task = page.locator('.cv-task-card .cv-agree-btn').first();
 
@@ -100,6 +109,31 @@ test.describe('on a touch tablet', () => {
   test('agreement mark: tap, undo and reload', async ({ page }) => {
     await agreementFlow(page, loc => loc.tap());
   });
+});
+
+/* An empty card cannot be agreed on: tapping 👍 shows a notice and
+   marks nothing (text of only spaces counts as empty). Once the card
+   has text the same tap marks it. */
+test('agreement mark: an empty card shows a notice and is not marked', async ({ page }) => {
+  await openApp(page);
+  await showCards(page);
+  const duty = page.locator('.cv-duty-card .cv-agree-btn').first();
+  const task = page.locator('.cv-task-card .cv-agree-btn').first();
+
+  await duty.click();
+  await expect(page.locator('#dacumNotice')).toBeVisible();
+  await expect(duty).toHaveAttribute('aria-pressed', 'false');
+
+  await page.locator('.cv-task-text').first().fill('   ');
+  await page.locator('.cv-task-text').first().blur();
+  await task.click();
+  await expect(task).toHaveAttribute('aria-pressed', 'false');
+
+  await writeFirstCards(page);
+  await duty.click();
+  await task.click();
+  await expect(duty).toHaveAttribute('aria-pressed', 'true');
+  await expect(task).toHaveAttribute('aria-pressed', 'true');
 });
 
 /* ── 4. Export and import ───────────────────────────────────────

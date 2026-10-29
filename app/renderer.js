@@ -19,11 +19,15 @@ import {
     createDeleteCircle,
     createEditable,
     createButton,
-    createAgreeButton
+    createAgreeButton,
+    showNotice
 } from './design-system.js';
 
 // ── 👍 Agreement mark (card view) ─────────────────────────────
 // Builds the thumbs-up toggle for a duty (task === null) or a task.
+// An empty card cannot be marked: the panel cannot agree on nothing, so
+// a tap on an empty duty/task shows a short notice and changes nothing.
+// (Removing a mark is always allowed, even if the text was cleared later.)
 // It records the toggle as an undoable command and updates only the
 // button in place, so tapping it never re-renders the board — a tablet
 // keeps its horizontal scroll position mid-workshop.
@@ -33,6 +37,12 @@ function _makeAgreeBtn(duty, task) {
         agreed:   !!target.agreed,
         titleOn:  t('renderer.agreedTitle'),
         titleOff: t('renderer.agreeTitle'),
+        beforeToggle() {
+            const text = task ? task.text : duty.title;
+            if (String(text || '').trim() !== '') return true;
+            showNotice(t('renderer.agreeEmpty'));
+            return false;
+        },
         onToggle(next) {
             const cmd = makeToggleAgreeCmd(duty.id, task ? task.id : null, !next, next);
             cmd.execute();
