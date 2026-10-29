@@ -52,6 +52,18 @@ for (const lang of ['en', 'fr', 'ar']) {
   });
 }
 
+/* The landing page lives on another origin, so it passes its language
+   as ?lang= instead of sharing localStorage. */
+test('opens in the language given by ?lang= and remembers it', async ({ page }) => {
+  await openApp(page, 'en');
+  await page.goto('/index.html?lang=ar');
+  await page.waitForFunction(() => window.DacumSelfCheck);
+  await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
+  await page.goto('/index.html');
+  await page.waitForFunction(() => window.DacumSelfCheck);
+  await expect(page.locator('html')).toHaveAttribute('lang', 'ar');
+});
+
 /* ── 2. Work is not lost ─────────────────────────────────────── */
 test('a duty and a task are still there after a reload', async ({ page }) => {
   await openApp(page);

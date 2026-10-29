@@ -42,6 +42,17 @@ const RTL_LANGS = ['ar'];
 let _lang = localStorage.getItem(LANG_KEY) || 'en';
 if (!LANG_ORDER.includes(_lang)) _lang = 'en';   // guard against stale/unknown values
 
+// ?lang=xx (sent by the landing page, which lives on another origin and
+// so cannot share localStorage) wins over the stored preference, and
+// becomes the stored preference.
+try {
+    const _urlLang = new URLSearchParams(location.search).get('lang');
+    if (LANG_ORDER.includes(_urlLang)) {
+        _lang = _urlLang;
+        localStorage.setItem(LANG_KEY, _lang);
+    }
+} catch (e) { /* no URL or storage — keep the stored language */ }
+
 // ── Public: read current language ────────────────────────────
 export function getLang() { return _lang; }
 
