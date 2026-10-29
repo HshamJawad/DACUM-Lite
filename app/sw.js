@@ -225,8 +225,14 @@ self.addEventListener('fetch', event => {
                               url.pathname === new URL('./', self.location).pathname;
 
     if (isVersionCritical) {
+        // Ask for the folder address directly: hosts such as Cloudflare
+        // redirect /index.html to /, and a redirect on a page load is
+        // what the installed app could not survive.
+        const target = url.pathname.endsWith('/index.html')
+            ? url.pathname.slice(0, -'index.html'.length) + url.search
+            : event.request.url;
         event.respondWith(
-            fetch(new Request(event.request.url, {
+            fetch(new Request(target, {
                 cache:       'reload',      // تجاوز كاش HTTP
                 credentials: 'same-origin'
             })).then(response => {

@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.16.3';        // Semantic Versioning
+export const APP_VERSION  = '4.16.4';        // Semantic Versioning
 export const APP_RELEASED = '2026-10-29';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,13 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.16.4',
+            date: '2026-10-29',
+            changes: [
+                'Installed app: it now opens at the folder address instead of /index.html, and the service worker no longer requests /index.html, which the host redirects. This fixes the installed app showing "This site can\'t be reached" (ERR_FAILED) when reopened',
+            ]
+        },
         {
             version: '4.16.3',
             date: '2026-10-29',
