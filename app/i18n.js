@@ -46,7 +46,10 @@ if (!LANG_ORDER.includes(_lang)) _lang = 'en';   // guard against stale/unknown 
 // so cannot share localStorage) wins over the stored preference, and
 // becomes the stored preference.
 try {
-    const _urlLang = new URLSearchParams(location.search).get('lang');
+    // #lang=xx is the form the landing page uses now (a query string is
+    // refused with a 403 on the custom domain); ?lang=xx still works.
+    const _urlLang = new URLSearchParams(location.hash.replace(/^#/, '')).get('lang')
+                  || new URLSearchParams(location.search).get('lang');
     if (LANG_ORDER.includes(_urlLang)) {
         _lang = _urlLang;
         localStorage.setItem(LANG_KEY, _lang);
