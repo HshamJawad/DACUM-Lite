@@ -1,0 +1,9 @@
+{
+  "name": "dacum-lite",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    // The repository root: index.html (landing) and app/ (the tool).
+    // .assetsignore keeps tests and repository files out.
+    "directory": "./"
+  }
+}
