@@ -767,12 +767,13 @@ body.sb-sidebar-closed #appWrapper {
   overflow-y: auto;
   overflow-x: hidden;
   padding: 7px 8px;
-  scrollbar-width: thin;
-  scrollbar-color: #1e2a40 transparent;
+  scrollbar-width: auto;
+  scrollbar-color: #818cf8 #1a2338;
 }
-.sb-project-list::-webkit-scrollbar       { width: 4px; }
-.sb-project-list::-webkit-scrollbar-track { background: transparent; }
-.sb-project-list::-webkit-scrollbar-thumb { background: #1e2a40; border-radius: 4px; }
+.sb-project-list::-webkit-scrollbar       { width: 10px; }
+.sb-project-list::-webkit-scrollbar-track { background: #1a2338; border-radius: 6px; }
+.sb-project-list::-webkit-scrollbar-thumb { background: #818cf8; border-radius: 6px; border: 2px solid #1a2338; min-height: 40px; }
+.sb-project-list::-webkit-scrollbar-thumb:hover { background: #a5b4fc; }
 
 /* ── Empty state ─────────────────────────────────────────────── */
 .sb-empty {
