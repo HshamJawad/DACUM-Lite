@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.16.5';        // Semantic Versioning
+export const APP_VERSION  = '4.16.6';        // Semantic Versioning
 export const APP_RELEASED = '2026-10-29';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,13 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.16.6',
+            date: '2026-10-29',
+            changes: [
+                'The language chosen on the landing page can now arrive as #lang=en|fr|ar as well as ?lang=en|fr|ar. The landing page uses #lang, because the address with a query string was refused (403) on the custom domain',
+            ]
+        },
         {
             version: '4.16.5',
             date: '2026-10-29',
