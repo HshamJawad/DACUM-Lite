@@ -27,7 +27,7 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.16.4';        // Semantic Versioning
+export const APP_VERSION  = '4.16.5';        // Semantic Versioning
 export const APP_RELEASED = '2026-10-29';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
@@ -55,6 +55,13 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.16.5',
+            date: '2026-10-29',
+            changes: [
+                'Projects sidebar: the scrollbar is now wider and clearly visible (light indigo thumb on a lighter track) instead of blending into the dark background',
+            ]
+        },
         {
             version: '4.16.4',
             date: '2026-10-29',
