@@ -60,6 +60,7 @@ export const VERSION = {
             date: '2026-10-29',
             changes: [
                 'Card view: tapping 👍 on an empty duty or task card no longer marks it. A short message appears instead ("This card is empty — write something in it before marking it as agreed") in English, French and Arabic. It is a small on-screen notice, not a pop-up, so it works smoothly in the installed app and never interrupts the workshop. Removing a mark is still always possible',
+                'Fix for hosts that redirect page addresses (e.g. Cloudflare turns /app/index.html into /app/): the app opened on the first visit but showed ERR_FAILED on every later one, because the service worker handed the browser a redirected response. It now passes a clean copy instead',
             ]
         },
         {

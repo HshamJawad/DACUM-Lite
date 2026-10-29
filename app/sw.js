@@ -187,6 +187,22 @@ self.addEventListener('message', event => {
     }
 });
 
+// ── Redirect clean-up ─────────────────────────────────────────
+// A page load (navigation) may NOT be answered with a Response that
+// came through a redirect: the browser refuses it with ERR_FAILED.
+// Some hosts redirect automatically — Cloudflare, for one, turns
+// /app/index.html into /app/ — so the first visit worked (no service
+// worker yet) and every later visit failed. This returns a plain copy
+// of such a response; ordinary responses pass through untouched.
+function plain(response) {
+    if (!response || !response.redirected) return response;
+    return response.blob().then(body => new Response(body, {
+        status:     response.status,
+        statusText: response.statusText,
+        headers:    response.headers
+    }));
+}
+
 // ── Fetch: network-first for the app shell, cache is the
 //    offline-only fallback ──────────────────────────────────
 self.addEventListener('fetch', event => {
@@ -229,7 +245,7 @@ self.addEventListener('fetch', event => {
             fetch(new Request(event.request.url, {
                 cache:       'reload',      // تجاوز كاش HTTP
                 credentials: 'same-origin'
-            })).then(response => {
+            })).then(plain).then(response => {
                 if (response && response.status === 200) {
                     const clone = response.clone();
                     caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
@@ -248,7 +264,7 @@ self.addEventListener('fetch', event => {
     // latest deployed files; only fall back to whatever is cached if
     // the network request fails (offline, or a flaky connection).
     event.respondWith(
-        fetch(event.request).then(response => {
+        fetch(event.request).then(plain).then(response => {
             if (response && response.status === 200) {
                 const clone = response.clone();
                 caches.open(CACHE_NAME).then(cache =>
