@@ -17,6 +17,33 @@ export function showStatus(message, type) {
     }
 }
 
+// ── Notice (non-blocking message) ─────────────────────────────
+/**
+ * showNotice(message)
+ * A short message at the bottom of the screen that fades by itself.
+ * Used instead of alert(): in an installed PWA a native alert() freezes
+ * the page, shows the app's address, and can steal focus mid-workshop.
+ * role="alert" makes screen readers read it out; tapping it closes it.
+ * Only one is ever on screen; showing it again replaces the old one.
+ */
+let _noticeTimer = null;
+
+export function showNotice(message, ms = 3800) {
+    const old = document.getElementById('dacumNotice');
+    if (old) old.remove();
+    clearTimeout(_noticeTimer);
+
+    const el = document.createElement('div');
+    el.id = 'dacumNotice';
+    el.className = 'dacum-notice';
+    el.setAttribute('role', 'alert');
+    el.textContent = message;
+    el.addEventListener('click', () => el.remove());
+    document.body.appendChild(el);
+
+    _noticeTimer = setTimeout(() => el.remove(), ms);
+}
+
 // ── Reusable Button Builder ───────────────────────────────────
 /**
  * createButton({ type, label, onClick, title, id, disabled })
@@ -88,12 +115,15 @@ export function createDeleteCircle({ type = 'task', onClick = null, title = 'Rem
 
 // ── Agree (👍) toggle ─────────────────────────────────────────
 /**
- * createAgreeButton({ agreed, titleOn, titleOff, onToggle })
+ * createAgreeButton({ agreed, titleOn, titleOff, onToggle, beforeToggle })
  * Round thumbs-up toggle for duty / task cards: tapped during a
  * workshop to record that the panel agrees with the item.
  * onToggle(nextValue) is called with the new boolean; the button
  * updates its own look immediately (no full re-render, so a tablet's
  * horizontal scroll position is never lost mid-session).
+ * beforeToggle() is asked only when the button is about to be MARKED;
+ * returning false cancels the mark (nothing changes, onToggle is not
+ * called). Un-marking is never blocked.
  * The returned element also carries .setAgreed(bool) to set its look
  * without firing onToggle.
  */
@@ -103,7 +133,7 @@ const _THUMB_SVG =
     '<path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3z"/>' +
     '<path d="M7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>';
 
-export function createAgreeButton({ agreed = false, titleOn = '', titleOff = '', onToggle = null } = {}) {
+export function createAgreeButton({ agreed = false, titleOn = '', titleOff = '', onToggle = null, beforeToggle = null } = {}) {
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'cv-agree-btn';
@@ -121,6 +151,7 @@ export function createAgreeButton({ agreed = false, titleOn = '', titleOff = '',
     btn.addEventListener('click', (e) => {
         e.stopPropagation();
         const next = !btn.classList.contains('is-agreed');
+        if (next && beforeToggle && beforeToggle() === false) return;
         apply(next);
         if (onToggle) onToggle(next);
     });

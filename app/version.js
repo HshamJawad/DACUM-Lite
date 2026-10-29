@@ -27,8 +27,8 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.16.1';        // Semantic Versioning
-export const APP_RELEASED = '2026-10-28';   // ISO 8601 (YYYY-MM-DD)
+export const APP_VERSION  = '4.16.2';        // Semantic Versioning
+export const APP_RELEASED = '2026-10-29';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
 // index.html registers  ./sw.js?v=<APP_VERSION>  and sw.js rebuilds
@@ -55,6 +55,13 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.16.2',
+            date: '2026-10-29',
+            changes: [
+                'Card view: tapping 👍 on an empty duty or task card no longer marks it. A short message appears instead ("This card is empty — write something in it before marking it as agreed") in English, French and Arabic. It is a small on-screen notice, not a pop-up, so it works smoothly in the installed app and never interrupts the workshop. Removing a mark is still always possible',
+            ]
+        },
         {
             version: '4.16.1',
             date: '2026-10-28',
