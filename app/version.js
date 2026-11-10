@@ -27,8 +27,8 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.16.6';        // Semantic Versioning
-export const APP_RELEASED = '2026-10-29';   // ISO 8601 (YYYY-MM-DD)
+export const APP_VERSION  = '4.16.7';        // Semantic Versioning
+export const APP_RELEASED = '2026-11-10';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
 // index.html registers  ./sw.js?v=<APP_VERSION>  and sw.js rebuilds
@@ -55,6 +55,13 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.16.7',
+            date: '2026-11-10',
+            changes: [
+                'Added a canonical address (https://lite.dacumtools.com/app/) so search engines treat the language and query-string addresses as one page',
+            ]
+        },
         {
             version: '4.16.6',
             date: '2026-10-29',
