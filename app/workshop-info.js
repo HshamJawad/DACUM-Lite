@@ -239,13 +239,6 @@ export function applyWorkshopData(info) {
 
     _syncTo(false);
     _paintLabels();
-
-    // Re-apply the saved end date after _syncTo has established a
-    // valid default for the dynamically-created date field.
-    if (multi && i.dacumDateTo) {
-        $('dacumDateTo').value = i.dacumDateTo;
-        _syncTo(false);
-    }
 }
 
 export function resetWorkshopData() {
