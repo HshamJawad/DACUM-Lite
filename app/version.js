@@ -59,7 +59,7 @@ export const VERSION = {
             version: '4.16.8',
             date: '2026-11-17',
             changes: [
-                'Restored Facilitators, Observers and Panel Members in PDF and Word chart exports. Workshop controls now initialize before export actions and preserve saved workshop data.', Workshop fields are initialized during app startup so previously stored details are available to the export functions.',
+                'Restored Facilitators, Observers and Panel Members in PDF and Word chart exports. Workshop controls now initialize before export actions and preserve saved workshop data.',',
             ]
         },
         {
