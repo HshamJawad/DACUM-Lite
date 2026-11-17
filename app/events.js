@@ -1418,11 +1418,13 @@ export async function exportToPDF() {
             infoY += ls.length * lineH12 + 1.5;
         });
 
-        // Workshop Panel — draw each populated group below workshop details.
+        // Workshop Panel — draw the three populated name lists below
+        // the workshop details. Keep the identity block on the same page;
+        // if it does not fit, start a new portrait title continuation page.
         const panelLabels = {
-            facilitators: t('chartInfo.facilitators').replace(/^\p{Extended_Pictographic}\s*/u, ''),
-            observers: t('chartInfo.observers').replace(/^\p{Extended_Pictographic}\s*/u, ''),
-            panelMembers: t('chartInfo.panelMembers').replace(/^\p{Extended_Pictographic}\s*/u, '')
+            facilitators: t('chartInfo.facilitators').replace(/^\\p{Extended_Pictographic}\\s*/u, ''),
+            observers: t('chartInfo.observers').replace(/^\\p{Extended_Pictographic}\\s*/u, ''),
+            panelMembers: t('chartInfo.panelMembers').replace(/^\\p{Extended_Pictographic}\\s*/u, '')
         };
         const panelValues = {
             facilitators: document.getElementById('facilitators')?.value || '',
@@ -1430,36 +1432,51 @@ export async function exportToPDF() {
             panelMembers: document.getElementById('panelMembers')?.value || ''
         };
         const panelSections = Object.keys(panelValues)
-            .map(key => ({ key, label: panelLabels[key], value: panelValues[key].split('\n').map(v => v.trim()).filter(Boolean) }))
+            .map(key => ({
+                key,
+                label: panelLabels[key],
+                value: panelValues[key].split('\\n').map(v => v.trim()).filter(Boolean)
+            }))
             .filter(section => section.value.length);
+
         if (panelSections.length) {
-            const panelHeading = t('chartInfo.workshopPanel').replace(/^\p{Extended_Pictographic}\s*/u, '');
+            const panelHeading = t('chartInfo.workshopPanel').replace(/^\\p{Extended_Pictographic}\\s*/u, '');
+            const gap = 3;
+            const panelColW = (halfW - gap * (panelSections.length - 1)) / panelSections.length;
+            const panelTextH = 4.5;
+            const panelRows = panelSections.map(section => {
+                const headingHeight = wrap(section.label, panelColW).length * panelTextH + 1;
+                const namesHeight = section.value.reduce((total, name) =>
+                    total + wrap(name, panelColW).length * panelTextH + 1, 0);
+                return { section, height: headingHeight + namesHeight };
+            });
+            const panelHeight = 7 + Math.max(...panelRows.map(row => row.height)) + 2;
+            if (infoY + panelHeight > pageHeight - margin - 6) {
+                pdf.addPage('a4', 'portrait');
+                infoY = margin + 8;
+            }
+
             pdf.setFontSize(13); setBoldFont(); hcOn();
             drawText(panelHeading, infoX, halfW, infoY, 0); blk();
             infoY += 7;
-            const gap = 3;
-            const panelColW = (halfW - gap * (panelSections.length - 1)) / panelSections.length;
-            const panelStartY = infoY;
-            const panelBottoms = panelSections.map((section, index) => {
-                let py = panelStartY;
+
+            panelRows.forEach(({ section }, index) => {
+                let py = infoY;
                 const px = infoX + index * (panelColW + gap);
                 pdf.setFontSize(10); setBoldFont(); hcOn();
                 const headingLines = wrap(section.label, panelColW);
                 drawLines(headingLines, px, panelColW, py, 0);
-                py += headingLines.length * 4.5 + 1;
+                py += headingLines.length * panelTextH + 1;
+
                 pdf.setFontSize(10); setBodyFont();
                 section.value.forEach(name => {
                     const nameLines = wrap(name, panelColW);
-                    if (py + nameLines.length * 4.5 > pageHeight - margin - 8) {
-                        pdf.addPage('a4', 'portrait');
-                        py = margin + 8;
-                    }
                     drawLines(nameLines, px, panelColW, py, 0);
-                    py += nameLines.length * 4.5 + 1;
+                    py += nameLines.length * panelTextH + 1;
                 });
-                return py;
             });
-            infoY = Math.max(...panelBottoms) + 3;
+
+            infoY += Math.max(...panelRows.map(row => row.height)) + 2;
         }
 
         pdf.setFontSize(14); setBoldFont(); hcOn();
