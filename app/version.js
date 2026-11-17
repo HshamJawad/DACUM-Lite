@@ -27,8 +27,8 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.16.7';        // Semantic Versioning
-export const APP_RELEASED = '2026-11-10';   // ISO 8601 (YYYY-MM-DD)
+export const APP_VERSION  = '4.16.8';        // Semantic Versioning
+export const APP_RELEASED = '2026-11-17';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
 // index.html registers  ./sw.js?v=<APP_VERSION>  and sw.js rebuilds
@@ -55,6 +55,13 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.16.8',
+            date: '2026-11-17',
+            changes: [
+                'Restored Facilitators, Observers and Panel Members in PDF and Word chart exports. Workshop fields are initialized during app startup so previously stored details are available to the export functions.',
+            ]
+        },
         {
             version: '4.16.7',
             date: '2026-11-10',
