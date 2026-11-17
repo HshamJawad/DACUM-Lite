@@ -1037,31 +1037,36 @@ export async function exportToWord() {
             children.push(new Paragraph({ spacing: { after: 200 } }));
         }
 
-        // Workshop Panel — include the three fields captured in Chart Info.
-        // A table keeps the three groups together and lets long name lists wrap.
+        // Workshop Panel — three independent, full-width subsections.
+        // Full-width paragraphs avoid forcing long name lists into narrow
+        // three-column cells and allow Word to paginate long lists cleanly.
         if (_panelSections.length) {
             children.push(new Paragraph({
-                children: [new TextRun({ text: t('chartInfo.workshopPanel').replace(/^\p{Extended_Pictographic}\s*/u, ''), bold: true, size: SZ_HEADING, color: C_HEADING })],
+                children: [new TextRun({
+                    text: t('chartInfo.workshopPanel').replace(/^\\p{Extended_Pictographic}\\s*/u, ''),
+                    bold: true, size: SZ_HEADING, color: C_HEADING
+                })],
                 spacing: { before: 200, after: 160 },
                 bidirectional: _rtl()
             }));
-            const panelCells = _panelSections.map(section => {
-                const paragraphs = _panel[section.key].split('\n').map(name => name.trim()).filter(Boolean)
-                    .map(name => new Paragraph({ children: [new TextRun({ text: name, size: SZ_BODY })], bidirectional: _rtl() }));
-                return new TableCell({
-                    children: [
-                        new Paragraph({ children: [new TextRun({ text: section.label, bold: true, size: SZ_BODY, color: C_HEADING })], bidirectional: _rtl() }),
-                        ...paragraphs
-                    ],
-                    width: { size: 100 / _panelSections.length, type: WidthType.PERCENTAGE }
+
+            _panelSections.forEach(section => {
+                children.push(new Paragraph({
+                    children: [new TextRun({
+                        text: section.label,
+                        bold: true, size: SZ_BODY, color: C_HEADING
+                    })],
+                    spacing: { before: 100, after: 80 },
+                    bidirectional: _rtl()
+                }));
+                _panel[section.key].split('\\n').map(name => name.trim()).filter(Boolean).forEach(name => {
+                    children.push(new Paragraph({
+                        children: [new TextRun({ text: name, size: SZ_BODY })],
+                        spacing: { after: 40 },
+                        bidirectional: _rtl()
+                    }));
                 });
             });
-            children.push(new Table({
-                visuallyRightToLeft: _rtl(),
-                width: { size: 9071, type: WidthType.DXA },
-                layout: 'fixed',
-                rows: [new TableRow({ children: panelCells })]
-            }));
             children.push(new Paragraph({ spacing: { after: 200 } }));
         }
 
