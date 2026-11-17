@@ -606,7 +606,9 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // ── 4. Bind events and render UI ───────────────────────────
     // Build the workshop format/date fields before exports can run.
+    // Restore any saved values after creating the dynamic controls.
     ensureWorkshopFields();
+    applyChartInfoData(getActiveProject()?.chartInfo || null);
     EventBinder.init();
     renderSidebar();
 
