@@ -1000,9 +1000,9 @@ export async function exportToWord() {
             panelMembers: document.getElementById('panelMembers')?.value?.trim() || ''
         };
         const _panelSections = [
-            { key: 'facilitators', label: t('chartInfo.facilitators').replace(/^\\p{Extended_Pictographic}\\s*/u, '') },
-            { key: 'observers', label: t('chartInfo.observers').replace(/^\\p{Extended_Pictographic}\\s*/u, '') },
-            { key: 'panelMembers', label: t('chartInfo.panelMembers').replace(/^\\p{Extended_Pictographic}\\s*/u, '') }
+            { key: 'facilitators', label: t('chartInfo.facilitators').replace(/^\p{Extended_Pictographic}\s*/u, '') },
+            { key: 'observers', label: t('chartInfo.observers').replace(/^\p{Extended_Pictographic}\s*/u, '') },
+            { key: 'panelMembers', label: t('chartInfo.panelMembers').replace(/^\p{Extended_Pictographic}\s*/u, '') }
         ].filter(section => _panel[section.key]);
 
         // Title page
@@ -1041,12 +1041,12 @@ export async function exportToWord() {
         // A table keeps the three groups together and lets long name lists wrap.
         if (_panelSections.length) {
             children.push(new Paragraph({
-                children: [new TextRun({ text: t('chartInfo.workshopPanel').replace(/^\\p{Extended_Pictographic}\\s*/u, ''), bold: true, size: SZ_HEADING, color: C_HEADING })],
+                children: [new TextRun({ text: t('chartInfo.workshopPanel').replace(/^\p{Extended_Pictographic}\s*/u, ''), bold: true, size: SZ_HEADING, color: C_HEADING })],
                 spacing: { before: 200, after: 160 },
                 bidirectional: _rtl()
             }));
             const panelCells = _panelSections.map(section => {
-                const paragraphs = _panel[section.key].split('\\n').map(name => name.trim()).filter(Boolean)
+                const paragraphs = _panel[section.key].split('\n').map(name => name.trim()).filter(Boolean)
                     .map(name => new Paragraph({ children: [new TextRun({ text: name, size: SZ_BODY })], bidirectional: _rtl() }));
                 return new TableCell({
                     children: [
@@ -1420,9 +1420,9 @@ export async function exportToPDF() {
 
         // Workshop Panel — draw each populated group below workshop details.
         const panelLabels = {
-            facilitators: t('chartInfo.facilitators').replace(/^\\p{Extended_Pictographic}\\s*/u, ''),
-            observers: t('chartInfo.observers').replace(/^\\p{Extended_Pictographic}\\s*/u, ''),
-            panelMembers: t('chartInfo.panelMembers').replace(/^\\p{Extended_Pictographic}\\s*/u, '')
+            facilitators: t('chartInfo.facilitators').replace(/^\p{Extended_Pictographic}\s*/u, ''),
+            observers: t('chartInfo.observers').replace(/^\p{Extended_Pictographic}\s*/u, ''),
+            panelMembers: t('chartInfo.panelMembers').replace(/^\p{Extended_Pictographic}\s*/u, '')
         };
         const panelValues = {
             facilitators: document.getElementById('facilitators')?.value || '',
@@ -1430,10 +1430,10 @@ export async function exportToPDF() {
             panelMembers: document.getElementById('panelMembers')?.value || ''
         };
         const panelSections = Object.keys(panelValues)
-            .map(key => ({ key, label: panelLabels[key], value: panelValues[key].split('\\n').map(v => v.trim()).filter(Boolean) }))
+            .map(key => ({ key, label: panelLabels[key], value: panelValues[key].split('\n').map(v => v.trim()).filter(Boolean) }))
             .filter(section => section.value.length);
         if (panelSections.length) {
-            const panelHeading = t('chartInfo.workshopPanel').replace(/^\\p{Extended_Pictographic}\\s*/u, '');
+            const panelHeading = t('chartInfo.workshopPanel').replace(/^\p{Extended_Pictographic}\s*/u, '');
             pdf.setFontSize(13); setBoldFont(); hcOn();
             drawText(panelHeading, infoX, halfW, infoY, 0); blk();
             infoY += 7;
