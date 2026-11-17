@@ -991,20 +991,6 @@ export async function exportToWord() {
         showStatus(t('status.wordGenerating'), 'success');
         const children = [];
 
-        // Workshop panel (facilitators, observers and panel members)
-        // These values are persisted in chartInfo and must be included
-        // in both document exports. Keep each entered name on its own line.
-        const _panel = {
-            facilitators: document.getElementById('facilitators')?.value?.trim() || '',
-            observers: document.getElementById('observers')?.value?.trim() || '',
-            panelMembers: document.getElementById('panelMembers')?.value?.trim() || ''
-        };
-        const _panelSections = [
-            { key: 'facilitators', label: t('chartInfo.facilitators').replace(/^\p{Extended_Pictographic}\s*/u, '') },
-            { key: 'observers', label: t('chartInfo.observers').replace(/^\p{Extended_Pictographic}\s*/u, '') },
-            { key: 'panelMembers', label: t('chartInfo.panelMembers').replace(/^\p{Extended_Pictographic}\s*/u, '') }
-        ].filter(section => _panel[section.key]);
-
         // Title page
         children.push(new Paragraph({ children: [new TextRun({ text: t('word.occupationTitle', { title: occupationTitle }), bold: true, size: SZ_TITLE, color: C_HEADING })], spacing: { after: 200 }, bidirectional: _rtl() }));
         children.push(new Paragraph({ children: [new TextRun({ text: t('word.jobTitle', { title: jobTitle }), bold: true, size: SZ_TITLE, color: C_HEADING })], spacing: { after: 200 }, bidirectional: _rtl() }));
@@ -1034,39 +1020,6 @@ export async function exportToWord() {
                 } catch(e) { console.error('Error adding Produced By image:', e); }
             }
         } else {
-            children.push(new Paragraph({ spacing: { after: 200 } }));
-        }
-
-        // Workshop Panel — three independent, full-width subsections.
-        // Full-width paragraphs avoid forcing long name lists into narrow
-        // three-column cells and allow Word to paginate long lists cleanly.
-        if (_panelSections.length) {
-            children.push(new Paragraph({
-                children: [new TextRun({
-                    text: t('chartInfo.workshopPanel').replace(/^\\p{Extended_Pictographic}\\s*/u, ''),
-                    bold: true, size: SZ_HEADING, color: C_HEADING
-                })],
-                spacing: { before: 200, after: 160 },
-                bidirectional: _rtl()
-            }));
-
-            _panelSections.forEach(section => {
-                children.push(new Paragraph({
-                    children: [new TextRun({
-                        text: section.label,
-                        bold: true, size: SZ_BODY, color: C_HEADING
-                    })],
-                    spacing: { before: 100, after: 80 },
-                    bidirectional: _rtl()
-                }));
-                _panel[section.key].split('\\n').map(name => name.trim()).filter(Boolean).forEach(name => {
-                    children.push(new Paragraph({
-                        children: [new TextRun({ text: name, size: SZ_BODY })],
-                        spacing: { after: 40 },
-                        bidirectional: _rtl()
-                    }));
-                });
-            });
             children.push(new Paragraph({ spacing: { after: 200 } }));
         }
 
@@ -1422,67 +1375,6 @@ export async function exportToPDF() {
             drawLines(ls, infoX, halfW, infoY, 0);
             infoY += ls.length * lineH12 + 1.5;
         });
-
-        // Workshop Panel — draw the three populated name lists below
-        // the workshop details. Keep the identity block on the same page;
-        // if it does not fit, start a new portrait title continuation page.
-        const panelLabels = {
-            facilitators: t('chartInfo.facilitators').replace(/^\\p{Extended_Pictographic}\\s*/u, ''),
-            observers: t('chartInfo.observers').replace(/^\\p{Extended_Pictographic}\\s*/u, ''),
-            panelMembers: t('chartInfo.panelMembers').replace(/^\\p{Extended_Pictographic}\\s*/u, '')
-        };
-        const panelValues = {
-            facilitators: document.getElementById('facilitators')?.value || '',
-            observers: document.getElementById('observers')?.value || '',
-            panelMembers: document.getElementById('panelMembers')?.value || ''
-        };
-        const panelSections = Object.keys(panelValues)
-            .map(key => ({
-                key,
-                label: panelLabels[key],
-                value: panelValues[key].split('\\n').map(v => v.trim()).filter(Boolean)
-            }))
-            .filter(section => section.value.length);
-
-        if (panelSections.length) {
-            const panelHeading = t('chartInfo.workshopPanel').replace(/^\\p{Extended_Pictographic}\\s*/u, '');
-            const gap = 3;
-            const panelColW = (halfW - gap * (panelSections.length - 1)) / panelSections.length;
-            const panelTextH = 4.5;
-            const panelRows = panelSections.map(section => {
-                const headingHeight = wrap(section.label, panelColW).length * panelTextH + 1;
-                const namesHeight = section.value.reduce((total, name) =>
-                    total + wrap(name, panelColW).length * panelTextH + 1, 0);
-                return { section, height: headingHeight + namesHeight };
-            });
-            const panelHeight = 7 + Math.max(...panelRows.map(row => row.height)) + 2;
-            if (infoY + panelHeight > pageHeight - margin - 6) {
-                pdf.addPage('a4', 'portrait');
-                infoY = margin + 8;
-            }
-
-            pdf.setFontSize(13); setBoldFont(); hcOn();
-            drawText(panelHeading, infoX, halfW, infoY, 0); blk();
-            infoY += 7;
-
-            panelRows.forEach(({ section }, index) => {
-                let py = infoY;
-                const px = infoX + index * (panelColW + gap);
-                pdf.setFontSize(10); setBoldFont(); hcOn();
-                const headingLines = wrap(section.label, panelColW);
-                drawLines(headingLines, px, panelColW, py, 0);
-                py += headingLines.length * panelTextH + 1;
-
-                pdf.setFontSize(10); setBodyFont();
-                section.value.forEach(name => {
-                    const nameLines = wrap(name, panelColW);
-                    drawLines(nameLines, px, panelColW, py, 0);
-                    py += nameLines.length * panelTextH + 1;
-                });
-            });
-
-            infoY += Math.max(...panelRows.map(row => row.height)) + 2;
-        }
 
         pdf.setFontSize(14); setBoldFont(); hcOn();
         drawText(t('pdf.occupationTitle'), occX, halfW, occY, 0); blk(); occY += 7;
