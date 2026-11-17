@@ -1023,6 +1023,14 @@ export async function exportToWord() {
             children.push(new Paragraph({ spacing: { after: 200 } }));
         }
 
+        // Facilitators / observers / panel members (Chart Info tab)
+        [['facilitators','word.facilitators'],['observers','word.observers'],['panelMembers','word.panelMembers']].forEach(([id, key]) => {
+            const names = (document.getElementById(id)?.value || '').split('\n').map(l => l.trim()).filter(Boolean);
+            if (!names.length) return;
+            children.push(new Paragraph({ children: [new TextRun({ text: t(key) + ':', bold: true, size: SZ_BODY })], spacing: { before: 200, after: 80 }, bidirectional: _rtl() }));
+            names.forEach(n => children.push(new Paragraph({ children: [new TextRun({ text: '• ' + n, size: SZ_BODY })], bidirectional: _rtl() })));
+        });
+
         // Duties and tasks — read from central AppState (works in any view)
         children.push(new Paragraph({ children: [new PageBreak(), new TextRun({ text: t('word.dutiesAndTasks'), bold: true, size: SZ_TITLE, color: C_HEADING })], alignment: AlignmentType.CENTER, spacing: { after: 300 }, bidirectional: _rtl() }));
 
@@ -1437,6 +1445,36 @@ export async function exportToPDF() {
             yPos = margin + 5;
             drawBanner('pdf.dutiesAndTasksCont');
         };
+
+        // ── Workshop participants (Chart Info tab) ────────────────
+        const _partCols = [['facilitators','pdf.facilitators'],['observers','pdf.observers'],['panelMembers','pdf.panelMembers']]
+            .map(([id, key]) => ({ key, names: (document.getElementById(id)?.value || '').split('\n').map(l => l.trim()).filter(Boolean) }))
+            .filter(c => c.names.length);
+        if (_partCols.length) {
+            const colW = chartWidth / _partCols.length;
+            const pageTop = () => { pdf.addPage('a4', 'landscape'); yPos = margin + 5; drawBanner('pdf.participants'); yPos += 6; };
+            pageTop();
+            const prepared = _partCols.map((c, i) => {
+                const x = RTL ? (pageWidth - margin - (i + 1) * colW) : (margin + i * colW);
+                pdf.setFontSize(12); setBodyFont();
+                const lines = [];
+                c.names.forEach(n => wrap('• ' + n, colW - 2 * cellPadX).forEach(l => lines.push(l)));
+                return { x, title: t(c.key), lines };
+            });
+            const drawTitles = () => {
+                pdf.setFontSize(13); setBoldFont(); hcOn();
+                prepared.forEach(c => drawText(c.title, c.x, colW, yPos, cellPadX));
+                blk(); yPos += 8;
+            };
+            drawTitles();
+            const maxLines = Math.max(...prepared.map(c => c.lines.length));
+            for (let i = 0; i < maxLines; i++) {
+                if (yPos > pageHeight - margin - 5) { pageTop(); drawTitles(); }
+                pdf.setFontSize(12); setBodyFont();
+                prepared.forEach(c => { if (c.lines[i] !== undefined) drawLines([c.lines[i]], c.x, colW, yPos, cellPadX); });
+                yPos += lineH12;
+            }
+        }
 
         pdf.addPage('a4', 'landscape');
         yPos = margin + 5;
