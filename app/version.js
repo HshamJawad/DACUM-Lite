@@ -27,8 +27,8 @@
 // ============================================================
 
 // ── The two constants that drive everything ──────────────────
-export const APP_VERSION  = '4.16.7';        // Semantic Versioning
-export const APP_RELEASED = '2026-11-10';   // ISO 8601 (YYYY-MM-DD)
+export const APP_VERSION  = '4.16.8';        // Semantic Versioning
+export const APP_RELEASED = '2026-11-17';   // ISO 8601 (YYYY-MM-DD)
 
 // ── Derived: service-worker cache name ───────────────────────
 // index.html registers  ./sw.js?v=<APP_VERSION>  and sw.js rebuilds
@@ -55,6 +55,13 @@ export const VERSION = {
     },
 
     changelog: [
+        {
+            version: '4.16.8',
+            date: '2026-11-17',
+            changes: [
+                'Fixed: the Facilitators, Observers and Panel Members entered in the Chart Info tab are now included in the Word and PDF exports (Word: title page; PDF: a Workshop Participants page before the duties)',
+            ]
+        },
         {
             version: '4.16.7',
             date: '2026-11-10',
