@@ -43,6 +43,7 @@ import {
 import { isDrawerMode, onViewportModeChange,
          initViewportMode }                     from './viewport-mode.js';
 import { initWordSettings }                     from './word-settings.js';
+import { ensureWorkshopFields }                 from './workshop-info.js';
 import {
     createProject, deleteProject, renameProject,
     setActiveProject, getActiveProject, getAllProjects,
@@ -604,6 +605,8 @@ window.addEventListener('DOMContentLoaded', () => {
     persistProjects();
 
     // ── 4. Bind events and render UI ───────────────────────────
+    // Build the workshop format/date fields before exports can run.
+    ensureWorkshopFields();
     EventBinder.init();
     renderSidebar();
 
