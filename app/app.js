@@ -43,7 +43,6 @@ import {
 import { isDrawerMode, onViewportModeChange,
          initViewportMode }                     from './viewport-mode.js';
 import { initWordSettings }                     from './word-settings.js';
-import { ensureWorkshopFields }                 from './workshop-info.js';
 import {
     createProject, deleteProject, renameProject,
     setActiveProject, getActiveProject, getAllProjects,
@@ -605,9 +604,6 @@ window.addEventListener('DOMContentLoaded', () => {
     persistProjects();
 
     // ── 4. Bind events and render UI ───────────────────────────
-    // The page markup contains the workshop panel textareas. Only the
-    // date/format/venue controls are created dynamically here.
-    ensureWorkshopFields();
     EventBinder.init();
     renderSidebar();
 
