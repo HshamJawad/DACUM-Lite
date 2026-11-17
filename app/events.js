@@ -991,6 +991,20 @@ export async function exportToWord() {
         showStatus(t('status.wordGenerating'), 'success');
         const children = [];
 
+        // Workshop panel (facilitators, observers and panel members)
+        // These values are persisted in chartInfo and must be included
+        // in both document exports. Keep each entered name on its own line.
+        const _panel = {
+            facilitators: document.getElementById('facilitators')?.value?.trim() || '',
+            observers: document.getElementById('observers')?.value?.trim() || '',
+            panelMembers: document.getElementById('panelMembers')?.value?.trim() || ''
+        };
+        const _panelSections = [
+            { key: 'facilitators', label: t('chartInfo.facilitators').replace(/^\\p{Extended_Pictographic}\\s*/u, '') },
+            { key: 'observers', label: t('chartInfo.observers').replace(/^\\p{Extended_Pictographic}\\s*/u, '') },
+            { key: 'panelMembers', label: t('chartInfo.panelMembers').replace(/^\\p{Extended_Pictographic}\\s*/u, '') }
+        ].filter(section => _panel[section.key]);
+
         // Title page
         children.push(new Paragraph({ children: [new TextRun({ text: t('word.occupationTitle', { title: occupationTitle }), bold: true, size: SZ_TITLE, color: C_HEADING })], spacing: { after: 200 }, bidirectional: _rtl() }));
         children.push(new Paragraph({ children: [new TextRun({ text: t('word.jobTitle', { title: jobTitle }), bold: true, size: SZ_TITLE, color: C_HEADING })], spacing: { after: 200 }, bidirectional: _rtl() }));
@@ -1020,6 +1034,34 @@ export async function exportToWord() {
                 } catch(e) { console.error('Error adding Produced By image:', e); }
             }
         } else {
+            children.push(new Paragraph({ spacing: { after: 200 } }));
+        }
+
+        // Workshop Panel — include the three fields captured in Chart Info.
+        // A table keeps the three groups together and lets long name lists wrap.
+        if (_panelSections.length) {
+            children.push(new Paragraph({
+                children: [new TextRun({ text: t('chartInfo.workshopPanel').replace(/^\\p{Extended_Pictographic}\\s*/u, ''), bold: true, size: SZ_HEADING, color: C_HEADING })],
+                spacing: { before: 200, after: 160 },
+                bidirectional: _rtl()
+            }));
+            const panelCells = _panelSections.map(section => {
+                const paragraphs = _panel[section.key].split('\\n').map(name => name.trim()).filter(Boolean)
+                    .map(name => new Paragraph({ children: [new TextRun({ text: name, size: SZ_BODY })], bidirectional: _rtl() }));
+                return new TableCell({
+                    children: [
+                        new Paragraph({ children: [new TextRun({ text: section.label, bold: true, size: SZ_BODY, color: C_HEADING })], bidirectional: _rtl() }),
+                        ...paragraphs
+                    ],
+                    width: { size: 100 / _panelSections.length, type: WidthType.PERCENTAGE }
+                });
+            });
+            children.push(new Table({
+                visuallyRightToLeft: _rtl(),
+                width: { size: 9071, type: WidthType.DXA },
+                layout: 'fixed',
+                rows: [new TableRow({ children: panelCells })]
+            }));
             children.push(new Paragraph({ spacing: { after: 200 } }));
         }
 
@@ -1375,6 +1417,50 @@ export async function exportToPDF() {
             drawLines(ls, infoX, halfW, infoY, 0);
             infoY += ls.length * lineH12 + 1.5;
         });
+
+        // Workshop Panel — draw each populated group below workshop details.
+        const panelLabels = {
+            facilitators: t('chartInfo.facilitators').replace(/^\\p{Extended_Pictographic}\\s*/u, ''),
+            observers: t('chartInfo.observers').replace(/^\\p{Extended_Pictographic}\\s*/u, ''),
+            panelMembers: t('chartInfo.panelMembers').replace(/^\\p{Extended_Pictographic}\\s*/u, '')
+        };
+        const panelValues = {
+            facilitators: document.getElementById('facilitators')?.value || '',
+            observers: document.getElementById('observers')?.value || '',
+            panelMembers: document.getElementById('panelMembers')?.value || ''
+        };
+        const panelSections = Object.keys(panelValues)
+            .map(key => ({ key, label: panelLabels[key], value: panelValues[key].split('\\n').map(v => v.trim()).filter(Boolean) }))
+            .filter(section => section.value.length);
+        if (panelSections.length) {
+            const panelHeading = t('chartInfo.workshopPanel').replace(/^\\p{Extended_Pictographic}\\s*/u, '');
+            pdf.setFontSize(13); setBoldFont(); hcOn();
+            drawText(panelHeading, infoX, halfW, infoY, 0); blk();
+            infoY += 7;
+            const gap = 3;
+            const panelColW = (halfW - gap * (panelSections.length - 1)) / panelSections.length;
+            const panelStartY = infoY;
+            const panelBottoms = panelSections.map((section, index) => {
+                let py = panelStartY;
+                const px = infoX + index * (panelColW + gap);
+                pdf.setFontSize(10); setBoldFont(); hcOn();
+                const headingLines = wrap(section.label, panelColW);
+                drawLines(headingLines, px, panelColW, py, 0);
+                py += headingLines.length * 4.5 + 1;
+                pdf.setFontSize(10); setBodyFont();
+                section.value.forEach(name => {
+                    const nameLines = wrap(name, panelColW);
+                    if (py + nameLines.length * 4.5 > pageHeight - margin - 8) {
+                        pdf.addPage('a4', 'portrait');
+                        py = margin + 8;
+                    }
+                    drawLines(nameLines, px, panelColW, py, 0);
+                    py += nameLines.length * 4.5 + 1;
+                });
+                return py;
+            });
+            infoY = Math.max(...panelBottoms) + 3;
+        }
 
         pdf.setFontSize(14); setBoldFont(); hcOn();
         drawText(t('pdf.occupationTitle'), occX, halfW, occY, 0); blk(); occY += 7;
