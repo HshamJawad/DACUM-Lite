@@ -930,6 +930,25 @@ export function loadFromJSON(event) {
 //  EXPORT TO WORD (DOCX)
 // ══════════════════════════════════════════════════════════════
 
+/** Read a logo data URL's real format and pixel size so exports can
+ *  embed it correctly (PNG stays PNG) and keep its aspect ratio. */
+function _logoMeta(dataUrl) {
+    return new Promise(resolve => {
+        const m = /^data:image\/(png|jpe?g|bmp|gif);base64,/i.exec(dataUrl || '');
+        const fmt = m ? m[1].toLowerCase().replace('jpg', 'jpeg') : 'jpeg';
+        const img = new Image();
+        img.onload  = () => resolve({ fmt, w: img.naturalWidth || 1, h: img.naturalHeight || 1 });
+        img.onerror = () => resolve({ fmt, w: 1, h: 1 });
+        img.src = dataUrl;
+    });
+}
+
+/** Fit (w,h) inside a maxW × maxH box, preserving aspect ratio. */
+function _fitBox(w, h, maxW, maxH) {
+    const k = Math.min(maxW / w, maxH / h);
+    return { w: w * k, h: h * k };
+}
+
 export async function exportToWord() {
     try {
         if (typeof window.docx === 'undefined') {
@@ -1001,25 +1020,33 @@ export async function exportToWord() {
             children.push(new Paragraph({ children: [new TextRun({ text: line, bold: true, size: SZ_BODY })], spacing: { after: 200 }, bidirectional: _rtl() }));
         });
 
+        /* Logos are exported whether or not the name text was typed. */
+        const _wordLogo = async (img, after) => {
+            if (!img) return;
+            try {
+                const meta = await _logoMeta(img);
+                const box  = _fitBox(meta.w, meta.h, 120, 94);
+                const type = meta.fmt === 'jpeg' ? 'jpg' : meta.fmt;
+                const base64Data = img.split(',')[1];
+                children.push(new Paragraph({ children: [new ImageRun({
+                    data: Uint8Array.from(atob(base64Data), c => c.charCodeAt(0)),
+                    type,
+                    transformation: { width: Math.round(box.w), height: Math.round(box.h) }
+                })], alignment: AlignmentType.CENTER, spacing: { after } }));
+            } catch (e) { console.error('Error adding logo to Word export:', e); }
+        };
+
         if (producedFor) {
             children.push(new Paragraph({ children: [new TextRun({ text: t('word.producedFor', { name: producedFor }), bold: true, size: SZ_BODY })], spacing: { after: 200 }, bidirectional: _rtl() }));
-            if (producedForImage) {
-                try {
-                    const base64Data = producedForImage.split(',')[1];
-                    children.push(new Paragraph({ children: [new ImageRun({ data: Uint8Array.from(atob(base64Data), c => c.charCodeAt(0)), transformation: { width: 94, height: 94 } })], alignment: AlignmentType.CENTER, spacing: { after: 200 } }));
-                } catch(e) { console.error('Error adding Produced For image:', e); }
-            }
         }
+        await _wordLogo(producedForImage, 200);
 
         if (producedBy) {
             children.push(new Paragraph({ children: [new TextRun({ text: t('word.producedBy', { name: producedBy }), bold: true, size: SZ_BODY })], spacing: { after: 200 }, bidirectional: _rtl() }));
-            if (producedByImage) {
-                try {
-                    const base64Data = producedByImage.split(',')[1];
-                    children.push(new Paragraph({ children: [new ImageRun({ data: Uint8Array.from(atob(base64Data), c => c.charCodeAt(0)), transformation: { width: 94, height: 94 } })], alignment: AlignmentType.CENTER, spacing: { after: 400 } }));
-                } catch(e) { console.error('Error adding Produced By image:', e); }
-            }
-        } else {
+        }
+        if (producedByImage) {
+            await _wordLogo(producedByImage, 400);
+        } else if (!producedBy) {
             children.push(new Paragraph({ spacing: { after: 200 } }));
         }
 
@@ -1348,27 +1375,38 @@ export async function exportToPDF() {
         const halfW    = pageWidth / 2 - margin - 20;
         const infoX    = RTL ? (pageWidth / 2 + 10) : (margin + 10);
         const occX     = RTL ? (margin + 10)        : (pageWidth / 2 + 10);
-        const imgX     = (boxX) => RTL ? (boxX + halfW - 30) : boxX;
 
         let infoY = yPos, occY = yPos;
 
-        if (producedForInput.value) {
+        /* Logos are drawn whether or not the name text was typed; the
+           label is shown when either the name or a logo exists. Format
+           comes from the data URL (PNG stays PNG) and the aspect ratio
+           is preserved inside a 40 × 24 mm box. */
+        const _pdfLogo = async (img, boxX, y) => {
+            const meta = await _logoMeta(img);
+            const box  = _fitBox(meta.w, meta.h, 40, 24);
+            const fmt  = meta.fmt === 'jpeg' ? 'JPEG' : meta.fmt.toUpperCase();
+            const x    = RTL ? (boxX + halfW - box.w) : boxX;
+            try { pdf.addImage(img, fmt, x, y, box.w, box.h); return box.h + 4; }
+            catch (e) { console.error('Error adding logo to PDF export:', e); return 0; }
+        };
+        if (producedForInput.value || producedForImage) {
             pdf.setFontSize(16); setBoldFont(); hcOn();
             drawText(t('pdf.producedFor'), infoX, halfW, infoY, 0); blk(); infoY += 8;
-            if (producedForImage) {
-                try { pdf.addImage(producedForImage, 'JPEG', imgX(infoX), infoY, 30, 20); infoY += 24; } catch (e) {}
+            if (producedForImage) infoY += await _pdfLogo(producedForImage, infoX, infoY);
+            if (producedForInput.value) {
+                setBodyFont(); pdf.setFontSize(13);
+                drawText(producedForInput.value, infoX, halfW, infoY, 0); infoY += 16;
             }
-            setBodyFont(); pdf.setFontSize(13);
-            drawText(producedForInput.value, infoX, halfW, infoY, 0); infoY += 16;
         }
-        if (producedByInput.value) {
+        if (producedByInput.value || producedByImage) {
             pdf.setFontSize(16); setBoldFont(); hcOn();
             drawText(t('pdf.producedBy'), infoX, halfW, infoY, 0); blk(); infoY += 8;
-            if (producedByImage) {
-                try { pdf.addImage(producedByImage, 'JPEG', imgX(infoX), infoY, 30, 20); infoY += 24; } catch (e) {}
+            if (producedByImage) infoY += await _pdfLogo(producedByImage, infoX, infoY);
+            if (producedByInput.value) {
+                setBodyFont(); pdf.setFontSize(13);
+                drawText(producedByInput.value, infoX, halfW, infoY, 0); infoY += 14;
             }
-            setBodyFont(); pdf.setFontSize(13);
-            drawText(producedByInput.value, infoX, halfW, infoY, 0); infoY += 14;
         }
         if (dacumDateFormatted) {
             pdf.setFontSize(13); setBoldFont();
